@@ -872,10 +872,10 @@
       <p>Enter your name to access your saved greenhouses.</p>
       <div class="form-field">
         <label for="userName">Your Name</label>
-        <input type="text" id="userName" placeholder="e.g. Ahmed" />
+        <input type="text" id="userName" placeholder="e.g. Ahmed" autocomplete="name" autocorrect="off" autocapitalize="words" />
       </div>
       <div class="modal-actions">
-        <button class="btn-save" id="btnUserLogin">Enter My Greenhouses</button>
+        <button class="btn-save" id="btnUserLogin" type="button">Enter My Greenhouses</button>
       </div>
     </div>
   </div>
@@ -1336,11 +1336,17 @@
     }
 
     function loginUser(name) {
-      state.user = name.trim();
-      if (!state.user) return;
-      localStorage.setItem(STORAGE_KEY, state.user);
+      const trimmed = (name || '').trim();
+      if (!trimmed) {
+        const inp = document.getElementById('userName');
+        if (inp) { inp.focus(); inp.style.border = '1.5px solid #e55'; }
+        return;
+      }
+      state.user = trimmed;
+      try { localStorage.setItem(STORAGE_KEY, state.user); } catch(e) {}
+      const modal = document.getElementById('userModal');
+      if (modal) modal.classList.remove('open');
       document.getElementById('userDisplay').textContent = state.user;
-      document.getElementById('userModal').classList.remove('open');
       state.draft = null;
       state.editMode = false;
       state.selectedId = null;
@@ -2419,10 +2425,20 @@
     document.getElementById('mobCanvas').addEventListener('click', closeMobilePanels);
     document.getElementById('mobControls').addEventListener('click', () => openMobilePanel('right'));
 
-    document.getElementById('btnUserLogin').addEventListener('click', () => loginUser(document.getElementById('userName').value));
-    document.getElementById('userName').addEventListener('keydown', e => {
-      if (e.key === 'Enter') loginUser(document.getElementById('userName').value);
-    });
+    // Login listeners - robust Enter + click
+    (function() {
+      const btn = document.getElementById('btnUserLogin');
+      const inp = document.getElementById('userName');
+      function doLogin() { loginUser(inp.value); }
+      btn.addEventListener('click', doLogin);
+      btn.addEventListener('touchend', function(e) { e.preventDefault(); doLogin(); });
+      inp.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); doLogin(); }
+        inp.style.border = ''; // reset red border on typing
+      });
+      // Focus input on modal open
+      inp.focus();
+    })();
     document.getElementById('btnSwitchUser').addEventListener('click', () => {
       state.draft = null;
       state.editMode = false;
