@@ -112,7 +112,10 @@
     .sidebar {
       display: flex;
       flex-direction: column;
-      background: var(--sidebar-bg);
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(122, 92, 68, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 90%, rgba(60, 40, 25, 0.22) 0%, transparent 50%),
+        var(--sidebar-bg);
       border-right: 1px solid var(--border);
       overflow: hidden;
     }
@@ -206,11 +209,15 @@
     .greenhouse-list::-webkit-scrollbar-thumb { background: var(--soil-light); border-radius: 4px; }
 
     .gh-item {
-      padding: 12px 14px;
-      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
       border-radius: var(--radius);
       cursor: pointer;
       border: 1px solid transparent;
+      transition: background 0.15s, border-color 0.15s;
     }
 
     .gh-item:hover { background: var(--card-hover); }
@@ -221,7 +228,27 @@
       box-shadow: inset 3px 0 0 var(--accent);
     }
 
-    .gh-item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+    .gh-thumb {
+      width: 76px;
+      height: 54px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #5c3d25;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.25);
+      image-rendering: auto;
+    }
+
+    .gh-item-info { flex: 1; min-width: 0; }
+
+    .gh-item-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .gh-item-meta {
       font-size: 0.75rem;
@@ -241,7 +268,12 @@
 
     .canvas-area { position: relative; overflow: hidden; }
 
-    #farmCanvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+    #farmCanvas { width: 100%; height: 100%; display: block; cursor: pointer; }
+    #farmCanvas.cursor-crosshair { cursor: crosshair; }
+    #farmCanvas.cursor-pointer { cursor: pointer; }
+    #farmCanvas.cursor-grab { cursor: grab; }
+    #farmCanvas.cursor-grabbing { cursor: grabbing; }
+    #farmCanvas.cursor-cell { cursor: cell; }
 
     .canvas-overlay {
       position: absolute;
@@ -296,7 +328,10 @@
     .control-panel {
       display: flex;
       flex-direction: column;
-      background: var(--sidebar-bg);
+      background:
+        radial-gradient(ellipse at 80% 10%, rgba(122, 92, 68, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 20% 90%, rgba(60, 40, 25, 0.22) 0%, transparent 50%),
+        var(--sidebar-bg);
       border-left: 1px solid var(--border);
       overflow: hidden;
     }
@@ -428,6 +463,8 @@
 
     .btn-action.primary:hover { background: var(--accent-light); }
 
+    body.login-open { overflow: hidden; }
+
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -439,9 +476,18 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
     }
 
     .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    #userModal.open {
+      align-items: flex-start;
+      padding-top: max(env(safe-area-inset-top, 16px), 16px);
+      padding-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
+      overflow-y: auto;
+    }
 
     .modal {
       background: var(--sidebar-bg);
@@ -706,20 +752,135 @@
         padding-top: max(env(safe-area-inset-top, 12px), 12px);
         overflow-y: auto;
       }
-
-      .modal {
-        margin: 12px auto;
-        max-height: none;
-      }
+      .modal { margin: 12px auto; max-height: none; }
     }
+
+    /* ===== LOGIN MODAL - Android optimized ===== */
+    .login-modal {
+      width: min(380px, 92vw);
+      padding: 32px 28px 28px;
+      text-align: center;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(122, 92, 68, 0.25) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 100%, rgba(60, 40, 25, 0.2) 0%, transparent 50%),
+        var(--sidebar-bg);
+      transform: translateY(var(--login-kb-offset, 0px));
+      transition: transform 0.2s ease;
+      margin: auto;
+    }
+
+    .login-logo { margin-bottom: 16px; }
+
+    .login-olive {
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 2px 8px rgba(107,142,78,0.4));
+    }
+
+    .login-logo h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent-light);
+      letter-spacing: 0.02em;
+    }
+
+    .login-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      text-align: center !important;
+    }
+
+    .login-modal .form-field { margin-bottom: 20px; text-align: left; }
+
+    .login-modal .form-field label { font-size: 0.7rem; letter-spacing: 0.05em; }
+
+    .login-modal .form-field input {
+      padding: 14px 16px;
+      font-size: 1.05rem;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .login-modal .form-field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(107,142,78,0.18);
+      outline: none;
+    }
+
+    .login-modal .form-field input.input-error {
+      border-color: #e55a5a;
+      box-shadow: 0 0 0 3px rgba(229,90,90,0.15);
+      animation: login-shake 0.35s ease;
+    }
+
+    @keyframes login-shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    .login-error {
+      font-size: 0.78rem;
+      color: #e88;
+      margin-top: -12px;
+      margin-bottom: 14px;
+      min-height: 1.2em;
+      text-align: center;
+    }
+
+    .btn-login-big {
+      width: 100%;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 14px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: background 0.18s, transform 0.1s;
+      /* Large touch target for Android */
+      min-height: 54px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .btn-login-big:active { transform: scale(0.97); background: var(--accent-light); }
 
     /* Prevent page zoom on double-tap for buttons */
     button, input, select { touch-action: manipulation; }
 
-    /* Canvas pan cursor feedback */
-    #farmCanvas.panning { cursor: grabbing !important; }
+    .gh-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .btn-gh-delete {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid rgba(220, 80, 80, 0.35);
+      border-radius: 8px;
+      background: rgba(180, 50, 50, 0.18);
+      color: #e88;
+      font-size: 0.95rem;
+      cursor: pointer;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .btn-gh-delete:hover { background: rgba(200, 60, 60, 0.3); }
   </style>
   <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-apple.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body>
@@ -734,6 +895,7 @@
       </div>
       <div class="header-right">
         <span class="save-indicator" id="saveIndicator" data-i18n="saved">Saved ✓</span>
+        <button class="btn-header" id="btnUndo" title="Undo" style="font-size:1rem;padding:6px 10px;" disabled>↩</button>
         <button class="btn-header" id="btnLangEn">EN</button>
         <button class="btn-header" id="btnLangAr">عربي</button>
         <div class="user-badge"><span data-i18n="user">User</span>: <strong id="userDisplay">—</strong></div>
@@ -836,16 +998,6 @@
             <div id="zoneListPanel"></div>
           </div>
           <div class="control-group">
-            <label>Temperature</label>
-            <div class="control-row"><span>Current</span><span id="ctrlTemp">22°C</span></div>
-            <div class="slider-wrap"><input type="range" id="tempSlider" min="10" max="40" value="22" /></div>
-          </div>
-          <div class="control-group">
-            <label>Humidity</label>
-            <div class="control-row"><span>Current</span><span id="ctrlHumidity">65%</span></div>
-            <div class="slider-wrap"><input type="range" id="humiditySlider" min="20" max="95" value="65" /></div>
-          </div>
-          <div class="control-group">
             <label>Status</label>
             <div class="control-row"><span>Ventilation</span><span class="badge" id="ctrlVent">Auto</span></div>
             <div class="control-row"><span>Irrigation</span><span class="badge idle" id="ctrlIrrigation">Idle</span></div>
@@ -854,6 +1006,9 @@
           <button class="btn-action" id="btnRenameGreenhouse">Rename Greenhouse</button>
           <button class="btn-action" id="btnToggleVent">Toggle Ventilation</button>
           <button class="btn-action" id="btnRunIrrigation">Run Irrigation</button>
+          <button class="btn-action btn-delete-gh" id="btnDeleteGreenhouse" style="margin-top:14px;background:rgba(180,50,50,0.18);border:1px solid rgba(220,80,80,0.35);color:#e88;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span style="font-size:1.1rem">♻️</span> <span data-i18n="deleteGh">Delete Greenhouse</span>
+          </button>
         </div>
       </div>
     </aside>
@@ -866,17 +1021,34 @@
   </div>
 
   <!-- User login -->
-  <div class="modal-backdrop open" id="userModal">
-    <div class="modal">
-      <h3>Welcome to Olive Agent</h3>
-      <p>Enter your name to access your saved greenhouses.</p>
-      <div class="form-field">
-        <label for="userName">Your Name</label>
-        <input type="text" id="userName" placeholder="e.g. Ahmed" autocomplete="name" autocorrect="off" autocapitalize="words" />
+  <div class="modal-backdrop" id="userModal" role="dialog" aria-modal="true" aria-label="Login">
+    <div class="modal login-modal">
+      <div class="login-logo">
+        <div class="login-olive">🫒</div>
+        <h2>Olive Agent</h2>
       </div>
-      <div class="modal-actions">
-        <button class="btn-save" id="btnUserLogin" type="button">Enter My Greenhouses</button>
-      </div>
+      <p class="login-sub" data-i18n="loginSub">Enter your name to access your greenhouses</p>
+      <form id="loginForm" novalidate>
+        <div class="form-field">
+          <label for="userName" data-i18n="loginName">Your Name</label>
+          <input
+            type="text"
+            id="userName"
+            placeholder="e.g. Ahmed"
+            autocomplete="name"
+            autocorrect="off"
+            autocapitalize="words"
+            spellcheck="false"
+            enterkeyhint="go"
+            inputmode="text"
+            required
+          />
+        </div>
+        <p class="login-error" id="loginError" role="alert" aria-live="polite"></p>
+        <button class="btn-save btn-login-big" id="btnUserLogin" type="submit">
+          <span data-i18n="loginBtn">Enter My Greenhouses →</span>
+        </button>
+      </form>
     </div>
   </div>
 
@@ -959,7 +1131,11 @@
         savePlasticTitle: 'Name Plastic House Design', savePlasticDesc: 'Name your design, then save.',
         plasticName: 'Plastic House Name', noZones: 'No plant zones — draw zones first',
         rectTooSmall: 'Rectangle too small — drag a larger area', welcome: 'Welcome — enter your name to start',
-        mobFarms: '🏠 Farms', mobCanvas: '🌾 Farm', mobControls: '⚙ Controls'
+        loginSub: 'Enter your name to access your greenhouses', loginName: 'Your Name',
+        loginBtn: 'Enter My Greenhouses →', loginError: 'Please enter your name',
+        mobFarms: '🏠 Farms', mobCanvas: '🌾 Farm', mobControls: '⚙ Controls',
+        deleteGh: 'Delete Greenhouse',
+        deleteConfirm: 'Delete "{name}" permanently? This cannot be undone.'
       },
       ar: {
         saved: 'تم الحفظ ✓', user: 'المستخدم', switchUser: 'تبديل المستخدم', myGreenhouses: 'بيوتي البلاستيكية',
@@ -983,7 +1159,11 @@
         savePlasticTitle: 'تسمية تصميم البيت البلاستيكي', savePlasticDesc: 'سمّ تصميمك ثم احفظ.',
         plasticName: 'اسم البيت البلاستيكي', noZones: 'لا توجد مناطق — ارسم مناطق أولاً',
         rectTooSmall: 'المستطيل صغير جداً — اسحب مساحة أكبر', welcome: 'مرحباً — أدخل اسمك للبدء',
-        mobFarms: '🏠 البيوت', mobCanvas: '🌾 المزرعة', mobControls: '⚙ التحكم'
+        loginSub: 'أدخل اسمك للوصول إلى بيوتك البلاستيكية', loginName: 'اسمك',
+        loginBtn: 'دخول بيوتي →', loginError: 'يرجى إدخال اسمك',
+        mobFarms: '🏠 البيوت', mobCanvas: '🌾 المزرعة', mobControls: '⚙ التحكم',
+        deleteGh: 'حذف البيت البلاستيكي',
+        deleteConfirm: 'حذف "{name}" نهائياً؟ لا يمكن التراجع عن هذا.'
       }
     };
 
@@ -991,6 +1171,7 @@
       user: null,
       greenhouses: [],
       selectedId: null,
+      undoStack: [],
       nextId: 1,
       nextZoneId: 1,
       viewport: { scale: 1, offsetX: 0, offsetY: 0 },
@@ -1014,13 +1195,67 @@
       birdsPlaying: false,
       birdsInterval: null,
       fieldPhase: 0,
-      fieldRaf: null
+      fieldRaf: null,
+      fieldAnimPaused: false
     };
 
     const canvas = document.getElementById('farmCanvas');
     const ctx = canvas.getContext('2d');
     const overlayEl = document.getElementById('canvasOverlay');
     let audioCtx = null;
+    let masterBus = null;
+    let _spaceHeld = false;
+    let _mousePan = false;
+    let _mousePanStart = null;
+    let _mousePanOffset0 = null;
+
+    const CURSOR_CLASSES = ['cursor-crosshair', 'cursor-pointer', 'cursor-grab', 'cursor-grabbing', 'cursor-cell'];
+
+    function getMasterBus() {
+      initAudio();
+      if (!masterBus) {
+        const comp = audioCtx.createDynamicsCompressor();
+        comp.threshold.value = -18;
+        comp.knee.value = 12;
+        comp.ratio.value = 3;
+        comp.attack.value = 0.003;
+        comp.release.value = 0.18;
+        const gain = audioCtx.createGain();
+        gain.gain.value = 1.75;
+        const warm = audioCtx.createBiquadFilter();
+        warm.type = 'lowpass';
+        warm.frequency.value = 12000;
+        warm.Q.value = 0.6;
+        gain.connect(warm);
+        warm.connect(comp);
+        comp.connect(audioCtx.destination);
+        masterBus = gain;
+      }
+      return masterBus;
+    }
+
+    function updateCanvasCursor() {
+      CURSOR_CLASSES.forEach(c => canvas.classList.remove(c));
+      if (_mousePan || canvas.classList.contains('panning')) {
+        canvas.classList.add('cursor-grabbing');
+        return;
+      }
+      if (_spaceHeld) {
+        canvas.classList.add('cursor-grab');
+        return;
+      }
+      if (!state.draft && !state.editMode) {
+        canvas.classList.add('cursor-pointer');
+        return;
+      }
+      if (state.tool === 'door' || state.tool === 'block') {
+        canvas.classList.add('cursor-cell');
+      } else if (state.tool === 'rect' || state.tool === 'zone') {
+        canvas.classList.add('cursor-crosshair');
+      } else {
+        canvas.classList.add('cursor-pointer');
+      }
+    }
 
     function t(key) { return STRINGS[state.lang]?.[key] || STRINGS.en[key] || key; }
 
@@ -1116,38 +1351,130 @@
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
+    // ── WIND (continuous ambient) ──────────────────────────────────────────────
+    let windNode = null, windGain = null;
+    function startWind() {
+      if (!audioCtx) return;
+      if (windNode) return; // already running
+      const bufLen = audioCtx.sampleRate * 2;
+      const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1);
+      const src = audioCtx.createBufferSource();
+      src.buffer = buf;
+      src.loop = true;
+
+      const lp = audioCtx.createBiquadFilter();
+      lp.type = 'bandpass';
+      lp.frequency.value = 350;
+      lp.Q.value = 0.6;
+
+      const lp2 = audioCtx.createBiquadFilter();
+      lp2.type = 'lowpass';
+      lp2.frequency.value = 900;
+
+      windGain = audioCtx.createGain();
+      windGain.gain.value = 0;
+
+      src.connect(lp); lp.connect(lp2); lp2.connect(windGain);
+      windGain.connect(getMasterBus());
+      src.start();
+      windNode = src;
+
+      // Fade in wind
+      windGain.gain.linearRampToValueAtTime(0.13, audioCtx.currentTime + 3);
+
+      // Subtle gusts
+      function gust() {
+        if (!windGain) return;
+        const peak = 0.16 + Math.random() * 0.08;
+        const t = audioCtx.currentTime;
+        windGain.gain.cancelScheduledValues(t);
+        windGain.gain.setValueAtTime(windGain.gain.value, t);
+        windGain.gain.linearRampToValueAtTime(peak, t + 1.5);
+        windGain.gain.linearRampToValueAtTime(0.1, t + 4);
+        setTimeout(gust, 5000 + Math.random() * 8000);
+      }
+      setTimeout(gust, 4000);
+    }
+
+    // ── ROOSTER crow ──────────────────────────────────────────────────────────
+    function playRooster() {
+      initAudio();
+      const now = audioCtx.currentTime;
+      const master = audioCtx.createGain();
+      master.gain.value = 0.42;
+      master.connect(getMasterBus());
+
+      // 3-part crow: "cock-a-doo-doo"
+      const parts = [
+        { f0: 620, f1: 980, dur: 0.18, vol: 1.0 },
+        { f0: 780, f1: 1320, dur: 0.22, vol: 0.9 },
+        { f0: 550, f1: 820, dur: 0.35, vol: 0.8 },
+        { f0: 480, f1: 680, dur: 0.28, vol: 0.7 }
+      ];
+
+      let t = now;
+      parts.forEach(({ f0, f1, dur, vol }, i) => {
+        const osc = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'triangle'; osc2.type = 'sine';
+        osc.frequency.setValueAtTime(f0, t);
+        osc.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.6);
+        osc.frequency.exponentialRampToValueAtTime(f0 * 0.85, t + dur);
+        osc2.frequency.setValueAtTime(f0 * 2.1, t);
+        osc2.frequency.exponentialRampToValueAtTime(f1 * 1.8, t + dur * 0.5);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(vol, t + 0.03);
+        g.gain.setValueAtTime(vol, t + dur * 0.7);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.connect(g); osc2.connect(g); g.connect(master);
+        osc.start(t); osc2.start(t);
+        osc.stop(t + dur + 0.05); osc2.stop(t + dur + 0.05);
+        t += dur + 0.07;
+      });
+    }
+
+    // ── BIRD CHIRP ────────────────────────────────────────────────────────────
+    function chirpBird() {
+      if (!audioCtx) return;
+      const tNow = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const f0 = 1800 + Math.random() * 2200;
+      osc.type = 'sine';
+      osc2.type = 'triangle';
+      osc.frequency.setValueAtTime(f0, tNow);
+      osc.frequency.exponentialRampToValueAtTime(f0 * 1.35, tNow + 0.05);
+      osc.frequency.exponentialRampToValueAtTime(f0 * 0.75, tNow + 0.14);
+      osc2.frequency.setValueAtTime(f0 * 2, tNow);
+      osc2.frequency.exponentialRampToValueAtTime(f0 * 1.6, tNow + 0.08);
+      gain.gain.setValueAtTime(0.0001, tNow);
+      gain.gain.exponentialRampToValueAtTime(0.11, tNow + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.18);
+      osc.connect(gain);
+      osc2.connect(gain);
+      gain.connect(getMasterBus());
+      osc.start(); osc2.start();
+      osc.stop(tNow + 0.24); osc2.stop(tNow + 0.24);
+    }
+
+    // ── SAVE JINGLE ───────────────────────────────────────────────────────────
     function playAlhamdulillah() {
       initAudio();
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance('الحمد لله');
-        u.lang = 'ar-SA';
-        u.rate = 0.88;
-        u.pitch = 1;
+        u.lang = 'ar-SA'; u.rate = 0.88; u.pitch = 1;
         speechSynthesis.speak(u);
       } else {
         playSound('save');
       }
     }
 
-    function chirpBird() {
-      if (!audioCtx) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      const f0 = 1800 + Math.random() * 2200;
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(f0, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(f0 * 1.4, audioCtx.currentTime + 0.04);
-      osc.frequency.exponentialRampToValueAtTime(f0 * 0.7, audioCtx.currentTime + 0.12);
-      gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.04, audioCtx.currentTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.2);
-    }
-
+    // ── BIRDS TOGGLE ──────────────────────────────────────────────────────────
     function toggleBirdsSound() {
       initAudio();
       const btn = document.getElementById('btnBirdsSound');
@@ -1155,40 +1482,77 @@
         clearInterval(state.birdsInterval);
         state.birdsInterval = null;
         state.birdsPlaying = false;
-        btn.textContent = t('birdsSound');
+        if (btn) btn.textContent = t('birdsSound');
         return;
       }
       state.birdsPlaying = true;
-      btn.textContent = t('birdsStop');
+      if (btn) btn.textContent = t('birdsStop');
       chirpBird();
       state.birdsInterval = setInterval(() => {
         if (Math.random() > 0.35) chirpBird();
       }, 600 + Math.random() * 1400);
     }
 
+    // ── DOOR KNOCK sound ──────────────────────────────────────────────────────
+    function playDoorKnock() {
+      if (!state.soundEnabled) return;
+      initAudio();
+      const t0 = audioCtx.currentTime;
+      [0, 0.18, 0.36].forEach(delay => {
+        const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.08, audioCtx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.015));
+        const src = audioCtx.createBufferSource();
+        src.buffer = buf;
+        const g = audioCtx.createGain(); g.gain.value = 0.58;
+        const lp = audioCtx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420;
+        const hp = audioCtx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 80;
+        src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(getMasterBus());
+        src.start(t0 + delay);
+      });
+    }
+
+    // ── GENERIC SOUNDS ────────────────────────────────────────────────────────
+    function playTone(freq, start, duration, vol = 0.14, type = 'triangle') {
+      const osc = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 2800;
+      osc.type = type;
+      osc2.type = 'sine';
+      osc.frequency.value = freq;
+      osc2.frequency.value = freq * 2;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(vol, start + 0.012);
+      gain.gain.setValueAtTime(vol * 0.85, start + duration * 0.55);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      osc.connect(gain);
+      osc2.connect(gain);
+      gain.connect(filter);
+      filter.connect(getMasterBus());
+      osc.start(start); osc2.start(start);
+      osc.stop(start + duration + 0.04);
+      osc2.stop(start + duration + 0.04);
+    }
+
     function playSound(kind) {
       if (!state.soundEnabled) return;
       initAudio();
+      if (kind === 'door') { playDoorKnock(); return; }
+      if (kind === 'rooster') { playRooster(); return; }
       const tones = {
-        nav:    [{ f: 440, d: 0.12 }, { f: 554, d: 0.18 }],
-        block:  [{ f: 660, d: 0.08 }],
-        save:   [{ f: 523, d: 0.1 }, { f: 659, d: 0.15 }, { f: 784, d: 0.2 }],
-        zoom:   [{ f: 330, d: 0.06 }]
+        nav:   [{ f: 440, d: 0.14, v: 0.13 }, { f: 554, d: 0.2, v: 0.12 }],
+        block: [{ f: 660, d: 0.1, v: 0.15 }],
+        save:  [{ f: 523, d: 0.12, v: 0.14 }, { f: 659, d: 0.16, v: 0.13 }, { f: 784, d: 0.22, v: 0.12 }],
+        zoom:  [{ f: 330, d: 0.08, v: 0.1 }],
+        zone:  [{ f: 392, d: 0.09, v: 0.13 }, { f: 523, d: 0.14, v: 0.12 }]
       };
       const seq = tones[kind] || tones.nav;
       let t = audioCtx.currentTime;
-      seq.forEach(({ f, d }) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = f;
-        gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.exponentialRampToValueAtTime(0.07, t + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + d);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(t);
-        osc.stop(t + d + 0.05);
+      seq.forEach(({ f, d, v }) => {
+        playTone(f, t, d, v);
         t += d * 0.55;
       });
     }
@@ -1287,6 +1651,101 @@
 
     function userDataKey() { return `olive-agent-data-${state.user}`; }
 
+    function cloneDraft(draft) {
+      if (!draft) return null;
+      return {
+        rect: draft.rect ? { ...draft.rect } : null,
+        doors: [...(draft.doors || [])],
+        zones: (draft.zones || []).map(z => ({ ...z, points: [...z.points] })),
+        blocks: [...(draft.blocks || [])],
+        name: draft.name || ''
+      };
+    }
+
+    function pushUndo(description) {
+      state.undoStack.push({
+        desc: description,
+        greenhouses: JSON.parse(JSON.stringify(state.greenhouses)),
+        nextId: state.nextId,
+        nextZoneId: state.nextZoneId,
+        selectedId: state.selectedId,
+        editMode: state.editMode,
+        draft: cloneDraft(state.draft),
+        tool: state.tool
+      });
+      if (state.undoStack.length > 50) state.undoStack.shift();
+      updateUndoBtn();
+    }
+
+    function updateUndoBtn() {
+      const btn = document.getElementById('btnUndo');
+      if (btn) btn.disabled = state.undoStack.length === 0;
+    }
+
+    function doUndo() {
+      if (state.undoStack.length === 0) return;
+      const snap = state.undoStack.pop();
+      state.greenhouses = snap.greenhouses;
+      state.nextId = snap.nextId;
+      state.nextZoneId = snap.nextZoneId;
+      state.selectedId = snap.selectedId;
+      state.editMode = snap.editMode;
+      state.draft = snap.draft;
+      state.tool = snap.tool;
+      state.isDraggingRect = false;
+      state.isDrawingZone = false;
+      state.previewRect = null;
+      state.zonePoints = [];
+      state.pendingZonePoints = null;
+      document.getElementById('toolGroup').classList.toggle('hidden', !state.draft || state.editMode);
+      document.getElementById('editToolGroup').classList.toggle('hidden', !state.editMode);
+      if (state.selectedId) {
+        const gh = state.greenhouses.find(g => g.id === state.selectedId);
+        if (gh) {
+          document.getElementById('panelPlaceholder').style.display = 'none';
+          document.getElementById('panelControls').style.display = 'block';
+          updatePanel(gh);
+        } else {
+          state.selectedId = null;
+          document.getElementById('panelPlaceholder').style.display = 'block';
+          document.getElementById('panelControls').style.display = 'none';
+        }
+      } else {
+        document.getElementById('panelPlaceholder').style.display = 'block';
+        document.getElementById('panelControls').style.display = 'none';
+      }
+      updateCreateTools();
+      updateUndoBtn();
+      persistData();
+      renderList();
+      updateCanvasCursor();
+      drawFarm();
+      playSound('nav');
+    }
+
+    function deleteGreenhouse(gh) {
+      if (!gh) return;
+      const confirmMsg = t('deleteConfirm').replace('{name}', gh.name);
+      if (!confirm(confirmMsg)) return;
+      pushUndo('delete greenhouse');
+      state.greenhouses = state.greenhouses.filter(g => g.id !== gh.id);
+      if (state.selectedId === gh.id) {
+        state.selectedId = null;
+        state.editMode = false;
+        state.draft = null;
+        state.tool = null;
+        document.getElementById('panelPlaceholder').style.display = 'block';
+        document.getElementById('panelControls').style.display = 'none';
+        document.getElementById('editToolGroup').classList.add('hidden');
+        document.getElementById('toolGroup').classList.add('hidden');
+      }
+      persistData();
+      renderList();
+      updateCanvasCursor();
+      drawFarm();
+      playSound('nav');
+    }
+
     function persistData() {
       if (!state.user) return;
       localStorage.setItem(userDataKey(), JSON.stringify({
@@ -1335,17 +1794,54 @@
       return gh;
     }
 
+    function showLoginModal() {
+      const modal = document.getElementById('userModal');
+      if (modal) modal.classList.add('open');
+      document.body.classList.add('login-open');
+      adjustLoginForKeyboard();
+      const inp = document.getElementById('userName');
+      const delay = 'ontouchstart' in window ? 420 : 60;
+      setTimeout(() => {
+        if (!inp || !modal.classList.contains('open')) return;
+        try { inp.focus({ preventScroll: true }); } catch(e) { inp.focus(); }
+      }, delay);
+    }
+
+    function hideLoginModal() {
+      const modal = document.getElementById('userModal');
+      if (modal) modal.classList.remove('open');
+      document.body.classList.remove('login-open');
+      const err = document.getElementById('loginError');
+      if (err) err.textContent = '';
+      const inp = document.getElementById('userName');
+      if (inp) inp.classList.remove('input-error');
+    }
+
+    function adjustLoginForKeyboard() {
+      const modal = document.getElementById('userModal');
+      if (!modal || !modal.classList.contains('open')) return;
+      const vv = window.visualViewport;
+      if (!vv) {
+        modal.style.setProperty('--login-kb-offset', '0px');
+        return;
+      }
+      const kbOverlap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      const lift = kbOverlap > 40 ? Math.min(kbOverlap * 0.35, 120) : 0;
+      modal.style.setProperty('--login-kb-offset', `-${lift}px`);
+    }
+
     function loginUser(name) {
       const trimmed = (name || '').trim();
       if (!trimmed) {
         const inp = document.getElementById('userName');
-        if (inp) { inp.focus(); inp.style.border = '1.5px solid #e55'; }
-        return;
+        const err = document.getElementById('loginError');
+        if (inp) { inp.classList.add('input-error'); inp.focus(); }
+        if (err) err.textContent = t('loginError');
+        return false;
       }
       state.user = trimmed;
       try { localStorage.setItem(STORAGE_KEY, state.user); } catch(e) {}
-      const modal = document.getElementById('userModal');
-      if (modal) modal.classList.remove('open');
+      hideLoginModal();
       document.getElementById('userDisplay').textContent = state.user;
       state.draft = null;
       state.editMode = false;
@@ -1358,16 +1854,22 @@
       loadUserData();
       renderList();
       drawFarm();
+      // Start ambient wind after user interaction (required by browsers)
+      setTimeout(() => { initAudio(); startWind(); }, 500);
       overlayEl.textContent = state.lang === 'ar'
         ? `بيوت ${state.user} — اختر أو أنشئ جديداً`
         : `${state.user}'s greenhouses — select or create`;
+      return true;
     }
 
     function initUser() {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
+      if (saved && saved.trim()) {
         document.getElementById('userName').value = saved;
         loginUser(saved);
+      } else {
+        showLoginModal();
+        overlayEl.textContent = t('welcome');
       }
     }
 
@@ -1630,33 +2132,6 @@
       }
     }
 
-      ctx.restore();
-
-      const midGlow = ctx.createRadialGradient(x, y, r * 0.1, x, y, r * 1.65);
-      midGlow.addColorStop(0, 'rgba(255, 248, 220, 0.95)');
-      midGlow.addColorStop(0.55, 'rgba(255, 210, 80, 0.55)');
-      midGlow.addColorStop(1, 'rgba(255, 150, 40, 0)');
-      ctx.fillStyle = midGlow;
-      ctx.beginPath();
-      ctx.arc(x, y, r * 1.65, 0, Math.PI * 2);
-      ctx.fill();
-
-      const core = ctx.createRadialGradient(x - r * 0.25, y - r * 0.28, r * 0.05, x, y, r);
-      core.addColorStop(0, '#fffef5');
-      core.addColorStop(0.35, '#ffe566');
-      core.addColorStop(0.75, '#ffb300');
-      core.addColorStop(1, '#ff8f00');
-      ctx.fillStyle = core;
-      ctx.shadowColor = 'rgba(255, 200, 80, 0.6)';
-      ctx.shadowBlur = r * 0.8;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-
-
-
     // ===== RICH FIELD BACKGROUND =====
     const fieldSeed = [];
     (function seedField() {
@@ -1673,26 +2148,52 @@
       for (let i = 0; i < 7; i++) fieldSeed.push({ type:'bird', startX: rng(i*71+3)*2400-200, y: rng(i*79+3)*400+50, speed: rng(i*83)*0.4+0.15, phase: rng(i*89)*Math.PI*2, wingPhase: rng(i*97)*Math.PI*2 });
     })();
 
-    function drawFieldBackground(worldW, worldH) {
-      // Base soil gradient
-      const grad = ctx.createLinearGradient(-200, -200, worldW-200, worldH-200);
-      grad.addColorStop(0,   '#6b4a30');
-      grad.addColorStop(0.3, '#5c3d25');
-      grad.addColorStop(0.6, '#4e3320');
-      grad.addColorStop(1,   '#3d2814');
-      ctx.fillStyle = grad;
-      ctx.fillRect(-200, -200, worldW, worldH);
+    function drawSoilBase(tctx, x, y, w, h, detail = true) {
+      const grad = tctx.createLinearGradient(x, y, x + w, y + h);
+      grad.addColorStop(0,   '#6e4c32');
+      grad.addColorStop(0.25, '#5e3f28');
+      grad.addColorStop(0.55, '#4a3220');
+      grad.addColorStop(0.8,  '#3f2a18');
+      grad.addColorStop(1,   '#352214');
+      tctx.fillStyle = grad;
+      tctx.fillRect(x, y, w, h);
 
-      // Soil texture patches
-      for (let tx = -200; tx < worldW-200; tx += 60) {
-        for (let ty = -200; ty < worldH-200; ty += 60) {
+      if (!detail) return;
+
+      const step = w < 120 ? 14 : 48;
+      for (let ty = y; ty < y + h; ty += step) {
+        const wave = Math.sin(ty * 0.08) * 3;
+        tctx.strokeStyle = 'rgba(35, 22, 12, 0.12)';
+        tctx.lineWidth = 1;
+        tctx.beginPath();
+        tctx.moveTo(x, ty + wave);
+        tctx.lineTo(x + w, ty + wave + Math.sin(ty * 0.04) * 2);
+        tctx.stroke();
+      }
+
+      for (let tx = x; tx < x + w; tx += step * 1.4) {
+        tctx.strokeStyle = 'rgba(55, 38, 22, 0.1)';
+        tctx.beginPath();
+        tctx.moveTo(tx, y);
+        tctx.lineTo(tx + step * 0.35, y + h);
+        tctx.stroke();
+      }
+
+      for (let tx = x; tx < x + w; tx += step) {
+        for (let ty = y; ty < y + h; ty += step) {
           const v = Math.sin(tx * 0.031 + 1.1) * Math.cos(ty * 0.027 + 0.7);
-          if (v > 0.1) {
-            ctx.fillStyle = `rgba(90,62,35,${v * 0.25})`;
-            ctx.beginPath(); ctx.ellipse(tx, ty, 30+v*18, 18+v*10, v, 0, Math.PI*2); ctx.fill();
+          if (v > 0.08) {
+            tctx.fillStyle = `rgba(95,65,38,${v * 0.22})`;
+            tctx.beginPath();
+            tctx.ellipse(tx, ty, 22 + v * 14, 14 + v * 8, v * 0.5, 0, Math.PI * 2);
+            tctx.fill();
           }
         }
       }
+    }
+
+    function drawFieldBackground(worldW, worldH) {
+      drawSoilBase(ctx, -200, -200, worldW, worldH, true);
 
       const sc = state.viewport.scale;
       const phase = state.fieldPhase;
@@ -1763,15 +2264,41 @@
     }
 
     function fieldAnimationLoop() {
+      if (document.hidden || state.fieldAnimPaused) {
+        state.fieldRaf = null;
+        return;
+      }
       state.fieldPhase += 0.016;
       drawFarm();
       state.fieldRaf = requestAnimationFrame(fieldAnimationLoop);
     }
 
     function startFieldAnimation() {
+      if (document.hidden) {
+        state.fieldAnimPaused = true;
+        return;
+      }
+      state.fieldAnimPaused = false;
       if (state.fieldRaf) cancelAnimationFrame(state.fieldRaf);
       state.fieldRaf = requestAnimationFrame(fieldAnimationLoop);
     }
+
+    function pauseFieldAnimation() {
+      state.fieldAnimPaused = true;
+      if (state.fieldRaf) {
+        cancelAnimationFrame(state.fieldRaf);
+        state.fieldRaf = null;
+      }
+    }
+
+    function resumeFieldAnimation() {
+      if (!document.hidden) startFieldAnimation();
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) pauseFieldAnimation();
+      else resumeFieldAnimation();
+    });
 
     function drawFarm() {
       const { w, h } = getCanvasSize();
@@ -1873,7 +2400,7 @@
 
       const hints = { rect: t('hintRect'), door: t('hintDoor'), zone: t('hintZone'), block: t('hintBlock') };
       overlayEl.textContent = hints[tool] || '';
-      canvas.style.cursor = tool === 'door' || tool === 'block' ? 'pointer' : 'crosshair';
+      updateCanvasCursor();
       drawFarm();
     }
 
@@ -1896,7 +2423,7 @@
     }
 
     function startNewGreenhouse() {
-      if (!state.user) { document.getElementById('userModal').classList.add('open'); return; }
+      if (!state.user) { showLoginModal(); return; }
       state.draft = { rect: null, doors: [], zones: [], blocks: [], name: '' };
       state.editMode = false;
       state.selectedId = null;
@@ -1910,6 +2437,7 @@
       document.getElementById('panelPlaceholder').style.display = 'block';
       document.getElementById('panelControls').style.display = 'none';
       renderList();
+      updateCanvasCursor();
       drawFarm();
     }
 
@@ -1940,6 +2468,7 @@
         document.getElementById('ctrlEditBadge').className = 'badge';
         overlayEl.textContent = `Viewing: ${gh.name}`;
       }
+      updateCanvasCursor();
       drawFarm();
     }
 
@@ -1967,6 +2496,7 @@
         drawFarm();
         return;
       }
+      pushUndo('draw rectangle');
       state.draft.rect = r;
       state.previewRect = null;
       setTool('door');
@@ -1979,7 +2509,7 @@
       const edge = findNearestEdge(wx, wy, gh.rect);
       if (!edge) { overlayEl.textContent = 'Click closer to the yellow border'; return; }
       const exists = gh.doors.some(d => d.edge === edge.edge && Math.abs(d.t - edge.t) < 0.12);
-      if (!exists) gh.doors.push(edge);
+      if (!exists) { pushUndo('place door'); gh.doors.push(edge); playSound('door'); }
       if (state.editMode) updatePanel(gh);
       drawFarm();
     }
@@ -1995,6 +2525,7 @@
       const minDist = Math.min(BLOCK_W, BLOCK_H) * 0.8;
       const tooClose = gh.blocks.some(b => (b.x - wx) ** 2 + (b.y - wy) ** 2 < minDist ** 2);
       if (!tooClose) {
+        pushUndo('place block');
         gh.blocks.push({ x: wx, y: wy });
         playSound('block');
         if (state.editMode) { updatePanel(gh); persistData(); }
@@ -2022,11 +2553,16 @@
       if (!gh) return;
       if (!gh.zones) gh.zones = [];
 
+      pushUndo('add zone');
       gh.zones.push({
         id: state.nextZoneId++,
         name, date, plants,
         points: state.pendingZonePoints
       });
+
+      // Zone added → birds chirp
+      initAudio();
+      if (audioCtx) { chirpBird(); setTimeout(chirpBird, 180); setTimeout(chirpBird, 380); }
 
       state.pendingZonePoints = null;
       document.getElementById('zoneModal').classList.remove('open');
@@ -2096,9 +2632,10 @@
         doors: [...(state.draft.doors || [])],
         zones: (state.draft.zones || []).map(z => ({ ...z, points: [...z.points] })),
         blocks: [...(state.draft.blocks || [])],
-        temp: 22, humidity: 65, ventilation: 'Auto', irrigation: 'Idle'
+        ventilation: 'Auto', irrigation: 'Idle'
       };
 
+      pushUndo('save greenhouse');
       state.greenhouses.push(gh);
       state.draft = null;
       state.tool = null;
@@ -2106,7 +2643,61 @@
       updateCreateTools();
       persistData();
       playAlhamdulillah();
+      setTimeout(playRooster, 1200);
+      startWind();
       selectGreenhouse(gh.id);
+    }
+
+    function drawGhThumbnail(gh, thumbCanvas) {
+      const tctx = thumbCanvas.getContext('2d');
+      const W = thumbCanvas.width;
+      const H = thumbCanvas.height;
+      tctx.clearRect(0, 0, W, H);
+      drawSoilBase(tctx, 0, 0, W, H, false);
+
+      const r = gh.rect;
+      if (!r || r.w < 1 || r.h < 1) return;
+
+      const pad = 6;
+      const scale = Math.min((W - pad * 2) / r.w, (H - pad * 2) / r.h);
+      const ox = pad + (W - pad * 2 - r.w * scale) / 2 - r.x * scale;
+      const oy = pad + (H - pad * 2 - r.h * scale) / 2 - r.y * scale;
+
+      tctx.save();
+      tctx.translate(ox, oy);
+      tctx.scale(scale, scale);
+
+      tctx.fillStyle = '#0d0d0d';
+      tctx.fillRect(r.x, r.y, r.w, r.h);
+      tctx.strokeStyle = gh.id === state.selectedId ? '#ffe566' : '#f5c518';
+      tctx.lineWidth = 2.5 / scale;
+      tctx.strokeRect(r.x, r.y, r.w, r.h);
+
+      (gh.zones || []).forEach(z => {
+        if (!z.points || z.points.length < 2) return;
+        tctx.beginPath();
+        tctx.moveTo(z.points[0].x, z.points[0].y);
+        for (let i = 1; i < z.points.length; i++) tctx.lineTo(z.points[i].x, z.points[i].y);
+        tctx.closePath();
+        tctx.fillStyle = 'rgba(74, 106, 53, 0.78)';
+        tctx.fill();
+        tctx.strokeStyle = '#6b8e4e';
+        tctx.lineWidth = 1.5 / scale;
+        tctx.stroke();
+      });
+
+      (gh.doors || []).forEach(door => {
+        const dr = getDoorRect(r, door);
+        tctx.fillStyle = '#3a7bd5';
+        tctx.fillRect(dr.x, dr.y, dr.w, dr.h);
+      });
+
+      (gh.blocks || []).forEach(b => {
+        tctx.fillStyle = '#e8eef5';
+        tctx.fillRect(b.x - BLOCK_W / 2, b.y - BLOCK_H / 2, BLOCK_W, BLOCK_H);
+      });
+
+      tctx.restore();
     }
 
     function renderList() {
@@ -2131,15 +2722,29 @@
         const el = document.createElement('div');
         el.className = 'gh-item' + (gh.id === state.selectedId ? ' active' : '');
         el.innerHTML = `
-          <div class="gh-item-name">${gh.name}</div>
-          <div class="gh-item-meta">
-            <span>${(gh.zones || []).length} zones</span>
-            <span>${totalPlants(gh)} plants</span>
-            <span>${(gh.doors || []).length} doors</span>
+          <canvas class="gh-thumb" width="152" height="108" aria-hidden="true"></canvas>
+          <div class="gh-item-info">
+            <div class="gh-item-name">${gh.name}</div>
+            <div class="gh-item-meta">
+              <span>${(gh.zones || []).length} zones</span>
+              <span>${totalPlants(gh)} plants</span>
+              <span>${(gh.doors || []).length} doors</span>
+            </div>
+          </div>
+          <div class="gh-item-actions">
+            <button type="button" class="btn-gh-delete" title="${t('deleteGh')}" aria-label="${t('deleteGh')}">🗑</button>
           </div>`;
+        const thumb = el.querySelector('.gh-thumb');
+        if (thumb) drawGhThumbnail(gh, thumb);
         el.addEventListener('click', () => {
           if (state.draft) return;
           selectGreenhouse(gh.id);
+          if (isMobileLayout()) closeMobilePanels();
+        });
+        el.querySelector('.btn-gh-delete').addEventListener('click', e => {
+          e.stopPropagation();
+          if (state.draft) return;
+          deleteGreenhouse(gh);
         });
         listEl.appendChild(el);
       });
@@ -2151,10 +2756,6 @@
       document.getElementById('ctrlPlants').textContent = totalPlants(gh);
       document.getElementById('ctrlDoors').textContent = (gh.doors || []).length;
       document.getElementById('ctrlBlocks').textContent = totalBlocks(gh);
-      document.getElementById('ctrlTemp').textContent = gh.temp + '°C';
-      document.getElementById('ctrlHumidity').textContent = gh.humidity + '%';
-      document.getElementById('tempSlider').value = gh.temp;
-      document.getElementById('humiditySlider').value = gh.humidity;
       document.getElementById('ctrlVent').textContent = gh.ventilation;
       document.getElementById('ctrlVent').className = 'badge' + (gh.ventilation === 'Off' ? ' idle' : '');
       document.getElementById('ctrlIrrigation').textContent = gh.irrigation;
@@ -2193,6 +2794,7 @@
       state.navZoneIndex = -1;
       updateNavLabel();
       renderList();
+      updateCanvasCursor();
       drawFarm();
     }
 
@@ -2277,10 +2879,64 @@
       if (state.isDrawingZone) finishZoneDraw();
     }
 
-    canvas.addEventListener('mousedown', e => handlePointerDown(getMouseWorld(e)));
-    canvas.addEventListener('mousemove', e => handlePointerMove(getMouseWorld(e)));
-    canvas.addEventListener('mouseup', handlePointerUp);
-    canvas.addEventListener('mouseleave', handlePointerUp);
+    function endMousePan() {
+      if (!_mousePan) return;
+      _mousePan = false;
+      _mousePanStart = null;
+      _mousePanOffset0 = null;
+      canvas.classList.remove('panning');
+      updateCanvasCursor();
+    }
+
+    canvas.addEventListener('mousedown', e => {
+      if (e.button === 1 || (_spaceHeld && e.button === 0)) {
+        e.preventDefault();
+        _mousePan = true;
+        canvas.classList.add('panning');
+        _mousePanStart = { x: e.clientX, y: e.clientY };
+        _mousePanOffset0 = { offsetX: state.viewport.offsetX, offsetY: state.viewport.offsetY };
+        updateCanvasCursor();
+        return;
+      }
+      handlePointerDown(getMouseWorld(e));
+    });
+    canvas.addEventListener('mousemove', e => {
+      if (_mousePan && _mousePanStart && _mousePanOffset0) {
+        state.viewport.offsetX = _mousePanOffset0.offsetX + (e.clientX - _mousePanStart.x);
+        state.viewport.offsetY = _mousePanOffset0.offsetY + (e.clientY - _mousePanStart.y);
+        syncPanSliders();
+        drawFarm();
+        return;
+      }
+      handlePointerMove(getMouseWorld(e));
+    });
+    canvas.addEventListener('mouseup', e => {
+      if (_mousePan && (e.button === 1 || e.button === 0)) endMousePan();
+      handlePointerUp();
+    });
+    canvas.addEventListener('mouseleave', () => {
+      endMousePan();
+      handlePointerUp();
+    });
+    canvas.addEventListener('contextmenu', e => {
+      if (_spaceHeld) e.preventDefault();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.code !== 'Space' || e.repeat) return;
+      if (isModalOpen()) return;
+      const tag = e.target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
+      e.preventDefault();
+      _spaceHeld = true;
+      updateCanvasCursor();
+    });
+    document.addEventListener('keyup', e => {
+      if (e.code !== 'Space') return;
+      _spaceHeld = false;
+      endMousePan();
+      updateCanvasCursor();
+    });
 
     // ===== TOUCH: pinch-to-zoom + two-finger pan =====
     let _pinchActive = false;
@@ -2321,6 +2977,7 @@
         _panStart = mid;
         _panOffset0 = { offsetX: state.viewport.offsetX, offsetY: state.viewport.offsetY };
         canvas.classList.add('panning');
+        updateCanvasCursor();
         return;
       }
 
@@ -2372,6 +3029,7 @@
         _pinchActive = false;
         _panActive = false;
         canvas.classList.remove('panning');
+        updateCanvasCursor();
       }
       if (e.touches.length === 0) {
         handlePointerUp();
@@ -2382,6 +3040,7 @@
       _pinchActive = false;
       _panActive = false;
       canvas.classList.remove('panning');
+      updateCanvasCursor();
       handlePointerUp();
     });
 
@@ -2425,26 +3084,54 @@
     document.getElementById('mobCanvas').addEventListener('click', closeMobilePanels);
     document.getElementById('mobControls').addEventListener('click', () => openMobilePanel('right'));
 
-    // Login listeners - robust Enter + click
+    // ── LOGIN — Simple, reliable & Android-friendly (form submit) ─────────────
     (function() {
-      const btn = document.getElementById('btnUserLogin');
-      const inp = document.getElementById('userName');
-      function doLogin() { loginUser(inp.value); }
-      btn.addEventListener('click', doLogin);
-      btn.addEventListener('touchend', function(e) { e.preventDefault(); doLogin(); });
-      inp.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') { e.preventDefault(); doLogin(); }
-        inp.style.border = ''; // reset red border on typing
+      const form    = document.getElementById('loginForm');
+      const inp     = document.getElementById('userName');
+      const errEl   = document.getElementById('loginError');
+      let locked    = false;
+
+      function doLogin() {
+        if (locked) return;
+        locked = true;
+        const ok = loginUser((inp.value || '').trim());
+        locked = false;
+        if (!ok && inp) {
+          void inp.offsetWidth;
+          inp.classList.add('input-error');
+        }
+      }
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          doLogin();
+        });
+      }
+
+      if (inp) {
+        inp.addEventListener('input', () => {
+          inp.classList.remove('input-error');
+          if (errEl) errEl.textContent = '';
+        });
+      }
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', adjustLoginForKeyboard);
+        window.visualViewport.addEventListener('scroll', adjustLoginForKeyboard);
+      }
+
+      document.getElementById('btnSwitchUser').addEventListener('click', function() {
+        state.draft = null;
+        state.editMode = false;
+        state.selectedId = null;
+        locked = false;
+        if (inp) { inp.value = ''; inp.classList.remove('input-error'); }
+        if (errEl) errEl.textContent = '';
+        showLoginModal();
+        setTimeout(() => { try { inp.focus(); } catch(e) {} }, 320);
       });
-      // Focus input on modal open
-      inp.focus();
     })();
-    document.getElementById('btnSwitchUser').addEventListener('click', () => {
-      state.draft = null;
-      state.editMode = false;
-      state.selectedId = null;
-      document.getElementById('userModal').classList.add('open');
-    });
 
     document.getElementById('btnNewGreenhouse').addEventListener('click', startNewGreenhouse);
     document.getElementById('btnToolRect').addEventListener('click', () => { if (state.draft && !state.draft.rect) setTool('rect'); });
@@ -2452,6 +3139,12 @@
     document.getElementById('btnToolZone').addEventListener('click', () => { if (state.draft?.rect) setTool('zone'); });
     document.getElementById('btnToolBlock').addEventListener('click', () => { if (state.draft?.rect) setTool('block'); });
     document.getElementById('btnFinish').addEventListener('click', () => { if (state.draft?.rect) openGhModal(false); });
+
+    document.getElementById('btnUndo').addEventListener('click', doUndo);
+
+    document.getElementById('btnDeleteGreenhouse').addEventListener('click', () => {
+      deleteGreenhouse(getSelected());
+    });
 
     document.getElementById('btnEditGreenhouse').addEventListener('click', startEditGreenhouse);
     document.getElementById('btnEditDoor').addEventListener('click', () => setTool('door'));
@@ -2513,21 +3206,7 @@
       }
     });
 
-    document.getElementById('tempSlider').addEventListener('input', e => {
-      const gh = getSelected();
-      if (!gh) return;
-      gh.temp = +e.target.value;
-      document.getElementById('ctrlTemp').textContent = gh.temp + '°C';
-      persistData();
-    });
 
-    document.getElementById('humiditySlider').addEventListener('input', e => {
-      const gh = getSelected();
-      if (!gh) return;
-      gh.humidity = +e.target.value;
-      document.getElementById('ctrlHumidity').textContent = gh.humidity + '%';
-      persistData();
-    });
 
     document.getElementById('btnToggleVent').addEventListener('click', () => {
       const gh = getSelected();
@@ -2565,7 +3244,9 @@
     setLang(savedLang);
     initUser();
     resizeCanvas();
+    updateCanvasCursor();
     startFieldAnimation();
+    updateUndoBtn();
   </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script>
 </body>

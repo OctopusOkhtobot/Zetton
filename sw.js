@@ -1,4 +1,4 @@
-const CACHE = 'olive-agent-v1';
+const CACHE = 'olive-agent-v3';
 const ASSETS = [
   './',
   './index.html',
