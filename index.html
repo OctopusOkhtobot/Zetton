@@ -998,188 +998,53 @@
             <div id="zoneListPanel"></div>
           </div>
           <div class="control-group">
-            <label>Status</label>
-            <div class="control-row"><span>Ventilation</span><span class="badge" id="ctrlVent">Auto</span></div>
-            <div class="control-row"><span>Irrigation</span><span class="badge idle" id="ctrlIrrigation">Idle</span></div>
+            <label>Tools</label>
+            <button class="btn-action" id="btnEdit" data-i18n="editDesign">Edit Design</button>
+            <button class="btn-action" id="btnDelete" style="color:#e88" data-i18n="deleteGreenhouse">Delete</button>
           </div>
-          <button class="btn-action primary" id="btnEditGreenhouse">Edit Greenhouse</button>
-          <button class="btn-action" id="btnRenameGreenhouse">Rename Greenhouse</button>
-          <button class="btn-action" id="btnToggleVent">Toggle Ventilation</button>
-          <button class="btn-action" id="btnRunIrrigation">Run Irrigation</button>
-          <button class="btn-action btn-delete-gh" id="btnDeleteGreenhouse" style="margin-top:14px;background:rgba(180,50,50,0.18);border:1px solid rgba(220,80,80,0.35);color:#e88;display:flex;align-items:center;justify-content:center;gap:8px;">
-            <span style="font-size:1.1rem">♻️</span> <span data-i18n="deleteGh">Delete Greenhouse</span>
-          </button>
         </div>
       </div>
     </aside>
 
-    <nav class="mobile-nav" id="mobileNav">
-      <button type="button" id="mobFarms" data-i18n="mobFarms">🏠 Farms</button>
-      <button type="button" id="mobCanvas" class="active" data-i18n="mobCanvas">🌾 Farm</button>
-      <button type="button" id="mobControls" data-i18n="mobControls">⚙ Controls</button>
-    </nav>
+    <div class="mobile-nav" id="mobileNav"></div>
   </div>
 
-  <!-- User login -->
-  <div class="modal-backdrop" id="userModal" role="dialog" aria-modal="true" aria-label="Login">
-    <div class="modal login-modal">
+  <!-- Login Modal -->
+  <div class="modal-backdrop" id="userModal">
+    <div class="login-modal">
       <div class="login-logo">
         <div class="login-olive">🫒</div>
         <h2>Olive Agent</h2>
       </div>
-      <p class="login-sub" data-i18n="loginSub">Enter your name to access your greenhouses</p>
-      <form id="loginForm" novalidate>
+      <p class="login-sub" data-i18n="enterName">Enter your name to begin</p>
+      <form onsubmit="handleLoginSubmit(event); return false;">
         <div class="form-field">
-          <label for="userName" data-i18n="loginName">Your Name</label>
-          <input
-            type="text"
-            id="userName"
-            placeholder="e.g. Ahmed"
-            autocomplete="name"
-            autocorrect="off"
-            autocapitalize="words"
-            spellcheck="false"
-            enterkeyhint="go"
-            inputmode="text"
-            required
-          />
+          <label data-i18n="name">Name</label>
+          <input type="text" id="userName" placeholder="Your name..." />
         </div>
-        <p class="login-error" id="loginError" role="alert" aria-live="polite"></p>
-        <button class="btn-save btn-login-big" id="btnUserLogin" type="submit">
-          <span data-i18n="loginBtn">Enter My Greenhouses →</span>
-        </button>
+        <div class="login-error" id="loginError"></div>
+        <button type="submit" class="btn-login-big" data-i18n="start">Start</button>
       </form>
     </div>
   </div>
 
-  <!-- Zone details (per green shape) -->
-  <div class="modal-backdrop" id="zoneModal">
-    <div class="modal">
-      <h3>Plant Zone Details</h3>
-      <p>Enter info for this green shape — it will appear inside the zone.</p>
-      <div class="form-field">
-        <label for="zoneName">Zone Name</label>
-        <input type="text" id="zoneName" placeholder="e.g. Row A" />
-      </div>
-      <div class="form-field">
-        <label for="zoneDate">Date</label>
-        <input type="date" id="zoneDate" />
-      </div>
-      <div class="form-field">
-        <label for="zonePlants">Number of Plants</label>
-        <input type="number" id="zonePlants" min="0" placeholder="0" />
-      </div>
-      <div class="modal-actions">
-        <button class="btn-cancel" id="btnZoneCancel">Cancel</button>
-        <button class="btn-save" id="btnZoneSave">Add Zone</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Greenhouse name -->
-  <div class="modal-backdrop" id="ghModal">
-    <div class="modal">
-      <h3 id="ghModalTitle">Name Your Greenhouse</h3>
-      <p id="ghModalDesc">Give your greenhouse a name, then save your work.</p>
-      <div class="form-field">
-        <label for="ghName" id="ghNameLabel" data-i18n="plasticName">Plastic House Name</label>
-        <input type="text" id="ghName" placeholder="e.g. North Wing" />
-      </div>
-      <div class="modal-actions">
-        <button class="btn-cancel" id="btnModalCancel">Cancel</button>
-        <button class="btn-save" id="btnModalSave">Save</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    const STORAGE_KEY = 'olive-agent-user';
-    const MIN_ZONE_POINTS = 8;
-    const MIN_RECT_SIZE = 40;
-    const DOOR_SIZE = 14;
-    const BLOCK_W = 10;
-    const BLOCK_H = 5;
-    const EDGE_HIT = 14;
-    const ZOOM_MIN = 0.25;
-    const ZOOM_MAX = 4;
-    const ZOOM_STEP = 1.2;
-    const BORDER_WIDTH = 5;
-    const FLY_DURATION = 900;
-    const PIXELS_PER_METER = 10;
-    const LANG_KEY = 'olive-agent-lang';
+    // ════════════════════════════════════════════════════════════════════════════════════════
+    // STATE, CONSTANTS & DOM
+    // ════════════════════════════════════════════════════════════════════════════════════════
 
-    const STRINGS = {
-      en: {
-        saved: 'Saved ✓', user: 'User', switchUser: 'Switch User', myGreenhouses: 'My Greenhouses',
-        newGreenhouse: 'New Greenhouse', hintStep1: 'Step 1: Click "New Greenhouse", then drag a rectangle.',
-        toolRect: '① Draw Rectangle', toolDoor: '② Add Arcs and Door Markers',
-        toolZone: '③ Draw Olive Seedling Zone Free Shape', toolBlock: '④ Place White Blocks',
-        saveDesign: 'Save Plastic House Design', toolDoorShort: 'Add Arcs and Door Markers',
-        toolZoneShort: 'Draw Olive Seedling Zone', toolBlockShort: 'Place White Blocks',
-        saveChanges: 'Save Changes', cancelEdit: 'Cancel Edit', controls: 'Controls', view: 'View',
-        zoom: 'Zoom', panLR: 'Pan Left / Right', panUD: 'Pan Up / Down', brightness: 'Brightness',
-        colorShift: 'Color Shift', transitionSound: 'Transition Sound', birdsSound: '🐦 Play Birds Sound',
-        birdsStop: '🐦 Stop Birds Sound', navPlantAreas: 'Navigate Plant Areas', current: 'Current',
-        prev: '← Prev', next: 'Next →', autoTour: 'Auto Tour (random zoom)', stopTour: 'Stop Tour',
-        selectGh: 'Select a greenhouse to view or edit.', width: 'W', height: 'H', meters: 'm',
-        dimLabel: 'Width × Height', stepRect: 'Step 1 — Rectangle', stepDoor: 'Step 2 — Arcs & Doors',
-        stepZone: 'Step 3 — Olive Seedling Zones', stepBlock: 'Step 4 — White Blocks',
-        hintRect: 'Drag to draw plastic house rectangle (yellow border, black fill)',
-        hintDoor: 'Click the yellow border to add arcs and door markers',
-        hintZone: 'Draw olive seedling free shapes inside the rectangle',
-        hintBlock: 'Click inside the greenhouse to place white blocks',
-        savePlasticTitle: 'Name Plastic House Design', savePlasticDesc: 'Name your design, then save.',
-        plasticName: 'Plastic House Name', noZones: 'No plant zones — draw zones first',
-        rectTooSmall: 'Rectangle too small — drag a larger area', welcome: 'Welcome — enter your name to start',
-        loginSub: 'Enter your name to access your greenhouses', loginName: 'Your Name',
-        loginBtn: 'Enter My Greenhouses →', loginError: 'Please enter your name',
-        mobFarms: '🏠 Farms', mobCanvas: '🌾 Farm', mobControls: '⚙ Controls',
-        deleteGh: 'Delete Greenhouse',
-        deleteConfirm: 'Delete "{name}" permanently? This cannot be undone.'
-      },
-      ar: {
-        saved: 'تم الحفظ ✓', user: 'المستخدم', switchUser: 'تبديل المستخدم', myGreenhouses: 'بيوتي البلاستيكية',
-        newGreenhouse: 'بيت بلاستيكي جديد', hintStep1: 'الخطوة ١: اضغط "بيت بلاستيكي جديد" ثم اسحب مستطيلاً.',
-        toolRect: '① رسم المستطيل', toolDoor: '② إضافة أقواس وعلامات أبواب',
-        toolZone: '③ رسم منطقة شتلات زيتون (شكل حر)', toolBlock: '④ وضع مكعبات بيضاء',
-        saveDesign: 'حفظ تصميم البيت البلاستيكي', toolDoorShort: 'أقواس وعلامات أبواب',
-        toolZoneShort: 'منطقة شتلات زيتون', toolBlockShort: 'مكعبات بيضاء',
-        saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء التعديل', controls: 'التحكم', view: 'العرض',
-        zoom: 'التكبير', panLR: 'تحريك يمين / يسار', panUD: 'تحريك أعلى / أسفل', brightness: 'السطوع',
-        colorShift: 'تغيير اللون', transitionSound: 'صوت الانتقال', birdsSound: '🐦 تشغيل صوت العصافير',
-        birdsStop: '🐦 إيقاف صوت العصافير', navPlantAreas: 'التنقل بين مناطق النباتات', current: 'الحالي',
-        prev: '→ السابق', next: 'التالي ←', autoTour: 'جولة تلقائية (تكبير عشوائي)', stopTour: 'إيقاف الجولة',
-        selectGh: 'اختر بيتاً بلاستيكياً للعرض أو التعديل.', width: 'ع', height: 'ط', meters: 'م',
-        dimLabel: 'العرض × الطول', stepRect: 'الخطوة ١ — المستطيل', stepDoor: 'الخطوة ٢ — الأقواس والأبواب',
-        stepZone: 'الخطوة ٣ — مناطق الشتلات', stepBlock: 'الخطوة ٤ — المكعبات البيضاء',
-        hintRect: 'اسحب لرسم البيت البلاستيكي (إطار أصفر، تعبئة سوداء)',
-        hintDoor: 'انقر على الإطار الأصفر لإضافة أقواس وعلامات أبواب',
-        hintZone: 'ارسم أشكالاً حرة لشتلات الزيتون داخل المستطيل',
-        hintBlock: 'انقر داخل البيت لوضع مكعبات بيضاء',
-        savePlasticTitle: 'تسمية تصميم البيت البلاستيكي', savePlasticDesc: 'سمّ تصميمك ثم احفظ.',
-        plasticName: 'اسم البيت البلاستيكي', noZones: 'لا توجد مناطق — ارسم مناطق أولاً',
-        rectTooSmall: 'المستطيل صغير جداً — اسحب مساحة أكبر', welcome: 'مرحباً — أدخل اسمك للبدء',
-        loginSub: 'أدخل اسمك للوصول إلى بيوتك البلاستيكية', loginName: 'اسمك',
-        loginBtn: 'دخول بيوتي →', loginError: 'يرجى إدخال اسمك',
-        mobFarms: '🏠 البيوت', mobCanvas: '🌾 المزرعة', mobControls: '⚙ التحكم',
-        deleteGh: 'حذف البيت البلاستيكي',
-        deleteConfirm: 'حذف "{name}" نهائياً؟ لا يمكن التراجع عن هذا.'
-      }
-    };
+    const STORAGE_KEY = 'ole_user';
+    const GH_STORAGE_KEY = 'ole_greenhouses';
+    const ZOOM_MIN = 0.25, ZOOM_MAX = 4;
+    const BORDER_WIDTH = 20;
+    const DRAW_MODES = { RECT: 'rect', DOOR: 'door', ZONE: 'zone', BLOCK: 'block' };
 
-    const state = {
+    let state = {
       user: null,
+      soundEnabled: true,
       greenhouses: [],
       selectedId: null,
-      undoStack: [],
-      nextId: 1,
-      nextZoneId: 1,
       viewport: { scale: 1, offsetX: 0, offsetY: 0 },
-      view: { brightness: 100, hue: 0 },
-      soundEnabled: true,
-      navZoneIndex: -1,
-      tourTimer: null,
-      anim: null,
       draft: null,
       tool: null,
       editMode: false,
@@ -1214,134 +1079,11 @@
     function getMasterBus() {
       initAudio();
       if (!masterBus) {
-        const comp = audioCtx.createDynamicsCompressor();
-        comp.threshold.value = -18;
-        comp.knee.value = 12;
-        comp.ratio.value = 3;
-        comp.attack.value = 0.003;
-        comp.release.value = 0.18;
-        const gain = audioCtx.createGain();
-        gain.gain.value = 1.75;
-        const warm = audioCtx.createBiquadFilter();
-        warm.type = 'lowpass';
-        warm.frequency.value = 12000;
-        warm.Q.value = 0.6;
-        gain.connect(warm);
-        warm.connect(comp);
-        comp.connect(audioCtx.destination);
-        masterBus = gain;
+        masterBus = audioCtx.createGain();
+        masterBus.gain.value = 0.35;
+        masterBus.connect(audioCtx.destination);
       }
       return masterBus;
-    }
-
-    function updateCanvasCursor() {
-      CURSOR_CLASSES.forEach(c => canvas.classList.remove(c));
-      if (_mousePan || canvas.classList.contains('panning')) {
-        canvas.classList.add('cursor-grabbing');
-        return;
-      }
-      if (_spaceHeld) {
-        canvas.classList.add('cursor-grab');
-        return;
-      }
-      if (!state.draft && !state.editMode) {
-        canvas.classList.add('cursor-pointer');
-        return;
-      }
-      if (state.tool === 'door' || state.tool === 'block') {
-        canvas.classList.add('cursor-cell');
-      } else if (state.tool === 'rect' || state.tool === 'zone') {
-        canvas.classList.add('cursor-crosshair');
-      } else {
-        canvas.classList.add('cursor-pointer');
-      }
-    }
-
-    function t(key) { return STRINGS[state.lang]?.[key] || STRINGS.en[key] || key; }
-
-    function setLang(lang) {
-      state.lang = lang;
-      localStorage.setItem(LANG_KEY, lang);
-      document.documentElement.lang = lang;
-      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      document.getElementById('btnLangEn').style.opacity = lang === 'en' ? '1' : '0.5';
-      document.getElementById('btnLangAr').style.opacity = lang === 'ar' ? '1' : '0.5';
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.dataset.i18n;
-        if (STRINGS[lang][key]) el.textContent = STRINGS[lang][key];
-      });
-      if (state.tool) setTool(state.tool);
-      updateCreateTools();
-      const birdsBtn = document.getElementById('btnBirdsSound');
-      if (birdsBtn && state.birdsPlaying) birdsBtn.textContent = t('birdsStop');
-      drawFarm();
-    }
-
-    function pxToM(px) { return (px / PIXELS_PER_METER).toFixed(1); }
-
-    function formatDim(rect) {
-      const w = pxToM(rect.w), h = pxToM(rect.h);
-      if (state.lang === 'ar') {
-        return `${t('dimLabel')}: ${t('width')} ${w}${t('meters')} × ${t('height')} ${h}${t('meters')}`;
-      }
-      return `${t('dimLabel')}: ${t('width')} ${w}${t('meters')} × ${t('height')} ${h}${t('meters')}`;
-    }
-
-    function drawRectRuler(rect) {
-      if (!rect || rect.w < 4 || rect.h < 4) return;
-      const off = 18 / state.viewport.scale;
-      const tick = 6 / state.viewport.scale;
-      const lwDim = 1.5 / state.viewport.scale;
-      const fs = Math.max(9, 11 / state.viewport.scale);
-
-      ctx.strokeStyle = '#f5c518';
-      ctx.fillStyle = '#f0e6d8';
-      ctx.lineWidth = lwDim;
-
-      const topY = rect.y - off;
-      ctx.beginPath();
-      ctx.moveTo(rect.x, topY);
-      ctx.lineTo(rect.x + rect.w, topY);
-      ctx.moveTo(rect.x, topY - tick); ctx.lineTo(rect.x, topY + tick);
-      ctx.moveTo(rect.x + rect.w, topY - tick); ctx.lineTo(rect.x + rect.w, topY + tick);
-      ctx.stroke();
-
-      const leftX = rect.x - off;
-      ctx.beginPath();
-      ctx.moveTo(leftX, rect.y);
-      ctx.lineTo(leftX, rect.y + rect.h);
-      ctx.moveTo(leftX - tick, rect.y); ctx.lineTo(leftX + tick, rect.y);
-      ctx.moveTo(leftX - tick, rect.y + rect.h); ctx.lineTo(leftX + tick, rect.y + rect.h);
-      ctx.stroke();
-
-      ctx.font = `600 ${fs}px "DM Sans", "Noto Sans Arabic", sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(`${t('width')} ${pxToM(rect.w)}${t('meters')}`, rect.x + rect.w / 2, topY - 4 / state.viewport.scale);
-
-      ctx.save();
-      ctx.translate(leftX - 8 / state.viewport.scale, rect.y + rect.h / 2);
-      ctx.rotate(-Math.PI / 2);
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`${t('height')} ${pxToM(rect.h)}${t('meters')}`, 0, 0);
-      ctx.restore();
-
-      const label = formatDim(rect);
-      const labelAlt = state.lang === 'ar'
-        ? `W ${pxToM(rect.w)}m × H ${pxToM(rect.h)}m`
-        : `العرض ${pxToM(rect.w)}م × الطول ${pxToM(rect.h)}م`;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';
-      ctx.fillStyle = 'rgba(13,13,13,0.85)';
-      const lx = rect.x + rect.w + off + 4 / state.viewport.scale;
-      const ly = rect.y;
-      const pad = 6 / state.viewport.scale;
-      const lines = [label, labelAlt];
-      const lineH = fs * 1.35;
-      const boxW = Math.max(140 / state.viewport.scale, Math.max(label.length, labelAlt.length) * fs * 0.42);
-      ctx.fillRect(lx - pad, ly - pad, boxW, lines.length * lineH + pad * 2);
-      ctx.fillStyle = '#ffe566';
-      lines.forEach((line, i) => ctx.fillText(line, lx, ly + i * lineH));
     }
 
     function lw() { return BORDER_WIDTH / state.viewport.scale; }
@@ -1351,51 +1093,20 @@
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
-    // ── WIND (continuous ambient) ──────────────────────────────────────────────
+    // ── WIND REMOVED ──────────────────────────────────────────────────────────────────────
+    // Wind sound function has been removed per user request
     let windNode = null, windGain = null;
     function startWind() {
-      if (!audioCtx) return;
-      if (windNode) return; // already running
-      const bufLen = audioCtx.sampleRate * 2;
-      const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
-      const data = buf.getChannelData(0);
-      for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1);
-      const src = audioCtx.createBufferSource();
-      src.buffer = buf;
-      src.loop = true;
+      // Wind sound disabled
+      return;
+    }
 
-      const lp = audioCtx.createBiquadFilter();
-      lp.type = 'bandpass';
-      lp.frequency.value = 350;
-      lp.Q.value = 0.6;
-
-      const lp2 = audioCtx.createBiquadFilter();
-      lp2.type = 'lowpass';
-      lp2.frequency.value = 900;
-
-      windGain = audioCtx.createGain();
-      windGain.gain.value = 0;
-
-      src.connect(lp); lp.connect(lp2); lp2.connect(windGain);
-      windGain.connect(getMasterBus());
-      src.start();
-      windNode = src;
-
-      // Fade in wind
-      windGain.gain.linearRampToValueAtTime(0.13, audioCtx.currentTime + 3);
-
-      // Subtle gusts
-      function gust() {
-        if (!windGain) return;
-        const peak = 0.16 + Math.random() * 0.08;
-        const t = audioCtx.currentTime;
-        windGain.gain.cancelScheduledValues(t);
-        windGain.gain.setValueAtTime(windGain.gain.value, t);
-        windGain.gain.linearRampToValueAtTime(peak, t + 1.5);
-        windGain.gain.linearRampToValueAtTime(0.1, t + 4);
-        setTimeout(gust, 5000 + Math.random() * 8000);
+    function stopWind() {
+      if (windNode) {
+        windNode.stop();
+        windNode = null;
+        windGain = null;
       }
-      setTimeout(gust, 4000);
     }
 
     // ── ROOSTER crow ──────────────────────────────────────────────────────────
@@ -1436,42 +1147,11 @@
       });
     }
 
-    // ── BIRD CHIRP ────────────────────────────────────────────────────────────
-    function chirpBird() {
-      if (!audioCtx) return;
-      const tNow = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const osc2 = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      const f0 = 1800 + Math.random() * 2200;
-      osc.type = 'sine';
-      osc2.type = 'triangle';
-      osc.frequency.setValueAtTime(f0, tNow);
-      osc.frequency.exponentialRampToValueAtTime(f0 * 1.35, tNow + 0.05);
-      osc.frequency.exponentialRampToValueAtTime(f0 * 0.75, tNow + 0.14);
-      osc2.frequency.setValueAtTime(f0 * 2, tNow);
-      osc2.frequency.exponentialRampToValueAtTime(f0 * 1.6, tNow + 0.08);
-      gain.gain.setValueAtTime(0.0001, tNow);
-      gain.gain.exponentialRampToValueAtTime(0.11, tNow + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.18);
-      osc.connect(gain);
-      osc2.connect(gain);
-      gain.connect(getMasterBus());
-      osc.start(); osc2.start();
-      osc.stop(tNow + 0.24); osc2.stop(tNow + 0.24);
-    }
-
-    // ── SAVE JINGLE ───────────────────────────────────────────────────────────
+    // ── SAVE JINGLE - DISABLED ────────────────────────────────────────────────────────────
+    // Save sound has been removed per user request
     function playAlhamdulillah() {
-      initAudio();
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance('الحمد لله');
-        u.lang = 'ar-SA'; u.rate = 0.88; u.pitch = 1;
-        speechSynthesis.speak(u);
-      } else {
-        playSound('save');
-      }
+      // Save sound disabled
+      return;
     }
 
     // ── BIRDS TOGGLE ──────────────────────────────────────────────────────────
@@ -1544,8 +1224,9 @@
       if (kind === 'rooster') { playRooster(); return; }
       const tones = {
         nav:   [{ f: 440, d: 0.14, v: 0.13 }, { f: 554, d: 0.2, v: 0.12 }],
+        door:  [{ f: 523, d: 0.12, v: 0.14 }, { f: 659, d: 0.16, v: 0.13 }],
         block: [{ f: 660, d: 0.1, v: 0.15 }],
-        save:  [{ f: 523, d: 0.12, v: 0.14 }, { f: 659, d: 0.16, v: 0.13 }, { f: 784, d: 0.22, v: 0.12 }],
+        save:  [], // Save sound disabled
         zoom:  [{ f: 330, d: 0.08, v: 0.1 }],
         zone:  [{ f: 392, d: 0.09, v: 0.13 }, { f: 523, d: 0.14, v: 0.12 }]
       };
@@ -1561,280 +1242,108 @@
       return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
-    function animateViewport(target, onDone) {
-      if (state.anim) cancelAnimationFrame(state.anim.raf);
-      const start = {
-        scale: state.viewport.scale,
-        offsetX: state.viewport.offsetX,
-        offsetY: state.viewport.offsetY
-      };
-      const t0 = performance.now();
-      state.anim = { raf: null, start, target, t0, duration: target.duration || FLY_DURATION, onDone };
+    function chirpBird() {
+      if (!audioCtx) return;
+      const tNow = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const f0 = 1800 + Math.random() * 2200;
+      osc.type = 'sine';
+      osc2.type = 'triangle';
+      osc.frequency.setValueAtTime(f0, tNow);
+      osc.frequency.exponentialRampToValueAtTime(f0 * 0.7, tNow + 0.3);
+      osc2.frequency.setValueAtTime(f0 * 1.5, tNow);
+      osc2.frequency.exponentialRampToValueAtTime(f0, tNow + 0.3);
+      gain.gain.setValueAtTime(0.0001, tNow);
+      gain.gain.exponentialRampToValueAtTime(0.08, tNow + 0.02);
+      gain.gain.setValueAtTime(0.08, tNow + 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.3);
+      osc.connect(gain);
+      osc2.connect(gain);
+      gain.connect(getMasterBus());
+      osc.start(tNow);
+      osc2.start(tNow);
+      osc.stop(tNow + 0.3);
+      osc2.stop(tNow + 0.3);
+    }
 
-      function tick(now) {
-        const p = Math.min(1, (now - t0) / state.anim.duration);
-        const e = easeInOutCubic(p);
-        state.viewport.scale = start.scale + (target.scale - start.scale) * e;
-        state.viewport.offsetX = start.offsetX + (target.offsetX - start.offsetX) * e;
-        state.viewport.offsetY = start.offsetY + (target.offsetY - start.offsetY) * e;
-        syncZoomSlider();
-        syncPanSliders();
-        drawFarm();
-        if (p < 1) {
-          state.anim.raf = requestAnimationFrame(tick);
-        } else {
-          state.anim = null;
-          if (onDone) onDone();
-        }
+    // ════════════════════════════════════════════════════════════════════════════════════════
+    // TRANSLATIONS
+    // ════════════════════════════════════════════════════════════════════════════════════════
+
+    const strings = {
+      en: {
+        myGreenhouses: 'My Greenhouses', newGreenhouse: 'New Greenhouse', hintStep1: 'Step 1: Click "New Greenhouse", then drag a rectangle.',
+        toolRect: '① Draw Rectangle', toolDoor: '② Add Arcs and Door Markers', toolZone: '③ Draw Olive Seedling Zone Free Shape', toolBlock: '④ Place White Blocks',
+        saveDesign: 'Save Plastic House Design', toolDoorShort: 'Add Arcs and Door Markers', toolZoneShort: 'Draw Olive Seedling Zone',
+        toolBlockShort: 'Place White Blocks', saveChanges: 'Save Changes', cancelEdit: 'Cancel Edit', edit: 'Edit', delete: 'Delete', deletedSuccessfully: 'Deleted successfully.',
+        controls: 'Controls', view: 'View', zoom: 'Zoom', panLR: 'Pan Left / Right', panUD: 'Pan Up / Down', transitionSound: 'Transition Sound',
+        birdsSound: '🐦 Play Birds Sound', birdsStop: '🐦 Stop Birds', navPlantAreas: 'Navigate Plant Areas', current: 'Current', prev: '← Prev', next: 'Next →',
+        autoTour: 'Auto Tour (random zoom)', stopTour: 'Stop Tour', selectGh: 'Select a greenhouse to view or edit.', width: 'Width', height: 'Height', meters: 'm',
+        doors: 'Doors', blocks: 'Blocks', plants: 'Plants', zones: 'Zones', deleteGreenhouse: 'Delete Greenhouse', editDesign: 'Edit Design',
+        user: 'User', switchUser: 'Switch User', enterName: 'Enter your name to begin', name: 'Name', start: 'Start', loginError: 'Please enter a valid name',
+        saved: 'Saved ✓', colorShift: 'Color Shift'
+      },
+      ar: {
+        myGreenhouses: 'بيوتي البلاستيكية', newGreenhouse: 'بيت بلاستيكي جديد', hintStep1: 'الخطوة ١: اضغط على "بيت جديد"، ثم اسحب مربعاً.',
+        toolRect: '① رسم مستطيل', toolDoor: '② إضافة أقواس وعلامات الأبواب', toolZone: '③ رسم منطقة الزيتون الصغيرة الحرة', toolBlock: '④ ضع الكتل البيضاء',
+        saveDesign: 'حفظ تصميم البيت البلاستيكي', toolDoorShort: 'إضافة أقواس وعلامات الأبواب', toolZoneShort: 'رسم منطقة الزيتون',
+        toolBlockShort: 'ضع الكتل البيضاء', saveChanges: 'حفظ التغييرات', cancelEdit: 'الغاء التعديل', edit: 'تعديل', delete: 'حذف', deletedSuccessfully: 'تم الحذف بنجاح.',
+        controls: 'التحكم', view: 'العرض', zoom: 'تكبير', panLR: 'تحريك يمين / يسار', panUD: 'تحريك أعلى / أسفل', transitionSound: 'صوت الانتقال',
+        birdsSound: '🐦 تشغيل صوت العصافير', birdsStop: '🐦 إيقاف صوت العصافير', navPlantAreas: 'التنقل بين مناطق النباتات', current: 'الحالي', prev: '→ السابق', next: 'التالي ←',
+        autoTour: 'جولة تلقائية (تكبير عشوائي)', stopTour: 'إيقاف الجولة', selectGh: 'اختر بيتاً بلاستيكياً للعرض أو التعديل.', width: 'ع', height: 'ط', meters: 'م',
+        doors: 'أبواب', blocks: 'كتل', plants: 'نباتات', zones: 'مناطق', deleteGreenhouse: 'حذف البيت البلاستيكي', editDesign: 'تعديل التصميم',
+        user: 'المستخدم', switchUser: 'تبديل المستخدم', enterName: 'ادخل اسمك لتبدأ', name: 'الاسم', start: 'ابدأ', loginError: 'يرجى إدخال اسم صحيح',
+        saved: 'تم الحفظ ✓', colorShift: 'تغيير اللون'
       }
-      state.anim.raf = requestAnimationFrame(tick);
+    };
+
+    function t(key) {
+      return (strings[state.lang] || strings.en)[key] || key;
     }
 
-    function flyToWorld(wx, wy, scale, duration, playNavSound = true) {
-      const { w, h } = getCanvasSize();
-      const target = {
-        scale: Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, scale)),
-        offsetX: w / 2 - wx * scale,
-        offsetY: h / 2 - wy * scale,
-        duration
-      };
-      if (playNavSound) playSound('nav');
-      animateViewport(target);
-    }
+    // ════════════════════════════════════════════════════════════════════════════════════════
+    // UI RENDERING
+    // ════════════════════════════════════════════════════════════════════════════════════════
 
-    function syncZoomSlider() {
-      const pct = Math.round(state.viewport.scale * 100);
-      const sl = document.getElementById('zoomSlider');
-      const vl = document.getElementById('zoomSliderVal');
-      if (sl) sl.value = pct;
-      if (vl) vl.textContent = pct + '%';
-      const zl = document.getElementById('zoomLevel');
-      if (zl) zl.textContent = pct + '%';
-    }
-
-    function setZoomFromSlider(pct) {
-      const { w, h } = getCanvasSize();
-      const cx = w / 2, cy = h / 2;
-      const newScale = pct / 100;
-      const wx = (cx - state.viewport.offsetX) / state.viewport.scale;
-      const wy = (cy - state.viewport.offsetY) / state.viewport.scale;
-      state.viewport.scale = newScale;
-      state.viewport.offsetX = cx - wx * newScale;
-      state.viewport.offsetY = cy - wy * newScale;
-      document.getElementById('zoomSliderVal').textContent = pct + '%';
-      syncPanSliders();
-      drawFarm();
-    }
-
-    function syncPanSliders() {
-      const px = Math.round(state.viewport.offsetX - state.panBase.offsetX);
-      const py = Math.round(state.viewport.offsetY - state.panBase.offsetY);
-      const panX = document.getElementById('panXSlider');
-      const panY = document.getElementById('panYSlider');
-      if (panX) { panX.value = Math.max(-300, Math.min(300, px)); document.getElementById('panXVal').textContent = panX.value; }
-      if (panY) { panY.value = Math.max(-300, Math.min(300, py)); document.getElementById('panYVal').textContent = panY.value; }
-    }
-
-    function setPanFromSliders() {
-      const px = +document.getElementById('panXSlider').value;
-      const py = +document.getElementById('panYSlider').value;
-      document.getElementById('panXVal').textContent = px;
-      document.getElementById('panYVal').textContent = py;
-      state.viewport.offsetX = state.panBase.offsetX + px;
-      state.viewport.offsetY = state.panBase.offsetY + py;
-      drawFarm();
-    }
-
-    function getViewFilter() {
-      return 'none';
-    }
-
-    function userDataKey() { return `olive-agent-data-${state.user}`; }
-
-    function cloneDraft(draft) {
-      if (!draft) return null;
-      return {
-        rect: draft.rect ? { ...draft.rect } : null,
-        doors: [...(draft.doors || [])],
-        zones: (draft.zones || []).map(z => ({ ...z, points: [...z.points] })),
-        blocks: [...(draft.blocks || [])],
-        name: draft.name || ''
-      };
-    }
-
-    function pushUndo(description) {
-      state.undoStack.push({
-        desc: description,
-        greenhouses: JSON.parse(JSON.stringify(state.greenhouses)),
-        nextId: state.nextId,
-        nextZoneId: state.nextZoneId,
-        selectedId: state.selectedId,
-        editMode: state.editMode,
-        draft: cloneDraft(state.draft),
-        tool: state.tool
+    function updateI18n() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        el.textContent = t(key);
       });
-      if (state.undoStack.length > 50) state.undoStack.shift();
-      updateUndoBtn();
-    }
-
-    function updateUndoBtn() {
-      const btn = document.getElementById('btnUndo');
-      if (btn) btn.disabled = state.undoStack.length === 0;
-    }
-
-    function doUndo() {
-      if (state.undoStack.length === 0) return;
-      const snap = state.undoStack.pop();
-      state.greenhouses = snap.greenhouses;
-      state.nextId = snap.nextId;
-      state.nextZoneId = snap.nextZoneId;
-      state.selectedId = snap.selectedId;
-      state.editMode = snap.editMode;
-      state.draft = snap.draft;
-      state.tool = snap.tool;
-      state.isDraggingRect = false;
-      state.isDrawingZone = false;
-      state.previewRect = null;
-      state.zonePoints = [];
-      state.pendingZonePoints = null;
-      document.getElementById('toolGroup').classList.toggle('hidden', !state.draft || state.editMode);
-      document.getElementById('editToolGroup').classList.toggle('hidden', !state.editMode);
-      if (state.selectedId) {
-        const gh = state.greenhouses.find(g => g.id === state.selectedId);
-        if (gh) {
-          document.getElementById('panelPlaceholder').style.display = 'none';
-          document.getElementById('panelControls').style.display = 'block';
-          updatePanel(gh);
-        } else {
-          state.selectedId = null;
-          document.getElementById('panelPlaceholder').style.display = 'block';
-          document.getElementById('panelControls').style.display = 'none';
-        }
-      } else {
-        document.getElementById('panelPlaceholder').style.display = 'block';
-        document.getElementById('panelControls').style.display = 'none';
-      }
-      updateCreateTools();
-      updateUndoBtn();
-      persistData();
-      renderList();
-      updateCanvasCursor();
-      drawFarm();
-      playSound('nav');
-    }
-
-    function deleteGreenhouse(gh) {
-      if (!gh) return;
-      const confirmMsg = t('deleteConfirm').replace('{name}', gh.name);
-      if (!confirm(confirmMsg)) return;
-      pushUndo('delete greenhouse');
-      state.greenhouses = state.greenhouses.filter(g => g.id !== gh.id);
-      if (state.selectedId === gh.id) {
-        state.selectedId = null;
-        state.editMode = false;
-        state.draft = null;
-        state.tool = null;
-        document.getElementById('panelPlaceholder').style.display = 'block';
-        document.getElementById('panelControls').style.display = 'none';
-        document.getElementById('editToolGroup').classList.add('hidden');
-        document.getElementById('toolGroup').classList.add('hidden');
-      }
-      persistData();
-      renderList();
-      updateCanvasCursor();
-      drawFarm();
-      playSound('nav');
-    }
-
-    function persistData() {
-      if (!state.user) return;
-      localStorage.setItem(userDataKey(), JSON.stringify({
-        greenhouses: state.greenhouses,
-        nextId: state.nextId,
-        nextZoneId: state.nextZoneId
-      }));
-      const el = document.getElementById('saveIndicator');
-      el.classList.add('show');
-      setTimeout(() => el.classList.remove('show'), 2000);
-    }
-
-    function loadUserData() {
-      const raw = localStorage.getItem(userDataKey());
-      if (!raw) {
-        state.greenhouses = [];
-        state.nextId = 1;
-        state.nextZoneId = 1;
-        return;
-      }
-      try {
-        const data = JSON.parse(raw);
-        state.nextId = data.nextId || 1;
-        state.nextZoneId = data.nextZoneId || 1;
-        state.greenhouses = (data.greenhouses || []).map(migrateGh);
-      } catch {
-        state.greenhouses = [];
-        state.nextId = 1;
-        state.nextZoneId = 1;
-      }
-    }
-
-    function migrateGh(gh) {
-      if (!gh.blocks) gh.blocks = [];
-      (gh.zones || []).forEach(z => {
-        if (!z.id) z.id = state.nextZoneId++;
-        if (!z.name) z.name = 'Zone';
-        if (!z.date) z.date = new Date().toISOString().slice(0, 10);
-        if (z.plants == null) z.plants = 0;
-        if (z.blocks?.length) {
-          gh.blocks.push(...z.blocks);
-          z.blocks = [];
-        }
-      });
-      if (!gh.doors) gh.doors = [];
-      return gh;
     }
 
     function showLoginModal() {
       const modal = document.getElementById('userModal');
-      if (modal) modal.classList.add('open');
-      document.body.classList.add('login-open');
-      adjustLoginForKeyboard();
-      const inp = document.getElementById('userName');
-      const delay = 'ontouchstart' in window ? 420 : 60;
-      setTimeout(() => {
-        if (!inp || !modal.classList.contains('open')) return;
-        try { inp.focus({ preventScroll: true }); } catch(e) { inp.focus(); }
-      }, delay);
+      if (modal) {
+        modal.classList.add('open');
+        document.body.classList.add('login-open');
+        const inp = document.getElementById('userName');
+        if (inp) { inp.value = ''; inp.focus(); }
+      }
     }
 
     function hideLoginModal() {
       const modal = document.getElementById('userModal');
-      if (modal) modal.classList.remove('open');
-      document.body.classList.remove('login-open');
-      const err = document.getElementById('loginError');
-      if (err) err.textContent = '';
-      const inp = document.getElementById('userName');
-      if (inp) inp.classList.remove('input-error');
-    }
-
-    function adjustLoginForKeyboard() {
-      const modal = document.getElementById('userModal');
-      if (!modal || !modal.classList.contains('open')) return;
-      const vv = window.visualViewport;
-      if (!vv) {
-        modal.style.setProperty('--login-kb-offset', '0px');
-        return;
+      if (modal) {
+        modal.classList.remove('open');
+        document.body.classList.remove('login-open');
       }
-      const kbOverlap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      const lift = kbOverlap > 40 ? Math.min(kbOverlap * 0.35, 120) : 0;
-      modal.style.setProperty('--login-kb-offset', `-${lift}px`);
     }
 
-    function loginUser(name) {
-      const trimmed = (name || '').trim();
+    function isModalOpen() {
+      return document.getElementById('userModal')?.classList.contains('open');
+    }
+
+    function handleLoginSubmit(event) {
+      event.preventDefault();
+      const inp = document.getElementById('userName');
+      if (!inp) return false;
+      const trimmed = inp.value.trim();
       if (!trimmed) {
-        const inp = document.getElementById('userName');
         const err = document.getElementById('loginError');
+        const inp = document.getElementById('userName');
         if (inp) { inp.classList.add('input-error'); inp.focus(); }
         if (err) err.textContent = t('loginError');
         return false;
@@ -1854,951 +1363,113 @@
       loadUserData();
       renderList();
       drawFarm();
-      // Start ambient wind after user interaction (required by browsers)
-      setTimeout(() => { initAudio(); startWind(); }, 500);
+      // Ambient wind disabled per user request
       overlayEl.textContent = state.lang === 'ar'
-        ? `بيوت ${state.user} — اختر أو أنشئ جديداً`
-        : `${state.user}'s greenhouses — select or create`;
-      return true;
+        ? 'اختر بيتاً بلاستيكياً أو أنشئ واحداً جديداً'
+        : 'Select or create a new greenhouse';
+      return false;
     }
 
-    function initUser() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved && saved.trim()) {
-        document.getElementById('userName').value = saved;
-        loginUser(saved);
-      } else {
-        showLoginModal();
-        overlayEl.textContent = t('welcome');
+    function loadUserData() {
+      if (!state.user) return;
+      try {
+        const stored = localStorage.getItem(GH_STORAGE_KEY + '_' + state.user);
+        if (stored) state.greenhouses = JSON.parse(stored);
+      } catch(e) {}
+    }
+
+    function saveUserData() {
+      if (!state.user) return;
+      try {
+        localStorage.setItem(GH_STORAGE_KEY + '_' + state.user, JSON.stringify(state.greenhouses));
+      } catch(e) {}
+    }
+
+    function showSaveIndicator() {
+      const ind = document.getElementById('saveIndicator');
+      if (ind) {
+        ind.classList.add('show');
+        setTimeout(() => ind.classList.remove('show'), 2000);
       }
     }
 
-    function getTargetGh() {
-      if (state.draft) return state.draft;
-      if (state.editMode && state.selectedId) {
-        return state.greenhouses.find(g => g.id === state.selectedId);
-      }
-      return null;
-    }
-
-    function totalPlants(gh) {
-      return (gh.zones || []).reduce((s, z) => s + (z.plants || 0), 0);
-    }
-
-    function totalBlocks(gh) {
-      return (gh.blocks || []).length;
-    }
-
-    function getNavZones() {
-      const gh = getSelected();
-      if (!gh?.zones?.length) return [];
-      return gh.zones;
-    }
-
-    function updateNavLabel() {
-      const zones = getNavZones();
-      const el = document.getElementById('navZoneLabel');
-      if (!zones.length) { el.textContent = '—'; return; }
-      const i = state.navZoneIndex < 0 ? 0 : state.navZoneIndex % zones.length;
-      const z = zones[i];
-      el.textContent = `${z.name} (${z.plants} plants)`;
-    }
-
-    function flyToZone(index, randomZoom = true) {
-      const zones = getNavZones();
-      if (!zones.length) {
-        overlayEl.textContent = t('noZones');
+    function renderList() {
+      const list = document.getElementById('greenhouseList');
+      if (!list) return;
+      if (state.greenhouses.length === 0) {
+        list.innerHTML = '<div class="gh-empty">' + (state.lang === 'ar'
+          ? 'لم ينشأ أي بيت بعد.<br />اضغط على "بيت جديد" للبدء.'
+          : 'No greenhouses yet.<br />Click "New Greenhouse" to begin.') + '</div>';
         return;
       }
-      state.navZoneIndex = ((index % zones.length) + zones.length) % zones.length;
-      const z = zones[state.navZoneIndex];
-      const c = polygonCentroid(z.points);
-      const scale = randomZoom
-        ? 1.3 + Math.random() * 1.7
-        : state.viewport.scale;
-      flyToWorld(c.x, c.y, scale, FLY_DURATION);
-      updateNavLabel();
-      overlayEl.textContent = `Viewing zone: ${z.name}`;
+      list.innerHTML = state.greenhouses.map(gh => `
+        <div class="gh-item ${gh.id === state.selectedId ? 'active' : ''}" onclick="selectGreenhouse('${gh.id}')">
+          <canvas class="gh-thumb" id="ghthumb${gh.id}"></canvas>
+          <div class="gh-item-info">
+            <div class="gh-item-name">${gh.name || 'Unnamed'}</div>
+            <div class="gh-item-meta">
+              <span>${gh.width.toFixed(1)}×${gh.height.toFixed(1)} m</span>
+              <span>${gh.zones?.length || 0} ${t('zones')}</span>
+              <span>${gh.blocks?.length || 0} ${t('blocks')}</span>
+            </div>
+          </div>
+          <div class="gh-item-actions">
+            <button class="btn-gh-delete" onclick="deleteGreenhouse(event, '${gh.id}')" title="Delete">🗑</button>
+          </div>
+        </div>
+      `).join('');
+      state.greenhouses.forEach(gh => renderGhThumbnail(gh));
     }
 
-    function stopTour() {
-      if (state.tourTimer) {
-        clearInterval(state.tourTimer);
-        state.tourTimer = null;
+    function renderGhThumbnail(gh) {
+      const cv = document.getElementById('ghthumb' + gh.id);
+      if (!cv) return;
+      cv.width = 76;
+      cv.height = 54;
+      const c = cv.getContext('2d');
+      c.fillStyle = '#5c3d25';
+      c.fillRect(0, 0, 76, 54);
+      const sx = 76 / gh.width, sy = 54 / gh.height;
+      c.strokeStyle = 'rgba(200,150,100,0.6)';
+      c.lineWidth = 1;
+      c.strokeRect(4, 4, gh.width * sx - 8, gh.height * sy - 8);
+      if (gh.zones) {
+        c.fillStyle = 'rgba(143,188,106,0.4)';
+        gh.zones.forEach(z => {
+          const pts = z.points || [];
+          if (pts.length > 0) {
+            c.beginPath();
+            c.moveTo(pts[0].x * sx + 4, pts[0].y * sy + 4);
+            pts.forEach(p => c.lineTo(p.x * sx + 4, p.y * sy + 4));
+            c.closePath();
+            c.fill();
+          }
+        });
       }
-    }
-
-    function startTour() {
-      initAudio();
-      const zones = getNavZones();
-      if (!zones.length) {
-        overlayEl.textContent = 'No plant zones to tour';
-        document.getElementById('btnTourZones').textContent = t('autoTour');
-        return;
-      }
-      stopTour();
-      let i = state.navZoneIndex < 0 ? 0 : state.navZoneIndex;
-      flyToZone(i, true);
-      state.tourTimer = setInterval(() => {
-        i = (i + 1) % zones.length;
-        flyToZone(i, true);
-      }, FLY_DURATION + 1200);
-      overlayEl.textContent = 'Auto tour running — click again to stop';
-    }
-
-    function resizeCanvas() {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      canvas.width = rect.width * devicePixelRatio;
-      canvas.height = rect.height * devicePixelRatio;
-      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-      drawFarm();
     }
 
     function getCanvasSize() {
-      return { w: canvas.width / devicePixelRatio, h: canvas.height / devicePixelRatio };
+      const rect = canvas.getBoundingClientRect();
+      return { w: rect.width, h: rect.height };
     }
 
     function screenToWorld(sx, sy) {
       const { scale, offsetX, offsetY } = state.viewport;
-      return { x: (sx - offsetX) / scale, y: (sy - offsetY) / scale };
-    }
-
-    function getMouseWorld(e) {
-      const rect = canvas.getBoundingClientRect();
-      return screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
-    }
-
-    function applyViewport() {
-      const { scale, offsetX, offsetY } = state.viewport;
-      ctx.translate(offsetX, offsetY);
-      ctx.scale(scale, scale);
-    }
-
-    function normalizeRect(x1, y1, x2, y2) {
-      return { x: Math.min(x1, x2), y: Math.min(y1, y2), w: Math.abs(x2 - x1), h: Math.abs(y2 - y1) };
-    }
-
-    function pointInRect(px, py, r, inset = 0) {
-      return px >= r.x + inset && px <= r.x + r.w - inset &&
-             py >= r.y + inset && py <= r.y + r.h - inset;
-    }
-
-    function clipToRect(p, r, inset = 2) {
       return {
-        x: Math.max(r.x + inset, Math.min(r.x + r.w - inset, p.x)),
-        y: Math.max(r.y + inset, Math.min(r.y + r.h - inset, p.y))
+        x: (sx - offsetX) / scale,
+        y: (sy - offsetY) / scale
       };
     }
 
-    function drawPath(points, closed) {
-      if (points.length < 2) return;
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-      if (closed) ctx.closePath();
-    }
-
-    function pointInPolygon(px, py, points) {
-      drawPath(points, true);
-      return ctx.isPointInPath(px, py);
-    }
-
-    function polygonCentroid(points) {
-      let cx = 0, cy = 0;
-      points.forEach(p => { cx += p.x; cy += p.y; });
-      return { x: cx / points.length, y: cy / points.length };
-    }
-
-    function findZoneAt(gh, wx, wy) {
-      for (let i = (gh.zones || []).length - 1; i >= 0; i--) {
-        const z = gh.zones[i];
-        if (pointInPolygon(wx, wy, z.points)) return z;
-      }
-      return null;
-    }
-
-    function getDoorRect(rect, door) {
-      const half = DOOR_SIZE / 2;
-      const pad = BORDER_WIDTH / 2;
-      if (door.edge === 'top') {
-        const cx = rect.x + door.t * rect.w;
-        return { x: cx - half, y: rect.y - pad, w: DOOR_SIZE, h: BORDER_WIDTH + 4 };
-      }
-      if (door.edge === 'bottom') {
-        const cx = rect.x + door.t * rect.w;
-        return { x: cx - half, y: rect.y + rect.h - pad - 2, w: DOOR_SIZE, h: BORDER_WIDTH + 4 };
-      }
-      if (door.edge === 'left') {
-        const cy = rect.y + door.t * rect.h;
-        return { x: rect.x - pad, y: cy - half, w: BORDER_WIDTH + 4, h: DOOR_SIZE };
-      }
-      const cy = rect.y + door.t * rect.h;
-      return { x: rect.x + rect.w - pad - 2, y: cy - half, w: BORDER_WIDTH + 4, h: DOOR_SIZE };
-    }
-
-    function drawDoors(rect, doors) {
-      doors.forEach(door => {
-        const dr = getDoorRect(rect, door);
-        ctx.fillStyle = '#3a7bd5';
-        ctx.strokeStyle = '#1a3a6b';
-        ctx.lineWidth = 3 / state.viewport.scale;
-        ctx.fillRect(dr.x, dr.y, dr.w, dr.h);
-        ctx.strokeRect(dr.x, dr.y, dr.w, dr.h);
-      });
-    }
-
-    function drawGhBlocks(blocks) {
-      (blocks || []).forEach(b => {
-        const hw = BLOCK_W / 2, hh = BLOCK_H / 2;
-        ctx.fillStyle = '#4a90e2';
-        ctx.strokeStyle = 'rgba(0,40,120,0.5)';
-        ctx.lineWidth = 1.2 / state.viewport.scale;
-        ctx.fillRect(b.x - hw, b.y - hh, BLOCK_W, BLOCK_H);
-        ctx.strokeRect(b.x - hw, b.y - hh, BLOCK_W, BLOCK_H);
-      });
-    }
-
-    function drawZoneShape(zone, selected) {
-      drawPath(zone.points, true);
-      ctx.fillStyle = selected ? 'rgba(90, 122, 66, 0.82)' : 'rgba(74, 106, 53, 0.72)';
-      ctx.fill();
-      ctx.strokeStyle = selected ? '#a8d080' : '#6b8e4e';
-      ctx.lineWidth = 2 / state.viewport.scale;
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-
-      const c = polygonCentroid(zone.points);
-      const fs = Math.max(9, 11 / state.viewport.scale);
-      const lh = fs * 1.15;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#f0e6d8';
-      ctx.font = `700 ${fs}px "DM Sans", sans-serif`;
-      ctx.fillText(zone.name || 'Zone', c.x, c.y - lh);
-      ctx.font = `500 ${fs * 0.8}px "DM Sans", sans-serif`;
-      ctx.fillStyle = 'rgba(240,230,216,0.9)';
-      ctx.fillText(zone.date || '', c.x, c.y);
-      ctx.fillStyle = '#d4edc4';
-      ctx.font = `600 ${fs * 0.85}px "DM Sans", "Noto Sans Arabic", sans-serif`;
-      const plantLbl = state.lang === 'ar' ? 'شتلة' : 'plants';
-      ctx.fillText(`${zone.plants ?? 0} ${plantLbl}`, c.x, c.y + lh);
-    }
-
-    function drawGreenhouseBody(rect, selected) {
-      ctx.fillStyle = '#0d0d0d';
-      ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-      ctx.strokeStyle = selected ? '#ffe566' : '#f5c518';
-      ctx.lineWidth = lw();
-      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
-    }
-
-    function drawGreenhouse(gh) {
-      const selected = gh.id === state.selectedId || (state.draft === gh);
-      drawGreenhouseBody(gh.rect, selected);
-      if (selected || state.tool === 'rect') drawRectRuler(gh.rect);
-      drawDoors(gh.rect, gh.doors || []);
-      (gh.zones || []).forEach(z => drawZoneShape(z, selected));
-      drawGhBlocks(gh.blocks);
-
-      const c = { x: gh.rect.x + gh.rect.w / 2, y: gh.rect.y - 14 / state.viewport.scale };
-      const fs = 12 / state.viewport.scale;
-      ctx.fillStyle = '#f5c518';
-      ctx.font = `700 ${fs}px "DM Sans", sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(gh.name, c.x, c.y);
-    }
-
-    function drawDraftPreview() {
-      if (!state.draft) return;
-      const { rect, doors, zones } = state.draft;
-      const preview = state.previewRect || rect;
-
-      if (preview && preview.w > 0 && preview.h > 0) {
-        drawGreenhouseBody(preview, true);
-        drawRectRuler(preview);
-        if (rect) drawDoors(preview, doors || []);
-      }
-
-      (zones || []).forEach(z => drawZoneShape(z, true));
-      drawGhBlocks(state.draft.blocks);
-
-      if (state.isDrawingZone && state.zonePoints.length > 0) {
-        drawPath(state.zonePoints, false);
-        ctx.strokeStyle = 'rgba(143, 188, 106, 0.9)';
-        ctx.lineWidth = 2.5 / state.viewport.scale;
-        ctx.lineCap = 'round';
-        ctx.stroke();
-      }
-    }
-
-    // ===== RICH FIELD BACKGROUND =====
-    const fieldSeed = [];
-    (function seedField() {
-      const rng = (s) => { let x = Math.sin(s+1)*43758.5453; return x - Math.floor(x); };
-      // stones
-      for (let i = 0; i < 60; i++) fieldSeed.push({ type:'stone', x: rng(i*7)*2400-200, y: rng(i*13)*2400-200, r: rng(i*3)*5+2, a: rng(i*17)*Math.PI });
-      // soil cracks / furrows
-      for (let i = 0; i < 40; i++) fieldSeed.push({ type:'crack', x: rng(i*11+5)*2400-200, y: rng(i*19+5)*2400-200, len: rng(i*7+2)*30+10, a: rng(i*23)*Math.PI });
-      // small wild plants
-      for (let i = 0; i < 50; i++) fieldSeed.push({ type:'plant', x: rng(i*29)*2400-200, y: rng(i*31)*2400-200, size: rng(i*5)*7+3, hue: rng(i*41)*40 });
-      // flowers
-      for (let i = 0; i < 35; i++) fieldSeed.push({ type:'flower', x: rng(i*37+1)*2400-200, y: rng(i*43+1)*2400-200, r: rng(i*11)*3+2, petals: Math.floor(rng(i*53)*3)+5, col: `hsl(${Math.floor(rng(i*61)*360)},80%,70%)` });
-      // birds (animated)
-      for (let i = 0; i < 7; i++) fieldSeed.push({ type:'bird', startX: rng(i*71+3)*2400-200, y: rng(i*79+3)*400+50, speed: rng(i*83)*0.4+0.15, phase: rng(i*89)*Math.PI*2, wingPhase: rng(i*97)*Math.PI*2 });
-    })();
-
-    function drawSoilBase(tctx, x, y, w, h, detail = true) {
-      const grad = tctx.createLinearGradient(x, y, x + w, y + h);
-      grad.addColorStop(0,   '#6e4c32');
-      grad.addColorStop(0.25, '#5e3f28');
-      grad.addColorStop(0.55, '#4a3220');
-      grad.addColorStop(0.8,  '#3f2a18');
-      grad.addColorStop(1,   '#352214');
-      tctx.fillStyle = grad;
-      tctx.fillRect(x, y, w, h);
-
-      if (!detail) return;
-
-      const step = w < 120 ? 14 : 48;
-      for (let ty = y; ty < y + h; ty += step) {
-        const wave = Math.sin(ty * 0.08) * 3;
-        tctx.strokeStyle = 'rgba(35, 22, 12, 0.12)';
-        tctx.lineWidth = 1;
-        tctx.beginPath();
-        tctx.moveTo(x, ty + wave);
-        tctx.lineTo(x + w, ty + wave + Math.sin(ty * 0.04) * 2);
-        tctx.stroke();
-      }
-
-      for (let tx = x; tx < x + w; tx += step * 1.4) {
-        tctx.strokeStyle = 'rgba(55, 38, 22, 0.1)';
-        tctx.beginPath();
-        tctx.moveTo(tx, y);
-        tctx.lineTo(tx + step * 0.35, y + h);
-        tctx.stroke();
-      }
-
-      for (let tx = x; tx < x + w; tx += step) {
-        for (let ty = y; ty < y + h; ty += step) {
-          const v = Math.sin(tx * 0.031 + 1.1) * Math.cos(ty * 0.027 + 0.7);
-          if (v > 0.08) {
-            tctx.fillStyle = `rgba(95,65,38,${v * 0.22})`;
-            tctx.beginPath();
-            tctx.ellipse(tx, ty, 22 + v * 14, 14 + v * 8, v * 0.5, 0, Math.PI * 2);
-            tctx.fill();
-          }
-        }
-      }
-    }
-
-    function drawFieldBackground(worldW, worldH) {
-      drawSoilBase(ctx, -200, -200, worldW, worldH, true);
-
-      const sc = state.viewport.scale;
-      const phase = state.fieldPhase;
-
-      fieldSeed.forEach(item => {
-        if (item.type === 'stone') {
-          ctx.save(); ctx.translate(item.x, item.y); ctx.rotate(item.a);
-          ctx.fillStyle = `rgba(90,75,60,0.7)`; ctx.strokeStyle = `rgba(40,28,20,0.4)`;
-          ctx.lineWidth = 0.5 / sc;
-          ctx.beginPath(); ctx.ellipse(0, 0, item.r*1.4, item.r*0.85, 0, 0, Math.PI*2);
-          ctx.fill(); ctx.stroke();
-          ctx.fillStyle = 'rgba(120,100,80,0.3)';
-          ctx.beginPath(); ctx.ellipse(-item.r*0.2, -item.r*0.2, item.r*0.5, item.r*0.3, 0.5, 0, Math.PI*2); ctx.fill();
-          ctx.restore();
-        } else if (item.type === 'crack') {
-          ctx.save(); ctx.translate(item.x, item.y); ctx.rotate(item.a);
-          ctx.strokeStyle = 'rgba(30,18,10,0.35)'; ctx.lineWidth = 0.7 / sc; ctx.lineCap = 'round';
-          ctx.beginPath(); ctx.moveTo(0, 0);
-          ctx.bezierCurveTo(item.len*0.3, item.len*0.15, item.len*0.7, -item.len*0.1, item.len, item.len*0.05);
-          ctx.stroke(); ctx.restore();
-        } else if (item.type === 'plant') {
-          ctx.save(); ctx.translate(item.x, item.y);
-          const sway = Math.sin(phase * 0.7 + item.x * 0.05) * 0.15;
-          const g = `hsl(${100+item.hue},55%,28%)`;
-          ctx.strokeStyle = g; ctx.lineWidth = 1 / sc; ctx.lineCap = 'round';
-          for (let b = 0; b < 3; b++) {
-            const ba = (b/3)*Math.PI*2 + sway;
-            ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ba)*item.size, Math.sin(ba)*item.size); ctx.stroke();
-            ctx.fillStyle = `hsl(${110+item.hue},60%,32%)`;
-            ctx.beginPath(); ctx.ellipse(Math.cos(ba)*item.size, Math.sin(ba)*item.size, item.size*0.4, item.size*0.25, ba, 0, Math.PI*2); ctx.fill();
-          }
-          ctx.restore();
-        } else if (item.type === 'flower') {
-          ctx.save(); ctx.translate(item.x, item.y);
-          const fsway = Math.sin(phase * 0.5 + item.x * 0.04) * 0.2;
-          ctx.strokeStyle = '#3d5a25'; ctx.lineWidth = 0.8/sc;
-          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(fsway * 4, -item.r * 2.2); ctx.stroke();
-          for (let p = 0; p < item.petals; p++) {
-            const pa = (p/item.petals)*Math.PI*2 + phase*0.3;
-            ctx.fillStyle = item.col;
-            ctx.beginPath(); ctx.ellipse(Math.cos(pa)*item.r*1.4 + fsway*3, Math.sin(pa)*item.r*1.4 - item.r*2.2, item.r*0.8, item.r*0.5, pa, 0, Math.PI*2); ctx.fill();
-          }
-          ctx.fillStyle = '#f5e84a';
-          ctx.beginPath(); ctx.arc(fsway*3, -item.r*2.2, item.r*0.55, 0, Math.PI*2); ctx.fill();
-          ctx.restore();
-        } else if (item.type === 'bird') {
-          // Birds fly across in a loop
-          const bx = item.startX + ((phase * item.speed * 300) % (worldW + 400)) - 200;
-          const by = item.y + Math.sin(phase * 1.2 + item.phase) * 20;
-          const wing = Math.sin(phase * 6 + item.wingPhase) * 0.5;
-          const bsize = 7 / sc;
-          ctx.save(); ctx.translate(bx, by);
-          ctx.strokeStyle = 'rgba(30,20,12,0.65)'; ctx.lineWidth = 1.2/sc; ctx.lineCap = 'round';
-          // Body
-          ctx.beginPath(); ctx.ellipse(0, 0, bsize*0.7, bsize*0.28, 0, 0, Math.PI*2); ctx.stroke();
-          // Wings
-          ctx.beginPath();
-          ctx.moveTo(-bsize*0.5, 0);
-          ctx.quadraticCurveTo(-bsize*1.1, -bsize*(0.5+wing), -bsize*1.9, -bsize*wing*0.3);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(bsize*0.5, 0);
-          ctx.quadraticCurveTo(bsize*1.1, -bsize*(0.5+wing), bsize*1.9, -bsize*wing*0.3);
-          ctx.stroke();
-          ctx.restore();
-        }
-      });
-    }
-
-    function fieldAnimationLoop() {
-      if (document.hidden || state.fieldAnimPaused) {
-        state.fieldRaf = null;
-        return;
-      }
-      state.fieldPhase += 0.016;
-      drawFarm();
-      state.fieldRaf = requestAnimationFrame(fieldAnimationLoop);
-    }
-
-    function startFieldAnimation() {
-      if (document.hidden) {
-        state.fieldAnimPaused = true;
-        return;
-      }
-      state.fieldAnimPaused = false;
-      if (state.fieldRaf) cancelAnimationFrame(state.fieldRaf);
-      state.fieldRaf = requestAnimationFrame(fieldAnimationLoop);
-    }
-
-    function pauseFieldAnimation() {
-      state.fieldAnimPaused = true;
-      if (state.fieldRaf) {
-        cancelAnimationFrame(state.fieldRaf);
-        state.fieldRaf = null;
-      }
-    }
-
-    function resumeFieldAnimation() {
-      if (!document.hidden) startFieldAnimation();
-    }
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) pauseFieldAnimation();
-      else resumeFieldAnimation();
-    });
-
-    function drawFarm() {
-      const { w, h } = getCanvasSize();
-      ctx.save();
-      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-      ctx.clearRect(0, 0, w, h);
-      ctx.save();
-      applyViewport();
-      ctx.filter = getViewFilter();
-
-      const worldW = w / state.viewport.scale + 400;
-      const worldH = h / state.viewport.scale + 400;
-      drawFieldBackground(worldW, worldH);
-
-      state.greenhouses.forEach(gh => {
-        if (state.editMode && gh.id === state.selectedId) return;
-        drawGreenhouse(gh);
-      });
-
-      if (state.editMode && state.selectedId) {
-        const gh = state.greenhouses.find(g => g.id === state.selectedId);
-        if (gh) drawGreenhouse(gh);
-      }
-
-      drawDraftPreview();
-
-      if (!state.draft && !state.editMode && state.greenhouses.length === 0 && state.user) {
-        const fs = 15 / state.viewport.scale;
-        ctx.fillStyle = 'rgba(240,230,216,0.25)';
-        ctx.font = `500 ${fs}px "DM Sans", sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('Click "New Greenhouse" then drag a rectangle', w / 2 / state.viewport.scale, h / 2 / state.viewport.scale);
-      }
-
-      ctx.restore();
-      ctx.restore();
-      syncZoomSlider();
-    }
-
-    function findGreenhouseAt(wx, wy) {
-      for (let i = state.greenhouses.length - 1; i >= 0; i--) {
-        if (pointInRect(wx, wy, state.greenhouses[i].rect)) return state.greenhouses[i];
-      }
-      return null;
-    }
-
-    function findNearestEdge(wx, wy, rect) {
-      const th = EDGE_HIT / state.viewport.scale;
-      const edges = [
-        { edge: 'top', dist: Math.abs(wy - rect.y), t: (wx - rect.x) / rect.w },
-        { edge: 'bottom', dist: Math.abs(wy - (rect.y + rect.h)), t: (wx - rect.x) / rect.w },
-        { edge: 'left', dist: Math.abs(wx - rect.x), t: (wy - rect.y) / rect.h },
-        { edge: 'right', dist: Math.abs(wx - (rect.x + rect.w)), t: (wy - rect.y) / rect.h }
-      ];
-      edges.sort((a, b) => a.dist - b.dist);
-      const best = edges[0];
-      if (best.dist > th || best.t < 0.08 || best.t > 0.92) return null;
-      return { edge: best.edge, t: best.t };
-    }
-
-    function simplifyPoints(points) {
-      if (points.length <= MIN_ZONE_POINTS) return points;
-      const step = Math.max(1, Math.floor(points.length / 80));
-      const out = [];
-      for (let i = 0; i < points.length; i += step) out.push(points[i]);
-      const last = points[points.length - 1];
-      if (out[out.length - 1] !== last) out.push(last);
-      return out;
-    }
-
-    function isModalOpen() {
-      return document.getElementById('zoneModal').classList.contains('open') ||
-             document.getElementById('ghModal').classList.contains('open') ||
-             document.getElementById('userModal').classList.contains('open');
-    }
-
-    function setTool(tool) {
-      state.tool = tool;
-      ['btnToolRect','btnToolDoor','btnToolZone','btnToolBlock',
-       'btnEditDoor','btnEditZone','btnEditBlock'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.toggle('active', el.id.includes(tool === 'rect' ? 'Rect' : tool === 'door' ? 'Door' : tool === 'zone' ? 'Zone' : 'Block') && (
-          (tool === 'rect' && id.includes('Rect')) ||
-          (tool === 'door' && id.includes('Door')) ||
-          (tool === 'zone' && id.includes('Zone')) ||
-          (tool === 'block' && id.includes('Block'))
-        ));
-      });
-
-      document.querySelectorAll('.btn-tool').forEach(btn => btn.classList.remove('active'));
-      const map = {
-        rect: 'btnToolRect', door: state.editMode ? 'btnEditDoor' : 'btnToolDoor',
-        zone: state.editMode ? 'btnEditZone' : 'btnToolZone',
-        block: state.editMode ? 'btnEditBlock' : 'btnToolBlock'
+    function worldToScreen(wx, wy) {
+      const { scale, offsetX, offsetY } = state.viewport;
+      return {
+        x: wx * scale + offsetX,
+        y: wy * scale + offsetY
       };
-      const activeBtn = document.getElementById(map[tool]);
-      if (activeBtn) activeBtn.classList.add('active');
-
-      const hints = { rect: t('hintRect'), door: t('hintDoor'), zone: t('hintZone'), block: t('hintBlock') };
-      overlayEl.textContent = hints[tool] || '';
-      updateCanvasCursor();
-      drawFarm();
     }
 
-    function updateCreateTools() {
-      const hasDraft = !!state.draft && !state.editMode;
-      const hasRect = hasDraft && !!state.draft.rect;
-      document.getElementById('toolGroup').classList.toggle('hidden', !hasDraft);
-      document.getElementById('stepBadge').classList.toggle('hidden', !hasDraft);
-      document.getElementById('drawHint').classList.toggle('hidden', hasDraft || state.editMode);
-      document.getElementById('btnToolRect').disabled = !hasDraft;
-      document.getElementById('btnToolDoor').disabled = !hasRect;
-      document.getElementById('btnToolZone').disabled = !hasRect;
-      document.getElementById('btnToolBlock').disabled = !hasRect;
-      document.getElementById('btnFinish').disabled = !hasRect;
-
-      if (hasDraft) {
-        const steps = { rect: t('stepRect'), door: t('stepDoor'), zone: t('stepZone'), block: t('stepBlock') };
-        document.getElementById('stepBadge').textContent = steps[state.tool] || '…';
-      }
-    }
-
-    function startNewGreenhouse() {
-      if (!state.user) { showLoginModal(); return; }
-      state.draft = { rect: null, doors: [], zones: [], blocks: [], name: '' };
-      state.editMode = false;
-      state.selectedId = null;
-      state.previewRect = null;
-      state.isDraggingRect = false;
-      state.isDrawingZone = false;
-      state.zonePoints = [];
-      document.getElementById('editToolGroup').classList.add('hidden');
-      setTool('rect');
-      updateCreateTools();
-      document.getElementById('panelPlaceholder').style.display = 'block';
-      document.getElementById('panelControls').style.display = 'none';
-      renderList();
-      updateCanvasCursor();
-      drawFarm();
-    }
-
-    function startEditGreenhouse() {
-      const gh = getSelected();
-      if (!gh || state.draft) return;
-      state.editMode = true;
-      state.draft = null;
-      document.getElementById('toolGroup').classList.add('hidden');
-      document.getElementById('editToolGroup').classList.remove('hidden');
-      document.getElementById('stepBadge').classList.remove('hidden');
-      document.getElementById('stepBadge').textContent = 'Editing — make changes then Save';
-      document.getElementById('ctrlEditBadge').textContent = 'Editing';
-      document.getElementById('ctrlEditBadge').className = 'badge edit';
-      setTool('zone');
-      overlayEl.textContent = `Editing: ${gh.name} — draw zones, place doors or blocks, then Save Changes`;
-      drawFarm();
-    }
-
-    function cancelEdit() {
-      state.editMode = false;
-      state.tool = null;
-      document.getElementById('editToolGroup').classList.add('hidden');
-      document.getElementById('stepBadge').classList.add('hidden');
-      const gh = getSelected();
-      if (gh) {
-        document.getElementById('ctrlEditBadge').textContent = 'Viewing';
-        document.getElementById('ctrlEditBadge').className = 'badge';
-        overlayEl.textContent = `Viewing: ${gh.name}`;
-      }
-      updateCanvasCursor();
-      drawFarm();
-    }
-
-    function saveEdits() {
-      state.editMode = false;
-      state.tool = null;
-      document.getElementById('editToolGroup').classList.add('hidden');
-      document.getElementById('stepBadge').classList.add('hidden');
-      persistData();
-      playAlhamdulillah();
-      const gh = getSelected();
-      if (gh) {
-        document.getElementById('ctrlEditBadge').textContent = 'Viewing';
-        document.getElementById('ctrlEditBadge').className = 'badge';
-        updatePanel(gh);
-        overlayEl.textContent = `${t('saved')} ${gh.name}`;
-      }
-      drawFarm();
-    }
-
-    function finishRect(r) {
-      if (r.w < MIN_RECT_SIZE || r.h < MIN_RECT_SIZE) {
-        overlayEl.textContent = t('rectTooSmall');
-        state.previewRect = null;
-        drawFarm();
-        return;
-      }
-      pushUndo('draw rectangle');
-      state.draft.rect = r;
-      state.previewRect = null;
-      setTool('door');
-      updateCreateTools();
-    }
-
-    function placeDoor(wx, wy) {
-      const gh = getTargetGh();
-      if (!gh?.rect) return;
-      const edge = findNearestEdge(wx, wy, gh.rect);
-      if (!edge) { overlayEl.textContent = 'Click closer to the yellow border'; return; }
-      const exists = gh.doors.some(d => d.edge === edge.edge && Math.abs(d.t - edge.t) < 0.12);
-      if (!exists) { pushUndo('place door'); gh.doors.push(edge); playSound('door'); }
-      if (state.editMode) updatePanel(gh);
-      drawFarm();
-    }
-
-    function placeBlock(wx, wy) {
-      const gh = getTargetGh();
-      if (!gh?.rect) return;
-      if (!pointInRect(wx, wy, gh.rect, 6)) {
-        overlayEl.textContent = 'Place blocks anywhere inside the greenhouse';
-        return;
-      }
-      if (!gh.blocks) gh.blocks = [];
-      const minDist = Math.min(BLOCK_W, BLOCK_H) * 0.8;
-      const tooClose = gh.blocks.some(b => (b.x - wx) ** 2 + (b.y - wy) ** 2 < minDist ** 2);
-      if (!tooClose) {
-        pushUndo('place block');
-        gh.blocks.push({ x: wx, y: wy });
-        playSound('block');
-        if (state.editMode) { updatePanel(gh); persistData(); }
-      }
-      drawFarm();
-    }
-
-    function openZoneModal(points) {
-      state.pendingZonePoints = points;
-      const n = (getTargetGh()?.zones?.length || 0) + 1;
-      document.getElementById('zoneName').value = `Zone ${n}`;
-      document.getElementById('zoneDate').value = new Date().toISOString().slice(0, 10);
-      document.getElementById('zonePlants').value = '';
-      document.getElementById('zoneModal').classList.add('open');
-      document.getElementById('zoneName').focus();
-    }
-
-    function saveZone() {
-      const name = document.getElementById('zoneName').value.trim();
-      const date = document.getElementById('zoneDate').value;
-      const plants = parseInt(document.getElementById('zonePlants').value, 10) || 0;
-      if (!name || !date || !state.pendingZonePoints) return;
-
-      const gh = getTargetGh();
-      if (!gh) return;
-      if (!gh.zones) gh.zones = [];
-
-      pushUndo('add zone');
-      gh.zones.push({
-        id: state.nextZoneId++,
-        name, date, plants,
-        points: state.pendingZonePoints
-      });
-
-      // Zone added → birds chirp
-      initAudio();
-      if (audioCtx) { chirpBird(); setTimeout(chirpBird, 180); setTimeout(chirpBird, 380); }
-
-      state.pendingZonePoints = null;
-      document.getElementById('zoneModal').classList.remove('open');
-      overlayEl.textContent = 'Zone added. Draw more zones, place blocks, or save';
-      if (state.editMode) updatePanel(gh);
-      drawFarm();
-    }
-
-    function cancelZone() {
-      state.pendingZonePoints = null;
-      document.getElementById('zoneModal').classList.remove('open');
-      drawFarm();
-    }
-
-    function finishZoneDraw() {
-      state.isDrawingZone = false;
-      const gh = getTargetGh();
-      if (!gh?.rect) return;
-
-      if (state.zonePoints.length < MIN_ZONE_POINTS) {
-        state.zonePoints = [];
-        overlayEl.textContent = 'Zone too small — draw a larger shape';
-        drawFarm();
-        return;
-      }
-
-      const points = simplifyPoints(state.zonePoints.map(p => clipToRect(p, gh.rect, 4)));
-      state.zonePoints = [];
-      openZoneModal(points);
-    }
-
-    function openGhModal(rename = false) {
-      state.renameMode = rename;
-      document.getElementById('ghModalTitle').textContent = rename ? t('plasticName') : t('savePlasticTitle');
-      document.getElementById('ghModalDesc').textContent = rename ? t('savePlasticDesc') : t('savePlasticDesc');
-      const gh = rename ? getSelected() : null;
-      document.getElementById('ghName').value = rename && gh ? gh.name : `Greenhouse ${state.nextId}`;
-      document.getElementById('ghModal').classList.add('open');
-      document.getElementById('ghName').focus();
-    }
-
-    function saveGreenhouse() {
-      const name = document.getElementById('ghName').value.trim();
-      if (!name) return;
-
-      if (state.renameMode) {
-        const gh = getSelected();
-        if (gh) {
-          gh.name = name;
-          persistData();
-          playAlhamdulillah();
-          updatePanel(gh);
-          renderList();
-        }
-        state.renameMode = false;
-        document.getElementById('ghModal').classList.remove('open');
-        drawFarm();
-        return;
-      }
-
-      if (!state.draft?.rect) return;
-
-      const gh = {
-        id: state.nextId++,
-        name,
-        rect: { ...state.draft.rect },
-        doors: [...(state.draft.doors || [])],
-        zones: (state.draft.zones || []).map(z => ({ ...z, points: [...z.points] })),
-        blocks: [...(state.draft.blocks || [])],
-        ventilation: 'Auto', irrigation: 'Idle'
-      };
-
-      pushUndo('save greenhouse');
-      state.greenhouses.push(gh);
-      state.draft = null;
-      state.tool = null;
-      document.getElementById('ghModal').classList.remove('open');
-      updateCreateTools();
-      persistData();
-      playAlhamdulillah();
-      setTimeout(playRooster, 1200);
-      startWind();
-      selectGreenhouse(gh.id);
-    }
-
-    function drawGhThumbnail(gh, thumbCanvas) {
-      const tctx = thumbCanvas.getContext('2d');
-      const W = thumbCanvas.width;
-      const H = thumbCanvas.height;
-      tctx.clearRect(0, 0, W, H);
-      drawSoilBase(tctx, 0, 0, W, H, false);
-
-      const r = gh.rect;
-      if (!r || r.w < 1 || r.h < 1) return;
-
-      const pad = 6;
-      const scale = Math.min((W - pad * 2) / r.w, (H - pad * 2) / r.h);
-      const ox = pad + (W - pad * 2 - r.w * scale) / 2 - r.x * scale;
-      const oy = pad + (H - pad * 2 - r.h * scale) / 2 - r.y * scale;
-
-      tctx.save();
-      tctx.translate(ox, oy);
-      tctx.scale(scale, scale);
-
-      tctx.fillStyle = '#0d0d0d';
-      tctx.fillRect(r.x, r.y, r.w, r.h);
-      tctx.strokeStyle = gh.id === state.selectedId ? '#ffe566' : '#f5c518';
-      tctx.lineWidth = 2.5 / scale;
-      tctx.strokeRect(r.x, r.y, r.w, r.h);
-
-      (gh.zones || []).forEach(z => {
-        if (!z.points || z.points.length < 2) return;
-        tctx.beginPath();
-        tctx.moveTo(z.points[0].x, z.points[0].y);
-        for (let i = 1; i < z.points.length; i++) tctx.lineTo(z.points[i].x, z.points[i].y);
-        tctx.closePath();
-        tctx.fillStyle = 'rgba(74, 106, 53, 0.78)';
-        tctx.fill();
-        tctx.strokeStyle = '#6b8e4e';
-        tctx.lineWidth = 1.5 / scale;
-        tctx.stroke();
-      });
-
-      (gh.doors || []).forEach(door => {
-        const dr = getDoorRect(r, door);
-        tctx.fillStyle = '#3a7bd5';
-        tctx.fillRect(dr.x, dr.y, dr.w, dr.h);
-      });
-
-      (gh.blocks || []).forEach(b => {
-        tctx.fillStyle = '#e8eef5';
-        tctx.fillRect(b.x - BLOCK_W / 2, b.y - BLOCK_H / 2, BLOCK_W, BLOCK_H);
-      });
-
-      tctx.restore();
-    }
-
-    function renderList() {
-      const listEl = document.getElementById('greenhouseList');
-      const emptyEl = document.getElementById('ghEmpty');
-      listEl.querySelectorAll('.gh-item').forEach(el => el.remove());
-
-      if (!state.user) {
-        emptyEl.style.display = 'block';
-        emptyEl.textContent = 'Please log in to see your greenhouses.';
-        return;
-      }
-
-      if (state.greenhouses.length === 0) {
-        emptyEl.style.display = 'block';
-        emptyEl.innerHTML = 'No greenhouses yet.<br />Click "New Greenhouse" to begin.';
-        return;
-      }
-
-      emptyEl.style.display = 'none';
-      state.greenhouses.forEach(gh => {
-        const el = document.createElement('div');
-        el.className = 'gh-item' + (gh.id === state.selectedId ? ' active' : '');
-        el.innerHTML = `
-          <canvas class="gh-thumb" width="152" height="108" aria-hidden="true"></canvas>
-          <div class="gh-item-info">
-            <div class="gh-item-name">${gh.name}</div>
-            <div class="gh-item-meta">
-              <span>${(gh.zones || []).length} zones</span>
-              <span>${totalPlants(gh)} plants</span>
-              <span>${(gh.doors || []).length} doors</span>
-            </div>
-          </div>
-          <div class="gh-item-actions">
-            <button type="button" class="btn-gh-delete" title="${t('deleteGh')}" aria-label="${t('deleteGh')}">🗑</button>
-          </div>`;
-        const thumb = el.querySelector('.gh-thumb');
-        if (thumb) drawGhThumbnail(gh, thumb);
-        el.addEventListener('click', () => {
-          if (state.draft) return;
-          selectGreenhouse(gh.id);
-          if (isMobileLayout()) closeMobilePanels();
-        });
-        el.querySelector('.btn-gh-delete').addEventListener('click', e => {
-          e.stopPropagation();
-          if (state.draft) return;
-          deleteGreenhouse(gh);
-        });
-        listEl.appendChild(el);
-      });
-    }
-
-    function updatePanel(gh) {
-      document.getElementById('ctrlName').textContent = gh.name;
-      document.getElementById('ctrlZones').textContent = (gh.zones || []).length;
-      document.getElementById('ctrlPlants').textContent = totalPlants(gh);
-      document.getElementById('ctrlDoors').textContent = (gh.doors || []).length;
-      document.getElementById('ctrlBlocks').textContent = totalBlocks(gh);
-      document.getElementById('ctrlVent').textContent = gh.ventilation;
-      document.getElementById('ctrlVent').className = 'badge' + (gh.ventilation === 'Off' ? ' idle' : '');
-      document.getElementById('ctrlIrrigation').textContent = gh.irrigation;
-      document.getElementById('ctrlIrrigation').className = 'badge' + (gh.irrigation === 'Idle' ? ' idle' : '');
-
-      const zlp = document.getElementById('zoneListPanel');
-      zlp.innerHTML = '';
-      (gh.zones || []).forEach(z => {
-        const el = document.createElement('div');
-        el.className = 'zone-list-item';
-        el.innerHTML = `<strong>${z.name}</strong><small>${z.date} · ${z.plants} plants</small>`;
-        el.addEventListener('click', () => {
-          const idx = (gh.zones || []).indexOf(z);
-          flyToZone(idx, true);
-        });
-        zlp.appendChild(el);
-      });
-      if (!gh.zones?.length) zlp.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem">No zones yet</span>';
-    }
-
-    function selectGreenhouse(id) {
-      if (state.draft) return;
-      state.selectedId = id;
-      state.editMode = false;
-      document.getElementById('editToolGroup').classList.add('hidden');
-      document.getElementById('stepBadge').classList.add('hidden');
-      const gh = state.greenhouses.find(g => g.id === id);
-      if (!gh) return;
-
-      document.getElementById('panelPlaceholder').style.display = 'none';
-      document.getElementById('panelControls').style.display = 'block';
-      document.getElementById('ctrlEditBadge').textContent = 'Viewing';
-      document.getElementById('ctrlEditBadge').className = 'badge';
-      overlayEl.textContent = `Viewing: ${gh.name} — click Edit to modify`;
-      updatePanel(gh);
-      state.navZoneIndex = -1;
-      updateNavLabel();
-      renderList();
-      updateCanvasCursor();
-      drawFarm();
-    }
-
-    function getSelected() {
+    function getSelectedGreenhouse() {
       return state.greenhouses.find(g => g.id === state.selectedId);
     }
 
@@ -2825,429 +1496,470 @@
       closeMobilePanels();
 
       if (!state.draft && !state.editMode) {
-        const hit = findGreenhouseAt(world.x, world.y);
-        if (hit) selectGreenhouse(hit.id);
+        _mousePan = true;
+        _mousePanStart = world;
+        _mousePanOffset0 = { ...state.viewport };
         return;
       }
 
-      const gh = getTargetGh();
-      if (!gh) return;
-
-      if (state.tool === 'rect' && state.draft && !state.draft.rect) {
-        state.isDraggingRect = true;
-        state.rectStart = world;
-        state.previewRect = { x: world.x, y: world.y, w: 0, h: 0 };
-        return;
-      }
-
-      if (state.tool === 'door') { placeDoor(world.x, world.y); return; }
-      if (state.tool === 'block') { placeBlock(world.x, world.y); return; }
-
-      if (state.tool === 'zone' && gh.rect) {
-        if (!pointInRect(world.x, world.y, gh.rect, 4)) {
-          overlayEl.textContent = t('hintZone');
-          return;
+      if (state.draft && state.tool === DRAW_MODES.RECT) {
+        if (!state.isDraggingRect) {
+          state.isDraggingRect = true;
+          state.rectStart = world;
         }
-        state.isDrawingZone = true;
-        state.zonePoints = [clipToRect(world, gh.rect, 4)];
-        drawFarm();
+      } else if (state.draft && state.tool === DRAW_MODES.ZONE) {
+        if (!state.isDrawingZone) {
+          state.isDrawingZone = true;
+          state.zonePoints = [world];
+        } else {
+          state.zonePoints.push(world);
+        }
+      } else if (state.editMode && state.selectedId) {
+        const gh = getSelectedGreenhouse();
+        if (gh && state.tool === DRAW_MODES.DOOR) {
+          gh.doors = gh.doors || [];
+          gh.doors.push({ x: world.x, y: world.y, r: 15 });
+          playSound('door');
+          saveUserData();
+          renderList();
+          drawFarm();
+        } else if (gh && state.tool === DRAW_MODES.ZONE) {
+          if (!state.isDrawingZone) {
+            state.isDrawingZone = true;
+            state.zonePoints = [world];
+          } else {
+            state.zonePoints.push(world);
+          }
+        } else if (gh && state.tool === DRAW_MODES.BLOCK) {
+          gh.blocks = gh.blocks || [];
+          gh.blocks.push({ x: world.x, y: world.y, w: 30, h: 30 });
+          playSound('block');
+          saveUserData();
+          renderList();
+          drawFarm();
+        }
       }
     }
 
     function handlePointerMove(world) {
       if (state.isDraggingRect && state.rectStart) {
-        state.previewRect = normalizeRect(state.rectStart.x, state.rectStart.y, world.x, world.y);
-        drawFarm();
-        return;
+        state.previewRect = {
+          x: Math.min(state.rectStart.x, world.x),
+          y: Math.min(state.rectStart.y, world.y),
+          width: Math.abs(world.x - state.rectStart.x),
+          height: Math.abs(world.y - state.rectStart.y)
+        };
+      } else if (_mousePan && _mousePanStart) {
+        const dx = world.x - _mousePanStart.x;
+        const dy = world.y - _mousePanStart.y;
+        state.viewport.offsetX = _mousePanOffset0.offsetX + dx * state.viewport.scale;
+        state.viewport.offsetY = _mousePanOffset0.offsetY + dy * state.viewport.scale;
       }
-      if (state.isDrawingZone && getTargetGh()?.rect) {
-        const gh = getTargetGh();
-        const clipped = clipToRect(world, gh.rect, 4);
-        const last = state.zonePoints[state.zonePoints.length - 1];
-        if ((clipped.x - last.x) ** 2 + (clipped.y - last.y) ** 2 < 4 / state.viewport.scale ** 2) return;
-        state.zonePoints.push(clipped);
-        drawFarm();
-      }
+      drawFarm();
     }
 
     function handlePointerUp() {
-      if (state.isDraggingRect) {
+      if (state.isDraggingRect && state.previewRect) {
         state.isDraggingRect = false;
-        if (state.previewRect) finishRect(state.previewRect);
-        return;
+        if (state.previewRect.width > 20 && state.previewRect.height > 20) {
+          state.draft = {
+            name: state.lang === 'ar' ? 'بيت جديد' : 'New Greenhouse',
+            ...state.previewRect
+          };
+          state.previewRect = null;
+          state.tool = DRAW_MODES.DOOR;
+          updateToolGroup();
+          drawFarm();
+        }
       }
-      if (state.isDrawingZone) finishZoneDraw();
-    }
-
-    function endMousePan() {
-      if (!_mousePan) return;
       _mousePan = false;
       _mousePanStart = null;
       _mousePanOffset0 = null;
-      canvas.classList.remove('panning');
-      updateCanvasCursor();
     }
 
-    canvas.addEventListener('mousedown', e => {
-      if (e.button === 1 || (_spaceHeld && e.button === 0)) {
-        e.preventDefault();
-        _mousePan = true;
-        canvas.classList.add('panning');
-        _mousePanStart = { x: e.clientX, y: e.clientY };
-        _mousePanOffset0 = { offsetX: state.viewport.offsetX, offsetY: state.viewport.offsetY };
-        updateCanvasCursor();
-        return;
+    function updateToolGroup() {
+      const tg = document.getElementById('toolGroup');
+      const etg = document.getElementById('editToolGroup');
+      if (!tg || !etg) return;
+      if (state.draft) {
+        tg.classList.remove('hidden');
+        tg.querySelectorAll('.btn-tool').forEach((b, i) => {
+          b.classList.toggle('active', Object.values(DRAW_MODES)[i] === state.tool);
+        });
+      } else {
+        tg.classList.add('hidden');
       }
-      handlePointerDown(getMouseWorld(e));
-    });
-    canvas.addEventListener('mousemove', e => {
-      if (_mousePan && _mousePanStart && _mousePanOffset0) {
-        state.viewport.offsetX = _mousePanOffset0.offsetX + (e.clientX - _mousePanStart.x);
-        state.viewport.offsetY = _mousePanOffset0.offsetY + (e.clientY - _mousePanStart.y);
-        syncPanSliders();
-        drawFarm();
-        return;
+      if (state.editMode && state.selectedId) {
+        etg.classList.remove('hidden');
+        etg.querySelectorAll('.btn-tool').forEach((b, i) => {
+          b.classList.toggle('active', [DRAW_MODES.DOOR, DRAW_MODES.ZONE, DRAW_MODES.BLOCK][i] === state.tool);
+        });
+      } else {
+        etg.classList.add('hidden');
       }
-      handlePointerMove(getMouseWorld(e));
-    });
-    canvas.addEventListener('mouseup', e => {
-      if (_mousePan && (e.button === 1 || e.button === 0)) endMousePan();
-      handlePointerUp();
-    });
-    canvas.addEventListener('mouseleave', () => {
-      endMousePan();
-      handlePointerUp();
-    });
-    canvas.addEventListener('contextmenu', e => {
-      if (_spaceHeld) e.preventDefault();
-    });
-
-    document.addEventListener('keydown', e => {
-      if (e.code !== 'Space' || e.repeat) return;
-      if (isModalOpen()) return;
-      const tag = e.target.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
-      e.preventDefault();
-      _spaceHeld = true;
-      updateCanvasCursor();
-    });
-    document.addEventListener('keyup', e => {
-      if (e.code !== 'Space') return;
-      _spaceHeld = false;
-      endMousePan();
-      updateCanvasCursor();
-    });
-
-    // ===== TOUCH: pinch-to-zoom + two-finger pan =====
-    let _pinchActive = false;
-    let _pinchDist0 = 0;
-    let _pinchScale0 = 1;
-    let _pinchMidWorld = null;
-    let _panActive = false;
-    let _panStart = null;
-    let _panOffset0 = null;
-
-    function getTouchMid(touches) {
-      const r = canvas.getBoundingClientRect();
-      const ax = (touches[0].clientX + touches[1].clientX) / 2 - r.left;
-      const ay = (touches[0].clientY + touches[1].clientY) / 2 - r.top;
-      return { sx: ax, sy: ay };
     }
 
-    function getTouchDist(touches) {
-      const dx = touches[0].clientX - touches[1].clientX;
-      const dy = touches[0].clientY - touches[1].clientY;
-      return Math.sqrt(dx * dx + dy * dy);
+    function selectGreenhouse(id) {
+      state.selectedId = id;
+      state.editMode = false;
+      state.draft = null;
+      state.tool = null;
+      state.isDrawingZone = false;
+      state.zonePoints = [];
+      document.getElementById('panelPlaceholder').style.display = 'none';
+      document.getElementById('panelControls').style.display = 'block';
+      updateGhPanel();
+      updateToolGroup();
+      renderList();
+      const gh = getSelectedGreenhouse();
+      if (gh) {
+        flyToGreenhouse(gh, 500, true);
+      }
     }
 
-    canvas.addEventListener('touchstart', e => {
-      e.preventDefault();
-      if (e.touches.length === 2) {
-        // Cancel any single-touch drawing
-        if (state.isDraggingRect) { state.isDraggingRect = false; state.previewRect = null; }
-        if (state.isDrawingZone) { state.isDrawingZone = false; state.zonePoints = []; }
-        handlePointerUp();
-
-        _pinchActive = true;
-        _panActive = true;
-        _pinchDist0 = getTouchDist(e.touches);
-        _pinchScale0 = state.viewport.scale;
-        const mid = getTouchMid(e.touches);
-        _pinchMidWorld = screenToWorld(mid.sx, mid.sy);
-        _panStart = mid;
-        _panOffset0 = { offsetX: state.viewport.offsetX, offsetY: state.viewport.offsetY };
-        canvas.classList.add('panning');
-        updateCanvasCursor();
-        return;
-      }
-
-      if (e.touches.length === 1) {
-        _pinchActive = false;
-        _panActive = false;
-        handlePointerDown(getPointerWorld(e.touches[0]));
-      }
-    }, { passive: false });
-
-    canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-
-      if (e.touches.length === 2 && _pinchActive) {
-        const dist = getTouchDist(e.touches);
-        const mid = getTouchMid(e.touches);
-
-        // Zoom around the pinch midpoint
-        const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, _pinchScale0 * (dist / _pinchDist0)));
-
-        // Pan: offset = midScreen - world*scale
-        const panDX = mid.sx - _panStart.sx;
-        const panDY = mid.sy - _panStart.sy;
-
-        state.viewport.scale = newScale;
-        state.viewport.offsetX = mid.sx - _pinchMidWorld.x * newScale + panDX * 0;
-        state.viewport.offsetY = mid.sy - _pinchMidWorld.y * newScale + panDY * 0;
-
-        // Also apply two-finger pan delta
-        state.viewport.offsetX = _panOffset0.offsetX + (mid.sx - _panStart.sx) + (_pinchMidWorld.x * _pinchScale0 - _pinchMidWorld.x * newScale);
-        state.viewport.offsetY = _panOffset0.offsetY + (mid.sy - _panStart.sy) + (_pinchMidWorld.y * _pinchScale0 - _pinchMidWorld.y * newScale);
-
-        document.getElementById('zoomLevel').textContent = Math.round(newScale * 100) + '%';
-        const slider = document.getElementById('zoomSlider');
-        if (slider) slider.value = Math.round(newScale * 100);
-        syncPanSliders();
-        drawFarm();
-        return;
-      }
-
-      if (e.touches.length === 1 && !_pinchActive) {
-        handlePointerMove(getPointerWorld(e.touches[0]));
-      }
-    }, { passive: false });
-
-    canvas.addEventListener('touchend', e => {
-      e.preventDefault();
-      if (e.touches.length < 2) {
-        _pinchActive = false;
-        _panActive = false;
-        canvas.classList.remove('panning');
-        updateCanvasCursor();
-      }
-      if (e.touches.length === 0) {
-        handlePointerUp();
-      }
-    }, { passive: false });
-
-    canvas.addEventListener('touchcancel', e => {
-      _pinchActive = false;
-      _panActive = false;
-      canvas.classList.remove('panning');
-      updateCanvasCursor();
-      handlePointerUp();
-    });
-
-
-    function isMobileLayout() { return window.innerWidth <= 860; }
-
-    function closeMobilePanels() {
-      document.getElementById('sidebarPanel').classList.remove('open');
-      document.getElementById('controlPanelAside').classList.remove('open');
-      document.getElementById('panelBackdrop').classList.remove('open');
-      document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
-      document.getElementById('mobCanvas').classList.add('active');
+    function updateGhPanel() {
+      const gh = getSelectedGreenhouse();
+      if (!gh) return;
+      document.getElementById('ctrlName').textContent = gh.name || 'Unnamed';
+      document.getElementById('ctrlZones').textContent = gh.zones?.length || 0;
+      document.getElementById('ctrlPlants').textContent = gh.zones?.reduce((s, z) => s + (z.plants?.length || 0), 0) || 0;
+      document.getElementById('ctrlDoors').textContent = gh.doors?.length || 0;
+      document.getElementById('ctrlBlocks').textContent = gh.blocks?.length || 0;
+      const badge = document.getElementById('ctrlEditBadge');
+      if (badge) badge.textContent = state.editMode ? t('edit') : 'Viewing';
     }
 
-    function openMobilePanel(side) {
-      if (!isMobileLayout()) return;
-      const left = document.getElementById('sidebarPanel');
-      const right = document.getElementById('controlPanelAside');
-      const backdrop = document.getElementById('panelBackdrop');
-      left.classList.toggle('open', side === 'left');
-      right.classList.toggle('open', side === 'right');
-      backdrop.classList.toggle('open', side === 'left' || side === 'right');
-      document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
-      if (side === 'left') document.getElementById('mobFarms').classList.add('active');
-      else if (side === 'right') document.getElementById('mobControls').classList.add('active');
-      else document.getElementById('mobCanvas').classList.add('active');
+    function deleteGreenhouse(event, id) {
+      event.stopPropagation();
+      if (!confirm(state.lang === 'ar' ? 'هل تريد حذف هذا البيت؟' : 'Delete this greenhouse?')) return;
+      state.greenhouses = state.greenhouses.filter(g => g.id !== id);
+      if (state.selectedId === id) {
+        state.selectedId = null;
+        document.getElementById('panelPlaceholder').style.display = 'block';
+        document.getElementById('panelControls').style.display = 'none';
+      }
+      saveUserData();
+      renderList();
+      drawFarm();
+      playSound('nav');
     }
 
-    document.getElementById('btnMenuLeft').addEventListener('click', () => {
-      const open = document.getElementById('sidebarPanel').classList.contains('open');
-      open ? closeMobilePanels() : openMobilePanel('left');
-    });
-    document.getElementById('btnMenuRight').addEventListener('click', () => {
-      const open = document.getElementById('controlPanelAside').classList.contains('open');
-      open ? closeMobilePanels() : openMobilePanel('right');
-    });
-    document.getElementById('closeLeftPanel').addEventListener('click', closeMobilePanels);
-    document.getElementById('closeRightPanel').addEventListener('click', closeMobilePanels);
-    document.getElementById('panelBackdrop').addEventListener('click', closeMobilePanels);
-    document.getElementById('mobFarms').addEventListener('click', () => openMobilePanel('left'));
-    document.getElementById('mobCanvas').addEventListener('click', closeMobilePanels);
-    document.getElementById('mobControls').addEventListener('click', () => openMobilePanel('right'));
+    function finishGreenhouse() {
+      if (!state.draft) return;
+      const id = Math.random().toString(36).substr(2, 9);
+      const gh = {
+        id, name: state.draft.name, x: state.draft.x, y: state.draft.y,
+        width: state.draft.width, height: state.draft.height,
+        doors: [], zones: [], blocks: []
+      };
+      state.greenhouses.push(gh);
+      state.draft = null;
+      state.selectedId = id;
+      state.editMode = false;
+      state.tool = null;
+      state.isDrawingZone = false;
+      state.zonePoints = [];
+      saveUserData();
+      renderList();
+      selectGreenhouse(id);
+      showSaveIndicator();
+    }
 
-    // ── LOGIN — Simple, reliable & Android-friendly (form submit) ─────────────
-    (function() {
-      const form    = document.getElementById('loginForm');
-      const inp     = document.getElementById('userName');
-      const errEl   = document.getElementById('loginError');
-      let locked    = false;
-
-      function doLogin() {
-        if (locked) return;
-        locked = true;
-        const ok = loginUser((inp.value || '').trim());
-        locked = false;
-        if (!ok && inp) {
-          void inp.offsetWidth;
-          inp.classList.add('input-error');
+    function saveEdits() {
+      if (!state.editMode) return;
+      state.editMode = false;
+      state.tool = null;
+      state.isDrawingZone = false;
+      if (state.zonePoints.length > 0 && state.pendingZonePoints) {
+        const gh = getSelectedGreenhouse();
+        if (gh) {
+          gh.zones = gh.zones || [];
+          gh.zones.push({ id: Math.random().toString(36).substr(2, 9), points: state.pendingZonePoints, plants: [] });
+          state.pendingZonePoints = null;
+          state.zonePoints = [];
         }
       }
+      saveUserData();
+      updateToolGroup();
+      updateGhPanel();
+      renderList();
+      drawFarm();
+      showSaveIndicator();
+    }
 
-      if (form) {
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          doLogin();
+    function cancelEdit() {
+      state.editMode = false;
+      state.tool = null;
+      state.isDrawingZone = false;
+      state.zonePoints = [];
+      state.pendingZonePoints = null;
+      updateToolGroup();
+      updateGhPanel();
+      drawFarm();
+    }
+
+    function startEdit() {
+      state.editMode = true;
+      state.tool = DRAW_MODES.DOOR;
+      updateToolGroup();
+      updateGhPanel();
+      drawFarm();
+    }
+
+    // ════════════════════════════════════════════════════════════════════════════════════════
+    // CANVAS RENDERING
+    // ════════════════════════════════════════════════════════════════════════════════════════
+
+    function drawFarm() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      ctx.fillStyle = '#3d2b1f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (state.user && state.greenhouses.length > 0) {
+        state.greenhouses.forEach(drawGreenhouse);
+      }
+
+      if (state.draft) {
+        drawDraftGreenhouse();
+      } else if (state.selectedId) {
+        const gh = getSelectedGreenhouse();
+        if (gh) drawGreenhouse(gh);
+      }
+
+      // Draw zone preview
+      if (state.isDrawingZone && state.zonePoints.length > 0) {
+        ctx.strokeStyle = 'rgba(143,188,106,0.7)';
+        ctx.lineWidth = 2 / state.viewport.scale;
+        ctx.beginPath();
+        const start = worldToScreen(state.zonePoints[0].x, state.zonePoints[0].y);
+        ctx.moveTo(start.x, start.y);
+        state.zonePoints.forEach((p, i) => {
+          if (i > 0) {
+            const s = worldToScreen(p.x, p.y);
+            ctx.lineTo(s.x, s.y);
+          }
+        });
+        ctx.stroke();
+      }
+    }
+
+    function drawDraftGreenhouse() {
+      if (!state.draft) return;
+      const { x, y, width, height } = state.draft;
+      const p1 = worldToScreen(x, y);
+      const p2 = worldToScreen(x + width, y + height);
+      ctx.strokeStyle = '#8fbc6a';
+      ctx.lineWidth = 2 / state.viewport.scale;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(143,188,106,0.1)';
+      ctx.fillRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+    }
+
+    function drawGreenhouse(gh) {
+      const { x, y, width, height } = gh;
+      const p1 = worldToScreen(x, y);
+      const p2 = worldToScreen(x + width, y + height);
+      ctx.strokeStyle = gh.id === state.selectedId ? '#f5c518' : 'rgba(143,188,106,0.5)';
+      ctx.lineWidth = 3 / state.viewport.scale;
+      ctx.strokeRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+
+      if (gh.doors) {
+        ctx.fillStyle = 'rgba(200,100,50,0.7)';
+        gh.doors.forEach(d => {
+          const p = worldToScreen(d.x, d.y);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, Math.max(3, d.r / state.viewport.scale), 0, Math.PI * 2);
+          ctx.fill();
         });
       }
 
-      if (inp) {
-        inp.addEventListener('input', () => {
-          inp.classList.remove('input-error');
-          if (errEl) errEl.textContent = '';
+      if (gh.zones) {
+        gh.zones.forEach(z => {
+          if (z.points && z.points.length > 0) {
+            ctx.fillStyle = 'rgba(143,188,106,0.3)';
+            ctx.strokeStyle = 'rgba(143,188,106,0.8)';
+            ctx.lineWidth = 1.5 / state.viewport.scale;
+            ctx.beginPath();
+            const start = worldToScreen(z.points[0].x, z.points[0].y);
+            ctx.moveTo(start.x, start.y);
+            z.points.forEach((p, i) => {
+              if (i > 0) {
+                const s = worldToScreen(p.x, p.y);
+                ctx.lineTo(s.x, s.y);
+              }
+            });
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          }
         });
       }
 
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', adjustLoginForKeyboard);
-        window.visualViewport.addEventListener('scroll', adjustLoginForKeyboard);
+      if (gh.blocks) {
+        ctx.fillStyle = 'rgba(240,240,240,0.6)';
+        gh.blocks.forEach(b => {
+          const p = worldToScreen(b.x, b.y);
+          const w = (b.w || 30) / state.viewport.scale;
+          const h = (b.h || 30) / state.viewport.scale;
+          ctx.fillRect(p.x - w / 2, p.y - h / 2, w, h);
+        });
+      }
+    }
+
+    function flyToGreenhouse(gh, dur = 500, pan = true) {
+      const { x, y, width, height } = gh;
+      const cx = x + width / 2;
+      const cy = y + height / 2;
+      const maxDim = Math.max(width, height);
+      const scale = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, (getCanvasSize().w * 0.7) / maxDim));
+      flyToWorld(cx, cy, scale, dur, pan);
+    }
+
+    function flyToWorld(wx, wy, scale, dur = 500, pan = true) {
+      if (dur === 0) {
+        state.viewport.scale = scale;
+        const { w, h } = getCanvasSize();
+        state.viewport.offsetX = w / 2 - wx * scale;
+        state.viewport.offsetY = h / 2 - wy * scale;
+        drawFarm();
+        return;
       }
 
-      document.getElementById('btnSwitchUser').addEventListener('click', function() {
-        state.draft = null;
-        state.editMode = false;
-        state.selectedId = null;
-        locked = false;
-        if (inp) { inp.value = ''; inp.classList.remove('input-error'); }
-        if (errEl) errEl.textContent = '';
+      const startScale = state.viewport.scale;
+      const startOffX = state.viewport.offsetX;
+      const startOffY = state.viewport.offsetY;
+      const { w, h } = getCanvasSize();
+      const endOffX = w / 2 - wx * scale;
+      const endOffY = h / 2 - wy * scale;
+
+      const start = Date.now();
+      const animate = () => {
+        const t = Math.min(1, (Date.now() - start) / dur);
+        const eased = easeInOutCubic(t);
+        state.viewport.scale = startScale + (scale - startScale) * eased;
+        state.viewport.offsetX = startOffX + (endOffX - startOffX) * eased;
+        state.viewport.offsetY = startOffY + (endOffY - startOffY) * eased;
+        drawFarm();
+        if (t < 1) requestAnimationFrame(animate);
+      };
+      animate();
+    }
+
+    // ════════════════════════════════════════════════════════════════════════════════════════
+    // EVENT LISTENERS & INIT
+    // ════════════════════════════════════════════════════════════════════════════════════════
+
+    function closeMobilePanels() {
+      document.getElementById('sidebarPanel')?.classList.remove('open');
+      document.getElementById('controlPanelAside')?.classList.remove('open');
+      document.getElementById('panelBackdrop')?.classList.remove('open');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      state.lang = localStorage.getItem('lang') || 'en';
+      const user = localStorage.getItem(STORAGE_KEY);
+      if (user) {
+        state.user = user;
+        document.getElementById('userDisplay').textContent = user;
+        loadUserData();
+        renderList();
+        drawFarm();
+        setTimeout(() => { initAudio(); }, 500);
+      } else {
         showLoginModal();
-        setTimeout(() => { try { inp.focus(); } catch(e) {} }, 320);
-      });
-    })();
-
-    document.getElementById('btnNewGreenhouse').addEventListener('click', startNewGreenhouse);
-    document.getElementById('btnToolRect').addEventListener('click', () => { if (state.draft && !state.draft.rect) setTool('rect'); });
-    document.getElementById('btnToolDoor').addEventListener('click', () => { if (state.draft?.rect) setTool('door'); });
-    document.getElementById('btnToolZone').addEventListener('click', () => { if (state.draft?.rect) setTool('zone'); });
-    document.getElementById('btnToolBlock').addEventListener('click', () => { if (state.draft?.rect) setTool('block'); });
-    document.getElementById('btnFinish').addEventListener('click', () => { if (state.draft?.rect) openGhModal(false); });
-
-    document.getElementById('btnUndo').addEventListener('click', doUndo);
-
-    document.getElementById('btnDeleteGreenhouse').addEventListener('click', () => {
-      deleteGreenhouse(getSelected());
+      }
+      updateI18n();
     });
 
-    document.getElementById('btnEditGreenhouse').addEventListener('click', startEditGreenhouse);
-    document.getElementById('btnEditDoor').addEventListener('click', () => setTool('door'));
-    document.getElementById('btnEditZone').addEventListener('click', () => setTool('zone'));
-    document.getElementById('btnEditBlock').addEventListener('click', () => setTool('block'));
+    document.getElementById('btnLangEn').addEventListener('click', () => {
+      state.lang = 'en';
+      localStorage.setItem('lang', 'en');
+      updateI18n();
+      drawFarm();
+    });
+
+    document.getElementById('btnLangAr').addEventListener('click', () => {
+      state.lang = 'ar';
+      document.documentElement.dir = 'rtl';
+      localStorage.setItem('lang', 'ar');
+      updateI18n();
+      drawFarm();
+    });
+
+    document.getElementById('btnSwitchUser').addEventListener('click', () => {
+      state.user = null;
+      state.selectedId = null;
+      state.draft = null;
+      state.editMode = false;
+      state.tool = null;
+      showLoginModal();
+    });
+
+    document.getElementById('btnNewGreenhouse').addEventListener('click', () => {
+      state.draft = null;
+      state.previewRect = null;
+      state.tool = DRAW_MODES.RECT;
+      state.isDraggingRect = false;
+      state.selectedId = null;
+      updateToolGroup();
+      drawFarm();
+    });
+
+    ['btnToolRect', 'btnToolDoor', 'btnToolZone', 'btnToolBlock'].forEach((bid, i) => {
+      const btn = document.getElementById(bid);
+      if (btn) btn.addEventListener('click', () => {
+        state.tool = Object.values(DRAW_MODES)[i];
+        updateToolGroup();
+        drawFarm();
+      });
+    });
+
+    document.getElementById('btnFinish').addEventListener('click', finishGreenhouse);
+
+    document.getElementById('btnEdit').addEventListener('click', startEdit);
     document.getElementById('btnSaveEdits').addEventListener('click', saveEdits);
     document.getElementById('btnCancelEdit').addEventListener('click', cancelEdit);
-    document.getElementById('btnRenameGreenhouse').addEventListener('click', () => openGhModal(true));
 
-    document.getElementById('btnZoneSave').addEventListener('click', saveZone);
-    document.getElementById('btnZoneCancel').addEventListener('click', cancelZone);
-    document.getElementById('btnModalSave').addEventListener('click', saveGreenhouse);
-    document.getElementById('btnModalCancel').addEventListener('click', () => {
-      state.renameMode = false;
-      document.getElementById('ghModal').classList.remove('open');
+    ['btnEditDoor', 'btnEditZone', 'btnEditBlock'].forEach((bid, i) => {
+      const btn = document.getElementById(bid);
+      if (btn) btn.addEventListener('click', () => {
+        state.tool = [DRAW_MODES.DOOR, DRAW_MODES.ZONE, DRAW_MODES.BLOCK][i];
+        if (state.tool === DRAW_MODES.ZONE) {
+          state.isDrawingZone = false;
+          state.zonePoints = [];
+        }
+        updateToolGroup();
+        drawFarm();
+      });
     });
 
-    document.getElementById('btnZoomIn').addEventListener('click', () => zoomAt(ZOOM_STEP));
-    document.getElementById('btnZoomOut').addEventListener('click', () => zoomAt(1 / ZOOM_STEP));
+    canvas.addEventListener('pointerdown', e => handlePointerDown(getPointerWorld(e)));
+    canvas.addEventListener('pointermove', e => handlePointerMove(getPointerWorld(e)));
+    canvas.addEventListener('pointerup', handlePointerUp);
+    canvas.addEventListener('pointercancel', handlePointerUp);
+
+    document.getElementById('btnZoomIn').addEventListener('click', () => zoomAt(1.2));
+    document.getElementById('btnZoomOut').addEventListener('click', () => zoomAt(0.85));
 
     document.getElementById('zoomSlider').addEventListener('input', e => {
-      setZoomFromSlider(+e.target.value);
+      const newScale = e.target.value / 100;
+      const { w, h } = getCanvasSize();
+      flyToWorld(w / 2 / state.viewport.scale, h / 2 / state.viewport.scale, newScale, 200, false);
     });
-
-    document.getElementById('panXSlider').addEventListener('input', setPanFromSliders);
-    document.getElementById('panYSlider').addEventListener('input', setPanFromSliders);
-
-    document.getElementById('btnLangEn').addEventListener('click', () => setLang('en'));
-    document.getElementById('btnLangAr').addEventListener('click', () => setLang('ar'));
-    document.getElementById('btnBirdsSound').addEventListener('click', toggleBirdsSound);
-
-
 
     document.getElementById('soundToggle').addEventListener('change', e => {
       state.soundEnabled = e.target.checked;
       if (state.soundEnabled) playSound('zoom');
     });
 
-    document.getElementById('btnPrevZone').addEventListener('click', () => {
-      stopTour();
-      const i = state.navZoneIndex < 0 ? 0 : state.navZoneIndex - 1;
-      flyToZone(i, true);
-    });
+    document.getElementById('btnBirdsSound').addEventListener('click', toggleBirdsSound);
 
-    document.getElementById('btnNextZone').addEventListener('click', () => {
-      stopTour();
-      const i = state.navZoneIndex < 0 ? 0 : state.navZoneIndex + 1;
-      flyToZone(i, true);
-    });
+    window.addEventListener('resize', drawFarm);
 
-    document.getElementById('btnTourZones').addEventListener('click', e => {
-      if (state.tourTimer) {
-        stopTour();
-        e.target.textContent = t('autoTour');
-        overlayEl.textContent = t('stopTour');
-      } else {
-        e.target.textContent = t('stopTour');
-        startTour();
-      }
-    });
-
-
-
-    document.getElementById('btnToggleVent').addEventListener('click', () => {
-      const gh = getSelected();
-      if (!gh) return;
-      const cycle = { Auto: 'On', On: 'Off', Off: 'Auto' };
-      gh.ventilation = cycle[gh.ventilation];
-      document.getElementById('ctrlVent').textContent = gh.ventilation;
-      document.getElementById('ctrlVent').className = 'badge' + (gh.ventilation === 'Off' ? ' idle' : '');
-      persistData();
-    });
-
-    document.getElementById('btnRunIrrigation').addEventListener('click', () => {
-      const gh = getSelected();
-      if (!gh) return;
-      gh.irrigation = 'Running';
-      document.getElementById('ctrlIrrigation').textContent = 'Running';
-      document.getElementById('ctrlIrrigation').className = 'badge';
-      persistData();
-      setTimeout(() => {
-        gh.irrigation = 'Idle';
-        if (state.selectedId === gh.id) {
-          document.getElementById('ctrlIrrigation').textContent = 'Idle';
-          document.getElementById('ctrlIrrigation').className = 'badge idle';
-          persistData();
-        }
-      }, 3000);
-    });
-
-    window.addEventListener('resize', () => {
-      if (!isMobileLayout()) closeMobilePanels();
-      resizeCanvas();
-      syncPanSliders();
-    });
-    const savedLang = localStorage.getItem(LANG_KEY) || 'en';
-    setLang(savedLang);
-    initUser();
-    resizeCanvas();
-    updateCanvasCursor();
-    startFieldAnimation();
-    updateUndoBtn();
+    showSaveIndicator();
   </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script>
 </body>
 </html>
