@@ -48,8 +48,9 @@
     .app {
       display: grid;
       grid-template-columns: 260px 1fr 280px;
-      grid-template-rows: 56px 1fr;
+      grid-template-rows: 56px 1fr auto;
       height: 100vh;
+      height: 100dvh;
       background:
         radial-gradient(ellipse at 20% 80%, rgba(90, 60, 40, 0.4) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 20%, rgba(60, 40, 25, 0.3) 0%, transparent 50%),
@@ -878,6 +879,259 @@
     }
 
     .btn-gh-delete:hover { background: rgba(200, 60, 60, 0.3); }
+
+    /* Credits */
+    .credit-bar {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      text-align: center;
+      max-width: min(420px, 38vw);
+      padding: 2px 8px;
+    }
+    .credit-bar .credit-en { color: var(--text-muted); }
+    .credit-bar .credit-ar {
+      color: var(--accent-light);
+      font-family: 'Noto Sans Arabic', 'DM Sans', sans-serif;
+      direction: rtl;
+    }
+    .header-credits {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      min-width: 0;
+      padding: 0 8px;
+    }
+    .footer-credit {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 6px 12px calc(6px + env(safe-area-inset-bottom, 0px));
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      background: var(--sidebar-bg);
+      border-top: 1px solid var(--border);
+      line-height: 1.4;
+    }
+    .footer-credit .credit-ar {
+      color: var(--accent-light);
+      font-family: 'Noto Sans Arabic', 'DM Sans', sans-serif;
+    }
+
+    .zoom-btn.reset-view {
+      width: auto;
+      min-width: 40px;
+      padding: 0 8px;
+      font-size: 0.65rem;
+      line-height: 1.15;
+      height: auto;
+      min-height: 40px;
+      white-space: normal;
+    }
+
+    /* Disease diagnosis page */
+    .disease-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(90, 60, 40, 0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(60, 40, 25, 0.3) 0%, transparent 50%),
+        linear-gradient(160deg, var(--soil-mid) 0%, var(--soil-dark) 60%, #2e1f14 100%);
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .disease-page.open { display: flex; }
+    body.disease-open .app { visibility: hidden; pointer-events: none; }
+    body.disease-open .mobile-nav { display: none !important; }
+
+    .disease-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top, 12px));
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .disease-header h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent-light);
+      flex: 1;
+      min-width: 0;
+    }
+    .disease-header .btn-header { flex-shrink: 0; }
+
+    .disease-toolbar {
+      padding: 12px 16px;
+      background: rgba(42, 31, 23, 0.85);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .disease-search {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+    .disease-search:focus { outline: none; border-color: var(--accent); }
+    .disease-search-wrap { position: relative; width: 100%; }
+    .disease-suggest {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: #241a12;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+      max-height: 340px;
+      overflow-y: auto;
+      z-index: 30;
+    }
+    .disease-suggest.open { display: block; }
+    .suggest-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+    }
+    .suggest-item:last-child { border-bottom: none; }
+    .suggest-item:hover, .suggest-item.hover { background: rgba(245, 197, 24, 0.1); }
+    .suggest-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .suggest-name .credit-ar,
+    .suggest-name-ar { font-weight: 600; color: var(--accent-light); font-family: 'Noto Sans Arabic', 'DM Sans', sans-serif; }
+    .suggest-snippet { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+    .suggest-snippet mark {
+      background: rgba(245, 197, 24, 0.28);
+      color: var(--yellow-border);
+      font-weight: 700;
+      border-radius: 3px;
+      padding: 0 1px;
+    }
+    .suggest-empty { padding: 14px; font-size: 0.82rem; color: var(--text-muted); text-align: center; }
+    .disease-filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .filter-chip {
+      padding: 7px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .filter-chip.active {
+      border-color: var(--yellow-border);
+      background: rgba(245, 197, 24, 0.15);
+      color: var(--yellow-border);
+    }
+    .filter-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      width: 100%;
+      margin-top: 2px;
+    }
+    .disease-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 16px 24px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .disease-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .disease-card-top {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 0;
+    }
+    @media (max-width: 520px) {
+      .disease-card-top { grid-template-columns: 1fr; }
+      .header-credits { display: none; }
+      .credit-bar { max-width: none; }
+    }
+    .disease-illus {
+      width: 100%;
+      min-height: 120px;
+      background: #3a2a1c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+    .disease-illus svg { width: 100%; max-width: 140px; height: auto; }
+    .disease-meta { padding: 14px 14px 8px; }
+    .disease-names { margin-bottom: 6px; }
+    .disease-name-en { font-weight: 700; font-size: 1rem; color: var(--text); }
+    .disease-name-ar {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--accent-light);
+      font-family: 'Noto Sans Arabic', 'DM Sans', sans-serif;
+      direction: rtl;
+      margin-top: 2px;
+    }
+    .disease-sci {
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .disease-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .tag-pill {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: rgba(107, 142, 78, 0.2);
+      color: var(--accent-light);
+    }
+    .tag-pill.part { background: rgba(245, 197, 24, 0.15); color: var(--yellow-border); }
+    .disease-body { padding: 0 14px 14px; }
+    .disease-section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin: 10px 0 4px;
+      font-weight: 700;
+    }
+    .disease-body p {
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .disease-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 40px 16px;
+      font-size: 0.9rem;
+    }
+    .nav-disease-btn {
+      background: rgba(107, 142, 78, 0.18) !important;
+      border-color: rgba(143, 188, 106, 0.35) !important;
+      color: var(--accent-light) !important;
+    }
   </style>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" sizes="180x180" href="icon-apple.png" />
@@ -893,8 +1147,15 @@
         <div class="logo-icon">🫒</div>
         <span>Olive Agent</span>
       </div>
+      <div class="header-credits">
+        <div class="credit-bar" aria-label="Credits">
+          <div class="credit-en">Under the supervision of Eng. Abdullah Al-Zoubi — Designed by Eng. Hassan Al-Zoubi</div>
+          <div class="credit-ar">بإشراف المهندس عبد الله الزعبي — تصميم المهندس حسن الزعبي</div>
+        </div>
+      </div>
       <div class="header-right">
         <span class="save-indicator" id="saveIndicator" data-i18n="saved">Saved ✓</span>
+        <button class="btn-header nav-disease-btn" id="btnOpenDisease" data-i18n="diseaseNav">🌿 Diseases</button>
         <button class="btn-header" id="btnUndo" title="Undo" style="font-size:1rem;padding:6px 10px;" disabled>↩</button>
         <button class="btn-header" id="btnLangEn">EN</button>
         <button class="btn-header" id="btnLangAr">عربي</button>
@@ -934,9 +1195,10 @@
     <main class="canvas-area">
       <canvas id="farmCanvas"></canvas>
       <div class="zoom-controls">
-        <button class="zoom-btn" id="btnZoomIn">+</button>
+        <button class="zoom-btn" id="btnZoomIn" title="Zoom in">+</button>
         <div class="zoom-level" id="zoomLevel">100%</div>
-        <button class="zoom-btn" id="btnZoomOut">−</button>
+        <button class="zoom-btn" id="btnZoomOut" title="Zoom out">−</button>
+        <button class="zoom-btn reset-view" id="btnResetView" data-i18n="resetView" title="Reset View">Reset View</button>
       </div>
       <div class="canvas-overlay" id="canvasOverlay">Welcome — enter your name to start</div>
     </main>
@@ -997,15 +1259,9 @@
             <label>Plant Zones</label>
             <div id="zoneListPanel"></div>
           </div>
-          <div class="control-group">
-            <label>Status</label>
-            <div class="control-row"><span>Ventilation</span><span class="badge" id="ctrlVent">Auto</span></div>
-            <div class="control-row"><span>Irrigation</span><span class="badge idle" id="ctrlIrrigation">Idle</span></div>
-          </div>
           <button class="btn-action primary" id="btnEditGreenhouse">Edit Greenhouse</button>
+          <button class="btn-action primary" id="btnExportImage" data-i18n="exportPlan">📷 Save as Image / Export Plan</button>
           <button class="btn-action" id="btnRenameGreenhouse">Rename Greenhouse</button>
-          <button class="btn-action" id="btnToggleVent">Toggle Ventilation</button>
-          <button class="btn-action" id="btnRunIrrigation">Run Irrigation</button>
           <button class="btn-action btn-delete-gh" id="btnDeleteGreenhouse" style="margin-top:14px;background:rgba(180,50,50,0.18);border:1px solid rgba(220,80,80,0.35);color:#e88;display:flex;align-items:center;justify-content:center;gap:8px;">
             <span style="font-size:1.1rem">♻️</span> <span data-i18n="deleteGh">Delete Greenhouse</span>
           </button>
@@ -1016,8 +1272,50 @@
     <nav class="mobile-nav" id="mobileNav">
       <button type="button" id="mobFarms" data-i18n="mobFarms">🏠 Farms</button>
       <button type="button" id="mobCanvas" class="active" data-i18n="mobCanvas">🌾 Farm</button>
+      <button type="button" id="mobDisease" data-i18n="mobDisease">🌿 Diseases</button>
       <button type="button" id="mobControls" data-i18n="mobControls">⚙ Controls</button>
     </nav>
+
+    <footer class="footer-credit" id="footerCredit">
+      <div>Under the supervision of Eng. Abdullah Al-Zoubi — Designed by Eng. Hassan Al-Zoubi</div>
+      <div class="credit-ar">بإشراف المهندس عبد الله الزعبي — تصميم المهندس حسن الزعبي</div>
+    </footer>
+  </div>
+
+  <!-- Disease Diagnosis (offline Mediterranean focus) -->
+  <div class="disease-page" id="diseasePage" aria-hidden="true">
+    <div class="disease-header">
+      <button class="btn-header" id="btnCloseDisease" data-i18n="diseaseBack">← Back to Farm</button>
+      <h1 data-i18n="diseaseTitle">Disease Diagnosis</h1>
+      <button class="btn-header" id="btnLangEn2">EN</button>
+      <button class="btn-header" id="btnLangAr2">عربي</button>
+    </div>
+    <div class="disease-toolbar">
+      <div class="disease-search-wrap">
+        <input type="search" class="disease-search" id="diseaseSearch" data-i18n-placeholder="diseaseSearchPh" placeholder="Search diseases…" autocomplete="off" />
+        <div class="disease-suggest" id="diseaseSuggest" role="listbox" aria-hidden="true"></div>
+      </div>
+      <div class="disease-filters" id="diseaseCropFilters">
+        <span class="filter-label" data-i18n="filterCrop">Crop</span>
+        <button type="button" class="filter-chip active" data-crop="all" data-i18n="filterAll">All</button>
+        <button type="button" class="filter-chip" data-crop="olive" data-i18n="filterOlive">🫒 Olive</button>
+        <button type="button" class="filter-chip" data-crop="citrus" data-i18n="filterCitrus">🍊 Citrus</button>
+      </div>
+      <div class="disease-filters" id="diseasePartFilters">
+        <span class="filter-label" data-i18n="filterPart">Affected part</span>
+        <button type="button" class="filter-chip active" data-part="all" data-i18n="filterAll">All</button>
+        <button type="button" class="filter-chip" data-part="leaves" data-i18n="partLeaves">Leaves</button>
+        <button type="button" class="filter-chip" data-part="twigs" data-i18n="partTwigs">Twigs</button>
+        <button type="button" class="filter-chip" data-part="trunk" data-i18n="partTrunk">Trunk</button>
+        <button type="button" class="filter-chip" data-part="roots" data-i18n="partRoots">Roots</button>
+        <button type="button" class="filter-chip" data-part="fruit" data-i18n="partFruit">Fruit</button>
+      </div>
+    </div>
+    <div class="disease-list" id="diseaseList"></div>
+    <footer class="footer-credit">
+      <div>Under the supervision of Eng. Abdullah Al-Zoubi — Designed by Eng. Hassan Al-Zoubi</div>
+      <div class="credit-ar">بإشراف المهندس عبد الله الزعبي — تصميم المهندس حسن الزعبي</div>
+    </footer>
   </div>
 
   <!-- User login -->
@@ -1135,7 +1433,29 @@
         loginBtn: 'Enter My Greenhouses →', loginError: 'Please enter your name',
         mobFarms: '🏠 Farms', mobCanvas: '🌾 Farm', mobControls: '⚙ Controls',
         deleteGh: 'Delete Greenhouse',
-        deleteConfirm: 'Delete "{name}" permanently? This cannot be undone.'
+        deleteConfirm: 'Delete "{name}" permanently? This cannot be undone.',
+        resetView: 'Reset View',
+        exportPlan: '📷 Save as Image / Export Plan',
+        exportDone: 'Plan image saved',
+        diseaseNav: '🌿 Diseases',
+        mobDisease: '🌿 Diseases',
+        diseaseTitle: 'Disease Diagnosis',
+        diseaseBack: '← Back to Farm',
+        diseaseSearchPh: 'Search diseases…',
+        filterCrop: 'Crop',
+        filterPart: 'Affected part',
+        filterAll: 'All',
+        filterOlive: '🫒 Olive',
+        filterCitrus: '🍊 Citrus',
+        partLeaves: 'Leaves',
+        partTwigs: 'Twigs',
+        partTrunk: 'Trunk',
+        partRoots: 'Roots',
+        partFruit: 'Fruit',
+        symptoms: 'Symptoms',
+        treatment: 'Treatment & prevention',
+        diseaseEmpty: 'No diseases match your filters.',
+        scaleLabel: 'Scale'
       },
       ar: {
         saved: 'تم الحفظ ✓', user: 'المستخدم', switchUser: 'تبديل المستخدم', myGreenhouses: 'بيوتي البلاستيكية',
@@ -1163,7 +1483,29 @@
         loginBtn: 'دخول بيوتي →', loginError: 'يرجى إدخال اسمك',
         mobFarms: '🏠 البيوت', mobCanvas: '🌾 المزرعة', mobControls: '⚙ التحكم',
         deleteGh: 'حذف البيت البلاستيكي',
-        deleteConfirm: 'حذف "{name}" نهائياً؟ لا يمكن التراجع عن هذا.'
+        deleteConfirm: 'حذف "{name}" نهائياً؟ لا يمكن التراجع عن هذا.',
+        resetView: 'إعادة العرض',
+        exportPlan: '📷 حفظ كصورة / تصدير المخطط',
+        exportDone: 'تم حفظ صورة المخطط',
+        diseaseNav: '🌿 الأمراض',
+        mobDisease: '🌿 الأمراض',
+        diseaseTitle: 'تشخيص الأمراض',
+        diseaseBack: '→ العودة للمزرعة',
+        diseaseSearchPh: 'البحث عن الأمراض…',
+        filterCrop: 'المحصول',
+        filterPart: 'الجزء المصاب',
+        filterAll: 'الكل',
+        filterOlive: '🫒 زيتون',
+        filterCitrus: '🍊 حمضيات',
+        partLeaves: 'أوراق',
+        partTwigs: 'أغصان',
+        partTrunk: 'جذع',
+        partRoots: 'جذور',
+        partFruit: 'ثمار',
+        symptoms: 'الأعراض',
+        treatment: 'العلاج والوقاية',
+        diseaseEmpty: 'لا توجد أمراض مطابقة للفلاتر.',
+        scaleLabel: 'المقياس'
       }
     };
 
@@ -1196,7 +1538,10 @@
       birdsInterval: null,
       fieldPhase: 0,
       fieldRaf: null,
-      fieldAnimPaused: false
+      fieldAnimPaused: false,
+      diseaseCrop: 'all',
+      diseasePart: 'all',
+      diseaseQuery: ''
     };
 
     const canvas = document.getElementById('farmCanvas');
@@ -1215,19 +1560,26 @@
       initAudio();
       if (!masterBus) {
         const comp = audioCtx.createDynamicsCompressor();
-        comp.threshold.value = -18;
-        comp.knee.value = 12;
-        comp.ratio.value = 3;
-        comp.attack.value = 0.003;
-        comp.release.value = 0.18;
+        // Loud but safe ceiling — catches peaks hard so every cue can run near max without clipping
+        comp.threshold.value = -10;
+        comp.knee.value = 10;
+        comp.ratio.value = 4;
+        comp.attack.value = 0.0015;
+        comp.release.value = 0.16;
         const gain = audioCtx.createGain();
-        gain.gain.value = 1.75;
+        gain.gain.value = 3.1;
         const warm = audioCtx.createBiquadFilter();
-        warm.type = 'lowpass';
-        warm.frequency.value = 12000;
-        warm.Q.value = 0.6;
+        warm.type = 'peaking';
+        warm.frequency.value = 2800;
+        warm.Q.value = 0.7;
+        warm.gain.value = 3.2;
+        const air = audioCtx.createBiquadFilter();
+        air.type = 'highshelf';
+        air.frequency.value = 6000;
+        air.gain.value = 2.4;
         gain.connect(warm);
-        warm.connect(comp);
+        warm.connect(air);
+        air.connect(comp);
         comp.connect(audioCtx.destination);
         masterBus = gain;
       }
@@ -1264,16 +1616,27 @@
       localStorage.setItem(LANG_KEY, lang);
       document.documentElement.lang = lang;
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      document.getElementById('btnLangEn').style.opacity = lang === 'en' ? '1' : '0.5';
-      document.getElementById('btnLangAr').style.opacity = lang === 'ar' ? '1' : '0.5';
+      ['btnLangEn', 'btnLangEn2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.opacity = lang === 'en' ? '1' : '0.5';
+      });
+      ['btnLangAr', 'btnLangAr2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.opacity = lang === 'ar' ? '1' : '0.5';
+      });
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.dataset.i18n;
         if (STRINGS[lang][key]) el.textContent = STRINGS[lang][key];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        if (STRINGS[lang][key]) el.placeholder = STRINGS[lang][key];
       });
       if (state.tool) setTool(state.tool);
       updateCreateTools();
       const birdsBtn = document.getElementById('btnBirdsSound');
       if (birdsBtn && state.birdsPlaying) birdsBtn.textContent = t('birdsStop');
+      if (typeof renderDiseaseList === 'function') renderDiseaseList();
       drawFarm();
     }
 
@@ -1351,71 +1714,24 @@
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
-    // ── WIND (continuous ambient) ──────────────────────────────────────────────
-    let windNode = null, windGain = null;
-    function startWind() {
-      if (!audioCtx) return;
-      if (windNode) return; // already running
-      const bufLen = audioCtx.sampleRate * 2;
-      const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
-      const data = buf.getChannelData(0);
-      for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1);
-      const src = audioCtx.createBufferSource();
-      src.buffer = buf;
-      src.loop = true;
-
-      const lp = audioCtx.createBiquadFilter();
-      lp.type = 'bandpass';
-      lp.frequency.value = 350;
-      lp.Q.value = 0.6;
-
-      const lp2 = audioCtx.createBiquadFilter();
-      lp2.type = 'lowpass';
-      lp2.frequency.value = 900;
-
-      windGain = audioCtx.createGain();
-      windGain.gain.value = 0;
-
-      src.connect(lp); lp.connect(lp2); lp2.connect(windGain);
-      windGain.connect(getMasterBus());
-      src.start();
-      windNode = src;
-
-      // Fade in wind
-      windGain.gain.linearRampToValueAtTime(0.13, audioCtx.currentTime + 3);
-
-      // Subtle gusts
-      function gust() {
-        if (!windGain) return;
-        const peak = 0.16 + Math.random() * 0.08;
-        const t = audioCtx.currentTime;
-        windGain.gain.cancelScheduledValues(t);
-        windGain.gain.setValueAtTime(windGain.gain.value, t);
-        windGain.gain.linearRampToValueAtTime(peak, t + 1.5);
-        windGain.gain.linearRampToValueAtTime(0.1, t + 4);
-        setTimeout(gust, 5000 + Math.random() * 8000);
-      }
-      setTimeout(gust, 4000);
-    }
-
     // ── ROOSTER crow ──────────────────────────────────────────────────────────
     function playRooster() {
       initAudio();
       const now = audioCtx.currentTime;
       const master = audioCtx.createGain();
-      master.gain.value = 0.42;
+      master.gain.value = 0.92;
       master.connect(getMasterBus());
 
       // 3-part crow: "cock-a-doo-doo"
       const parts = [
         { f0: 620, f1: 980, dur: 0.18, vol: 1.0 },
-        { f0: 780, f1: 1320, dur: 0.22, vol: 0.9 },
-        { f0: 550, f1: 820, dur: 0.35, vol: 0.8 },
-        { f0: 480, f1: 680, dur: 0.28, vol: 0.7 }
+        { f0: 780, f1: 1320, dur: 0.22, vol: 0.95 },
+        { f0: 550, f1: 820, dur: 0.35, vol: 0.88 },
+        { f0: 480, f1: 680, dur: 0.28, vol: 0.8 }
       ];
 
       let t = now;
-      parts.forEach(({ f0, f1, dur, vol }, i) => {
+      parts.forEach(({ f0, f1, dur, vol }) => {
         const osc = audioCtx.createOscillator();
         const osc2 = audioCtx.createOscillator();
         const g = audioCtx.createGain();
@@ -1442,38 +1758,35 @@
       const tNow = audioCtx.currentTime;
       const osc = audioCtx.createOscillator();
       const osc2 = audioCtx.createOscillator();
+      const osc3 = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
+      const bp = audioCtx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = 2400;
+      bp.Q.value = 1.1;
       const f0 = 1800 + Math.random() * 2200;
       osc.type = 'sine';
       osc2.type = 'triangle';
+      osc3.type = 'sine';
       osc.frequency.setValueAtTime(f0, tNow);
       osc.frequency.exponentialRampToValueAtTime(f0 * 1.35, tNow + 0.05);
       osc.frequency.exponentialRampToValueAtTime(f0 * 0.75, tNow + 0.14);
       osc2.frequency.setValueAtTime(f0 * 2, tNow);
       osc2.frequency.exponentialRampToValueAtTime(f0 * 1.6, tNow + 0.08);
+      osc3.frequency.setValueAtTime(f0 * 3.1, tNow);
       gain.gain.setValueAtTime(0.0001, tNow);
-      gain.gain.exponentialRampToValueAtTime(0.11, tNow + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.18);
+      gain.gain.exponentialRampToValueAtTime(0.4, tNow + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.2);
       osc.connect(gain);
       osc2.connect(gain);
-      gain.connect(getMasterBus());
-      osc.start(); osc2.start();
-      osc.stop(tNow + 0.24); osc2.stop(tNow + 0.24);
+      osc3.connect(gain);
+      gain.connect(bp);
+      bp.connect(getMasterBus());
+      osc.start(); osc2.start(); osc3.start();
+      osc.stop(tNow + 0.26); osc2.stop(tNow + 0.26); osc3.stop(tNow + 0.26);
     }
 
     // ── SAVE JINGLE ───────────────────────────────────────────────────────────
-    function playAlhamdulillah() {
-      initAudio();
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance('الحمد لله');
-        u.lang = 'ar-SA'; u.rate = 0.88; u.pitch = 1;
-        speechSynthesis.speak(u);
-      } else {
-        playSound('save');
-      }
-    }
-
     // ── BIRDS TOGGLE ──────────────────────────────────────────────────────────
     function toggleBirdsSound() {
       initAudio();
@@ -1498,35 +1811,35 @@
       if (!state.soundEnabled) return;
       initAudio();
       const t0 = audioCtx.currentTime;
-      [0, 0.18, 0.36].forEach(delay => {
-        const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.08, audioCtx.sampleRate);
+      [0, 0.16, 0.32].forEach(delay => {
+        const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
         const data = buf.getChannelData(0);
-        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.015));
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.012));
         const src = audioCtx.createBufferSource();
         src.buffer = buf;
-        const g = audioCtx.createGain(); g.gain.value = 0.58;
-        const lp = audioCtx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420;
-        const hp = audioCtx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 80;
+        const g = audioCtx.createGain(); g.gain.value = 1.3;
+        const lp = audioCtx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520;
+        const hp = audioCtx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 70;
         src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(getMasterBus());
         src.start(t0 + delay);
       });
     }
 
     // ── GENERIC SOUNDS ────────────────────────────────────────────────────────
-    function playTone(freq, start, duration, vol = 0.14, type = 'triangle') {
+    function playTone(freq, start, duration, vol = 0.28, type = 'triangle') {
       const osc = audioCtx.createOscillator();
       const osc2 = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       const filter = audioCtx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.value = 2800;
+      filter.frequency.value = 4200;
       osc.type = type;
       osc2.type = 'sine';
       osc.frequency.value = freq;
       osc2.frequency.value = freq * 2;
       gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(vol, start + 0.012);
-      gain.gain.setValueAtTime(vol * 0.85, start + duration * 0.55);
+      gain.gain.exponentialRampToValueAtTime(vol, start + 0.01);
+      gain.gain.setValueAtTime(vol * 0.9, start + duration * 0.5);
       gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
       osc.connect(gain);
       osc2.connect(gain);
@@ -1543,11 +1856,11 @@
       if (kind === 'door') { playDoorKnock(); return; }
       if (kind === 'rooster') { playRooster(); return; }
       const tones = {
-        nav:   [{ f: 440, d: 0.14, v: 0.13 }, { f: 554, d: 0.2, v: 0.12 }],
-        block: [{ f: 660, d: 0.1, v: 0.15 }],
-        save:  [{ f: 523, d: 0.12, v: 0.14 }, { f: 659, d: 0.16, v: 0.13 }, { f: 784, d: 0.22, v: 0.12 }],
-        zoom:  [{ f: 330, d: 0.08, v: 0.1 }],
-        zone:  [{ f: 392, d: 0.09, v: 0.13 }, { f: 523, d: 0.14, v: 0.12 }]
+        nav:   [{ f: 440, d: 0.14, v: 0.44 }, { f: 554, d: 0.2, v: 0.42 }],
+        block: [{ f: 660, d: 0.11, v: 0.46 }],
+        save:  [{ f: 523, d: 0.13, v: 0.46 }, { f: 659, d: 0.16, v: 0.44 }, { f: 784, d: 0.24, v: 0.42 }],
+        zoom:  [{ f: 330, d: 0.09, v: 0.4 }],
+        zone:  [{ f: 392, d: 0.1, v: 0.42 }, { f: 523, d: 0.15, v: 0.4 }]
       };
       const seq = tones[kind] || tones.nav;
       let t = audioCtx.currentTime;
@@ -1854,8 +2167,7 @@
       loadUserData();
       renderList();
       drawFarm();
-      // Start ambient wind after user interaction (required by browsers)
-      setTimeout(() => { initAudio(); startWind(); }, 500);
+      setTimeout(() => { initAudio(); }, 300);
       overlayEl.textContent = state.lang === 'ar'
         ? `بيوت ${state.user} — اختر أو أنشئ جديداً`
         : `${state.user}'s greenhouses — select or create`;
@@ -2050,8 +2362,8 @@
     function drawGhBlocks(blocks) {
       (blocks || []).forEach(b => {
         const hw = BLOCK_W / 2, hh = BLOCK_H / 2;
-        ctx.fillStyle = '#4a90e2';
-        ctx.strokeStyle = 'rgba(0,40,120,0.5)';
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#c8c8c8';
         ctx.lineWidth = 1.2 / state.viewport.scale;
         ctx.fillRect(b.x - hw, b.y - hh, BLOCK_W, BLOCK_H);
         ctx.strokeRect(b.x - hw, b.y - hh, BLOCK_W, BLOCK_H);
@@ -2300,6 +2612,82 @@
       else resumeFieldAnimation();
     });
 
+    function pickScaleBarMeters() {
+      // Choose a readable bar length in meters for current zoom (screen ~60–140px)
+      const candidates = [1, 2, 5, 10, 20, 50];
+      const sc = state.viewport.scale;
+      let best = 5;
+      let bestScore = Infinity;
+      candidates.forEach(m => {
+        const px = m * PIXELS_PER_METER * sc;
+        const score = Math.abs(px - 90);
+        if (score < bestScore && px >= 40 && px <= 200) {
+          bestScore = score;
+          best = m;
+        }
+      });
+      return best;
+    }
+
+    /** Permanent screen-space scale bar (visible at all zoom levels). */
+    function drawScaleBar(screenW, screenH) {
+      const meters = pickScaleBarMeters();
+      const barPx = meters * PIXELS_PER_METER * state.viewport.scale;
+      const margin = 14;
+      const barH = 8;
+      const x = margin;
+      const y = screenH - margin - 28;
+      const label = state.lang === 'ar'
+        ? `${t('scaleLabel')}: ${meters}${t('meters')}`
+        : `${t('scaleLabel')}: ${meters}${t('meters')}`;
+
+      ctx.save();
+      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      // Backdrop
+      ctx.fillStyle = 'rgba(13, 13, 13, 0.78)';
+      const boxW = Math.max(barPx + 24, 88);
+      ctx.beginPath();
+      const r = 8;
+      ctx.moveTo(x - 8 + r, y - 18);
+      ctx.arcTo(x - 8 + boxW, y - 18, x - 8 + boxW, y + 22, r);
+      ctx.arcTo(x - 8 + boxW, y + 22, x - 8, y + 22, r);
+      ctx.arcTo(x - 8, y + 22, x - 8, y - 18, r);
+      ctx.arcTo(x - 8, y - 18, x - 8 + boxW, y - 18, r);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = '#f5c518';
+      ctx.fillStyle = '#f5c518';
+      ctx.lineWidth = 2;
+      // Bar with end ticks
+      ctx.beginPath();
+      ctx.moveTo(x, y + barH);
+      ctx.lineTo(x + barPx, y + barH);
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y + barH + 2);
+      ctx.moveTo(x + barPx, y);
+      ctx.lineTo(x + barPx, y + barH + 2);
+      ctx.stroke();
+      // Checker segments
+      const segs = Math.max(2, Math.min(5, meters));
+      const segW = barPx / segs;
+      for (let i = 0; i < segs; i++) {
+        ctx.fillStyle = i % 2 === 0 ? '#f5c518' : '#f0e6d8';
+        ctx.fillRect(x + i * segW, y + 2, segW, barH - 2);
+      }
+
+      ctx.fillStyle = '#ffe566';
+      ctx.font = '600 11px "DM Sans", "Noto Sans Arabic", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(label, x, y - 4);
+      // Realism hint: typical plastic house ~5×20 m
+      ctx.fillStyle = 'rgba(240,230,216,0.65)';
+      ctx.font = '500 9px "DM Sans", "Noto Sans Arabic", sans-serif';
+      ctx.fillText(state.lang === 'ar' ? '≈ ٥×٢٠ م بيت بلاستيكي نموذجي' : '≈ 5×20 m typical plastic house', x, y + barH + 14);
+      ctx.restore();
+    }
+
     function drawFarm() {
       const { w, h } = getCanvasSize();
       ctx.save();
@@ -2335,8 +2723,575 @@
       }
 
       ctx.restore();
+      // Screen-space overlay: scale bar always visible
+      drawScaleBar(w, h);
       ctx.restore();
       syncZoomSlider();
+    }
+
+    function resetView() {
+      if (state.anim) {
+        cancelAnimationFrame(state.anim.raf);
+        state.anim = null;
+      }
+      state.viewport.scale = 1;
+      state.viewport.offsetX = 0;
+      state.viewport.offsetY = 0;
+      state.panBase = { offsetX: 0, offsetY: 0 };
+      const panX = document.getElementById('panXSlider');
+      const panY = document.getElementById('panYSlider');
+      if (panX) panX.value = 0;
+      if (panY) panY.value = 0;
+      syncZoomSlider();
+      syncPanSliders();
+      drawFarm();
+      playSound('zoom');
+      overlayEl.textContent = state.lang === 'ar' ? 'تمت إعادة العرض إلى 100٪' : 'View reset to 100%';
+    }
+
+    function sanitizeFileName(s) {
+      return String(s || 'greenhouse')
+        .replace(/[<>:"/\\|?*\u0000-\u001f]/g, '')
+        .replace(/\s+/g, '_')
+        .slice(0, 80) || 'greenhouse';
+    }
+
+    /** High-quality PNG export of selected greenhouse with user name watermark. */
+    function exportGreenhouseImage() {
+      const gh = getSelected();
+      if (!gh?.rect) return;
+      const r = gh.rect;
+      const pad = 48;
+      const scale = 3; // high DPI export
+      const dimPad = 56;
+      const outW = Math.ceil((r.w + pad * 2 + dimPad) * scale);
+      const outH = Math.ceil((r.h + pad * 2 + dimPad + 40) * scale);
+      const off = document.createElement('canvas');
+      off.width = outW;
+      off.height = outH;
+      const c = off.getContext('2d');
+      c.scale(scale, scale);
+
+      // Soil background
+      drawSoilBase(c, 0, 0, outW / scale, outH / scale, true);
+
+      const ox = pad + dimPad * 0.35 - r.x;
+      const oy = pad + 28 - r.y;
+      c.save();
+      c.translate(ox, oy);
+
+      // Body
+      c.fillStyle = '#0d0d0d';
+      c.fillRect(r.x, r.y, r.w, r.h);
+      c.strokeStyle = '#f5c518';
+      c.lineWidth = BORDER_WIDTH;
+      c.strokeRect(r.x, r.y, r.w, r.h);
+
+      // Zones
+      (gh.zones || []).forEach(z => {
+        if (!z.points || z.points.length < 2) return;
+        c.beginPath();
+        c.moveTo(z.points[0].x, z.points[0].y);
+        for (let i = 1; i < z.points.length; i++) c.lineTo(z.points[i].x, z.points[i].y);
+        c.closePath();
+        c.fillStyle = 'rgba(74, 106, 53, 0.78)';
+        c.fill();
+        c.strokeStyle = '#6b8e4e';
+        c.lineWidth = 2;
+        c.stroke();
+        const cen = polygonCentroid(z.points);
+        c.fillStyle = '#f0e6d8';
+        c.font = '700 12px "DM Sans", sans-serif';
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillText(z.name || 'Zone', cen.x, cen.y - 10);
+        c.font = '500 10px "DM Sans", sans-serif';
+        c.fillStyle = 'rgba(240,230,216,0.9)';
+        c.fillText(z.date || '', cen.x, cen.y);
+        c.fillStyle = '#d4edc4';
+        c.font = '600 11px "DM Sans", "Noto Sans Arabic", sans-serif';
+        c.fillText(`${z.plants ?? 0} ${state.lang === 'ar' ? 'شتلة' : 'plants'}`, cen.x, cen.y + 12);
+      });
+
+      // Doors
+      (gh.doors || []).forEach(door => {
+        const dr = getDoorRect(r, door);
+        c.fillStyle = '#3a7bd5';
+        c.strokeStyle = '#1a3a6b';
+        c.lineWidth = 2;
+        c.fillRect(dr.x, dr.y, dr.w, dr.h);
+        c.strokeRect(dr.x, dr.y, dr.w, dr.h);
+      });
+
+      // White blocks
+      (gh.blocks || []).forEach(b => {
+        c.fillStyle = '#ffffff';
+        c.strokeStyle = '#c8c8c8';
+        c.lineWidth = 1;
+        c.fillRect(b.x - BLOCK_W / 2, b.y - BLOCK_H / 2, BLOCK_W, BLOCK_H);
+        c.strokeRect(b.x - BLOCK_W / 2, b.y - BLOCK_H / 2, BLOCK_W, BLOCK_H);
+      });
+
+      // Dimensions (meters)
+      const offDim = 16;
+      const tick = 6;
+      c.strokeStyle = '#f5c518';
+      c.fillStyle = '#ffe566';
+      c.lineWidth = 1.5;
+      const topY = r.y - offDim;
+      c.beginPath();
+      c.moveTo(r.x, topY); c.lineTo(r.x + r.w, topY);
+      c.moveTo(r.x, topY - tick); c.lineTo(r.x, topY + tick);
+      c.moveTo(r.x + r.w, topY - tick); c.lineTo(r.x + r.w, topY + tick);
+      c.stroke();
+      const leftX = r.x - offDim;
+      c.beginPath();
+      c.moveTo(leftX, r.y); c.lineTo(leftX, r.y + r.h);
+      c.moveTo(leftX - tick, r.y); c.lineTo(leftX + tick, r.y);
+      c.moveTo(leftX - tick, r.y + r.h); c.lineTo(leftX + tick, r.y + r.h);
+      c.stroke();
+      c.font = '600 13px "DM Sans", "Noto Sans Arabic", sans-serif';
+      c.textAlign = 'center';
+      c.textBaseline = 'bottom';
+      c.fillText(`${t('width')} ${pxToM(r.w)}${t('meters')}`, r.x + r.w / 2, topY - 3);
+      c.save();
+      c.translate(leftX - 6, r.y + r.h / 2);
+      c.rotate(-Math.PI / 2);
+      c.textBaseline = 'middle';
+      c.fillText(`${t('height')} ${pxToM(r.h)}${t('meters')}`, 0, 0);
+      c.restore();
+
+      // Title
+      c.fillStyle = '#f5c518';
+      c.font = '700 16px "DM Sans", "Noto Sans Arabic", sans-serif';
+      c.textAlign = 'center';
+      c.textBaseline = 'bottom';
+      c.fillText(gh.name, r.x + r.w / 2, r.y - offDim - 18);
+
+      c.restore();
+
+      // User name watermark — elegant, readable
+      const userName = state.user || 'User';
+      const cx = (outW / scale) / 2;
+      const cy = outH / scale - 22;
+      c.save();
+      c.font = '700 22px "DM Sans", "Noto Sans Arabic", Georgia, serif';
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.shadowColor = 'rgba(0,0,0,0.75)';
+      c.shadowBlur = 8;
+      c.shadowOffsetX = 0;
+      c.shadowOffsetY = 2;
+      c.strokeStyle = 'rgba(13,13,13,0.85)';
+      c.lineWidth = 3.5;
+      c.strokeText(userName, cx, cy);
+      c.fillStyle = '#f0e6d8';
+      c.fillText(userName, cx, cy);
+      c.shadowBlur = 0;
+      c.font = '500 11px "DM Sans", sans-serif';
+      c.fillStyle = 'rgba(245,197,24,0.9)';
+      c.fillText(formatDim(r), cx, cy - 22);
+      c.restore();
+
+      // Credit line
+      c.font = '500 9px "DM Sans", "Noto Sans Arabic", sans-serif';
+      c.fillStyle = 'rgba(184,168,148,0.85)';
+      c.textAlign = 'left';
+      c.fillText('Olive Agent · Eng. Abdullah Al-Zoubi / Eng. Hassan Al-Zoubi', 12, outH / scale - 8);
+
+      const fileName = `${sanitizeFileName(gh.name)}_${sanitizeFileName(userName)}.png`;
+      off.toBlob(blob => {
+        if (!blob) return;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+        playSound('save');
+        overlayEl.textContent = t('exportDone');
+      }, 'image/png');
+    }
+
+    // ── DISEASE DIAGNOSIS DATA (offline, Mediterranean olive + citrus) ────────
+    const DISEASES = [
+      {
+        id: 'peacock-spot', crop: 'olive', parts: ['leaves'],
+        nameEn: 'Peacock Spot', nameAr: 'عين الطاووس',
+        sci: 'Spilocaea oleagina (Fusicladium oleagineum)',
+        symptomsEn: 'Round olive-green to black spots ringed with a yellow halo on the upper leaf surface, resembling a peacock feather eye. Heavy infection causes premature leaf drop, weakening the tree and reducing yield.',
+        symptomsAr: 'بقع دائرية خضراء زيتونية إلى سوداء محاطة بهالة صفراء على السطح العلوي للورقة، تشبه عين ريشة الطاووس. الإصابة الشديدة تسبب تساقط الأوراق المبكر وإضعاف الشجرة وتقليل المحصول.',
+        treatmentEn: 'Apply copper-based fungicide in autumn and again before spring rains. Prune for open, airy canopies to speed leaf drying. Remove and destroy fallen infected leaves. Avoid excess nitrogen and dense planting.',
+        treatmentAr: 'رش مبيد نحاسي في الخريف وقبل أمطار الربيع. تقليم الأشجار لفتح التاج وتحسين التهوية وتسريع جفاف الأوراق. جمع وإتلاف الأوراق المتساقطة المصابة. تجنب الإفراط في التسميد النيتروجيني والزراعة الكثيفة.',
+        svg: leafIconSvg('#6b8e4e', ['#3d2b1f','#3d2b1f','#5c4033'])
+      },
+      {
+        id: 'olive-knot', crop: 'olive', parts: ['twigs','trunk'],
+        nameEn: 'Olive Knot', nameAr: 'ورم الزيتون البكتيري',
+        sci: 'Pseudomonas savastanoi pv. savastanoi',
+        symptomsEn: 'Rough, woody galls or knots on twigs, branches, and trunk, often at pruning wounds or frost cracks. Knots enlarge over seasons, girdling branches and reducing vigor and fruiting.',
+        symptomsAr: 'أورام أو عقد خشبية خشنة على الأغصان والفروع والجذع، غالباً عند جروح التقليم أو تشققات الصقيع. تكبر العقد مع الفصول وقد تطوق الأفرع وتضعف النمو والإثمار.',
+        treatmentEn: 'Prune out and burn infected branches in dry weather; disinfect tools between cuts. Avoid pruning or working trees in wet conditions. Protect wounds with copper paste and control leaf-mining insects that create entry points.',
+        treatmentAr: 'إزالة وحرق الأفرع المصابة في طقس جاف مع تعقيم أدوات التقليم بين كل قطعة وأخرى. تجنب التقليم أو العمل بالأشجار في الأجواء الرطبة. حماية الجروح بعجينة نحاسية ومكافحة الحشرات التي تسبب جروحاً تدخل منها البكتيريا.',
+        svg: twigIconSvg()
+      },
+      {
+        id: 'verticillium-wilt', crop: 'olive', parts: ['trunk','roots','leaves'],
+        nameEn: 'Verticillium Wilt', nameAr: 'ذبول الفرتيسليوم',
+        sci: 'Verticillium dahliae',
+        symptomsEn: 'Sudden wilting and drying of leaves and shoots, often on one side of the tree ("apoplectic" form), or slow decline with leaf yellowing and shedding. Dark streaking visible in the wood beneath the bark.',
+        symptomsAr: 'ذبول وجفاف مفاجئ للأوراق والأفرع، غالباً في جانب واحد من الشجرة، أو تدهور بطيء مع اصفرار وتساقط الأوراق. تظهر خطوط داكنة في الخشب تحت اللحاء عند الفحص.',
+        treatmentEn: 'No curative chemical treatment exists. Avoid planting after cotton, tomato, or other host crops. Improve drainage, avoid root injury and water stress, and remove severely affected trees. Use resistant rootstocks/cultivars where available and solarize soil before replanting.',
+        treatmentAr: 'لا يوجد علاج كيميائي شافٍ. تجنب الزراعة بعد القطن أو الطماطم أو محاصيل عائلة أخرى. تحسين الصرف وتجنب إجهاد الري وجروح الجذور، وإزالة الأشجار شديدة الإصابة. استخدام أصول وأصناف مقاومة عند توفرها وتعقيم التربة شمسياً قبل إعادة الزراعة.',
+        svg: wiltIconSvg()
+      },
+      {
+        id: 'olive-fruit-fly', crop: 'olive', parts: ['fruit'],
+        nameEn: 'Olive Fruit Fly', nameAr: 'ذبابة ثمار الزيتون',
+        sci: 'Bactrocera oleae',
+        symptomsEn: 'Small puncture marks on the fruit skin where eggs are laid, with tunneling larvae inside the flesh causing brown rotten patches, premature fruit drop, and increased oil acidity.',
+        symptomsAr: 'ثقوب صغيرة على قشرة الثمرة عند وضع البيض، مع يرقات تحفر أنفاقاً داخل اللب تسبب بقعاً بنية متعفنة وتساقط الثمار المبكر وارتفاع حموضة الزيت.',
+        treatmentEn: 'Monitor with yellow sticky or pheromone traps from early summer. Use mass-trapping or approved bait sprays timed to adult emergence. Harvest promptly at the first sign of infestation and remove fallen/infested fruit to break the life cycle.',
+        treatmentAr: 'المراقبة بالمصائد اللاصقة الصفراء أو الفرمونية من بداية الصيف. استخدام المصائد الجماعية أو الطعوم المعتمدة بتوقيت ظهور الحشرات الكاملة. القطاف المبكر عند أول علامات الإصابة وإزالة الثمار المتساقطة أو المصابة لكسر دورة الحياة.',
+        svg: fruitFlyIconSvg()
+      },
+      {
+        id: 'anthracnose-olive', crop: 'olive', parts: ['fruit','leaves'],
+        nameEn: 'Anthracnose (Olive Fruit Rot)', nameAr: 'أنثراكنوز الزيتون (تعفن الثمار)',
+        sci: 'Colletotrichum spp. (C. gloeosporioides / C. acutatum)',
+        symptomsEn: 'Sunken, dark brown to black lesions on ripening fruit, often with orange-pink spore masses in humid weather; affected fruit shrivels into "mummies." Can also cause twig dieback and leaf spotting.',
+        symptomsAr: 'بقع غائرة بنية داكنة إلى سوداء على الثمار الناضجة، وغالباً مع كتل بذور برتقالية-وردية في الجو الرطب؛ تتحول الثمار المصابة إلى مومياء جافة. قد يسبب أيضاً موت أطراف الأفرع وتبقع الأوراق.',
+        treatmentEn: 'Apply copper or other approved fungicide before autumn rains and again during fruit ripening in wet seasons. Harvest early, avoid fruit injury, prune for good airflow, and remove mummified fruit and infected twigs.',
+        treatmentAr: 'رش مبيد نحاسي أو مبيد فطري معتمد قبل أمطار الخريف ومرة أخرى أثناء نضج الثمار في المواسم الرطبة. القطاف المبكر وتجنب جرح الثمار، وتقليم الأشجار لتحسين التهوية، وإزالة الثمار المومياء والأفرع المصابة.',
+        svg: fruitRotIconSvg()
+      },
+      {
+        id: 'cercospora-leaf-spot', crop: 'olive', parts: ['leaves'],
+        nameEn: 'Cercospora Leaf Spot', nameAr: 'تبقع أوراق الزيتون (سركوسبورا)',
+        sci: 'Pseudocercospora cladosporioides (syn. Cercospora cladosporioides)',
+        symptomsEn: 'Diffuse gray-green to sooty patches on the underside of leaves with a faint yellow blotch above; heavily spotted leaves turn yellow and drop, thinning the canopy, mainly in humid, poorly ventilated groves.',
+        symptomsAr: 'بقع رمادية مخضرة إلى دخانية منتشرة على السطح السفلي للورقة مع اصفرار خفيف في المقابل من الأعلى؛ الأوراق شديدة الإصابة تصفر وتتساقط مما يخفف كثافة التاج، خاصة في البساتين الرطبة قليلة التهوية.',
+        treatmentEn: 'Improve canopy ventilation with regular pruning and wider spacing. Apply copper-based fungicide in autumn where pressure is high. Avoid overhead irrigation and clear fallen leaf litter that harbors the fungus.',
+        treatmentAr: 'تحسين تهوية التاج بالتقليم المنتظم والمسافات الأوسع بين الأشجار. رش مبيد نحاسي في الخريف عند ارتفاع الإصابة. تجنب الري بالرش من الأعلى وتنظيف الأوراق المتساقطة التي تؤوي الفطر.',
+        svg: leafIconSvg('#8fbc6a', ['#5c4033','#3d2b1f'])
+      },
+      {
+        id: 'citrus-canker', crop: 'citrus', parts: ['leaves','fruit','twigs'],
+        nameEn: 'Citrus Canker', nameAr: 'تقرح الحمضيات البكتيري',
+        sci: 'Xanthomonas citri subsp. citri',
+        symptomsEn: 'Raised, corky, brown lesions with a water-soaked yellow halo on leaves, fruit, and twigs; lesions on fruit are often surrounded by a cracked, volcano-like rim. Severe cases cause leaf and fruit drop.',
+        symptomsAr: 'بقع بارزة فلينية بنية اللون محاطة بهالة صفراء مشبعة بالماء على الأوراق والثمار والأغصان؛ تحيط بالبقع على الثمار حافة متشققة تشبه فوهة بركان. الإصابة الشديدة تسبب تساقط الأوراق والثمار.',
+        treatmentEn: 'Use certified disease-free planting material. Apply copper sprays before and during wet, windy periods. Establish windbreaks to reduce leaf wounding, disinfect tools, and remove/destroy severely infected trees where regulations require.',
+        treatmentAr: 'استخدام شتلات معتمدة خالية من المرض. رش مركبات نحاسية قبل وأثناء فترات الرياح والأمطار. إنشاء مصدات رياح لتقليل جروح الأوراق، وتعقيم الأدوات، وإزالة وإتلاف الأشجار شديدة الإصابة وفق الأنظمة المحلية.',
+        svg: citrusLeafIconSvg('#c76b3a', true)
+      },
+      {
+        id: 'hlb-greening', crop: 'citrus', parts: ['leaves','fruit'],
+        nameEn: 'Huanglongbing (Citrus Greening)', nameAr: 'اخضرار الحمضيات (هوانجلونغبينغ)',
+        sci: 'Candidatus Liberibacter asiaticus / africanus / americanus',
+        symptomsEn: 'Blotchy, asymmetric yellow mottling on leaves (unlike symmetric nutrient deficiency), stunted growth, twig dieback, and small, lopsided, bitter fruit that stays partly green. Spread by the Asian citrus psyllid.',
+        symptomsAr: 'اصفرار غير متماثل ومبقع على الأوراق (بخلاف نقص العناصر المتماثل)، وتقزم النمو وموت الأطراف، وثمار صغيرة غير متماثلة ومرة تبقى خضراء جزئياً. ينتقل عبر حشرة السيلا الآسيوية للحمضيات.',
+        treatmentEn: 'No cure once infected; remove and destroy confirmed infected trees promptly. Control the Asian citrus psyllid vector with approved insecticides and monitoring traps, use certified disease-free nursery stock, and report suspected cases to local plant-protection authorities.',
+        treatmentAr: 'لا يوجد علاج بعد الإصابة؛ يجب إزالة وإتلاف الأشجار المؤكدة الإصابة فوراً. مكافحة حشرة السيلا الناقلة بمبيدات معتمدة ومصائد مراقبة، واستخدام شتلات مشتل معتمدة خالية من المرض، وإبلاغ جهات وقاية النبات المحلية عن الحالات المشتبه بها.',
+        svg: citrusLeafIconSvg('#e0c04a', false)
+      },
+      {
+        id: 'citrus-leaf-miner', crop: 'citrus', parts: ['leaves'],
+        nameEn: 'Citrus Leaf Miner', nameAr: 'صانعة أنفاق أوراق الحمضيات',
+        sci: 'Phyllocnistis citrella',
+        symptomsEn: 'Silvery, winding serpentine tunnels beneath the leaf surface of young flush growth, causing leaves to curl and distort. Damaged young trees show reduced growth and may become more prone to canker.',
+        symptomsAr: 'أنفاق فضية متعرجة تحت سطح الأوراق الفتية الحديثة النمو، تسبب التفاف وتشوه الأوراق. الأشجار الصغيرة المتضررة يقل نموها وقد تصبح أكثر عرضة للتقرح البكتيري.',
+        treatmentEn: 'Encourage natural predators and parasitic wasps; avoid broad-spectrum insecticides that kill them. Time nitrogen fertilization to reduce prolonged tender flush. Prune out heavily mined shoots and apply horticultural oil on new flush if pressure is high.',
+        treatmentAr: 'تشجيع الأعداء الطبيعية والطفيليات النافعة وتجنب المبيدات واسعة الطيف التي تقضي عليها. تنظيم التسميد النيتروجيني لتقليل فترة النمو الطري الممتد. تقليم الأفرع شديدة الإصابة ورش زيت بستنة على النموات الجديدة عند ارتفاع الإصابة.',
+        svg: leafMinerIconSvg()
+      },
+      {
+        id: 'phytophthora-gummosis', crop: 'citrus', parts: ['trunk','roots'],
+        nameEn: 'Phytophthora Gummosis / Root Rot', nameAr: 'تصمغ وتعفن جذور الحمضيات (فيتوفثورا)',
+        sci: 'Phytophthora citrophthora / P. nicotianae',
+        symptomsEn: 'Amber gum oozing from cracked bark near the trunk base, dark water-soaked bark lesions, and canopy thinning. Root rot causes stunted, yellowing trees with poor vigor, worse in poorly drained or over-irrigated soil.',
+        symptomsAr: 'إفراز صمغ كهرماني من لحاء متشقق قرب قاعدة الجذع، وبقع لحاء داكنة مشبعة بالماء، وتخفف كثافة التاج. تعفن الجذور يسبب تقزم الشجرة واصفرارها وضعف نموها، ويزداد سوءاً في التربة سيئة الصرف أو المروية بإفراط.',
+        treatmentEn: 'Keep the trunk base dry and free of soil/mulch contact; improve drainage and avoid flood irrigation touching the trunk. Use resistant rootstocks, apply approved phosphonate/fungicide trunk paints or soil drenches, and remove diseased bark back to healthy tissue.',
+        treatmentAr: 'إبقاء قاعدة الجذع جافة وبعيدة عن ملامسة التربة أو النشارة، وتحسين الصرف وتجنب ري الغمر الذي يلامس الجذع. استخدام أصول مقاومة، ودهان الجذع أو معالجة التربة بمبيدات فوسفونات معتمدة، وإزالة اللحاء المصاب حتى الأنسجة السليمة.',
+        svg: trunkGummosisIconSvg()
+      },
+      {
+        id: 'alternaria-brown-spot', crop: 'citrus', parts: ['leaves','fruit'],
+        nameEn: 'Alternaria Brown Spot', nameAr: 'التبقع البني (ألترناريا)',
+        sci: 'Alternaria alternata pv. citri',
+        symptomsEn: 'Dark brown to black necrotic spots often surrounded by a yellow halo on young leaves, twigs, and fruit rind, mainly on mandarins and mandarin hybrids; heavy infection causes leaf and fruit drop and rind blemishes.',
+        symptomsAr: 'بقع نخرية بنية داكنة إلى سوداء محاطة غالباً بهالة صفراء على الأوراق الفتية والأغصان وقشرة الثمرة، خصوصاً في اليوسفي وهجنه؛ الإصابة الشديدة تسبب تساقط الأوراق والثمار وتشوه القشرة.',
+        treatmentEn: 'Apply protective fungicides (e.g. copper or strobilurins where approved) timed to new flush and fruit set in susceptible varieties. Prune to improve airflow, avoid excess nitrogen that promotes tender growth, and remove infected leaf litter.',
+        treatmentAr: 'رش مبيدات فطرية وقائية (نحاسية أو ستروبيلورين حيث معتمدة) بتوقيت النمو الجديد وعقد الثمار في الأصناف الحساسة. التقليم لتحسين التهوية، وتجنب الإفراط في التسميد النيتروجيني المحفز للنمو الطري، وإزالة الأوراق المتساقطة المصابة.',
+        svg: citrusLeafIconSvg('#7a5c44', true)
+      },
+      {
+        id: 'citrus-scab', crop: 'citrus', parts: ['leaves','fruit'],
+        nameEn: 'Citrus Scab', nameAr: 'جرب الحمضيات',
+        sci: 'Elsinoë fawcettii / E. australis',
+        symptomsEn: 'Wart-like, corky, raised outgrowths or scabby lesions on young leaves, twigs, and fruit rind, causing leaf distortion and blemished, lower-grade fruit; most damaging on young succulent tissue in wet, humid weather.',
+        symptomsAr: 'نتوءات فلينية بارزة تشبه الثآليل أو بقع جربية على الأوراق الفتية والأغصان وقشرة الثمرة، تسبب تشوه الأوراق وتشوه الثمار وتراجع درجتها التجارية؛ الأضرار الأكبر على الأنسجة الفتية الغضة في الطقس الرطب.',
+        treatmentEn: 'Spray copper-based fungicide at petal fall and again 2–3 weeks later during wet springs. Prune for canopy airflow and light penetration, avoid overhead sprinklers, and remove infected twigs and leaf debris.',
+        treatmentAr: 'رش مبيد نحاسي عند سقوط البتلات ومرة أخرى بعد ٢-٣ أسابيع في الربيع الرطب. التقليم لتحسين تهوية التاج ودخول الضوء، وتجنب الرشاشات العلوية، وإزالة الأغصان والأوراق المتساقطة المصابة.',
+        svg: scabIconSvg()
+      }
+    ];
+
+    // ── Small offline SVG illustrations (inline, theme-matched) ───────────────
+    function leafIconSvg(leafColor, spotColors) {
+      const spots = spotColors.map((c, i) => {
+        const cx = 46 + (i % 2 === 0 ? -10 : 12);
+        const cy = 34 + i * 18;
+        return `<circle cx="${cx}" cy="${cy}" r="${5 - (i % 2)}" fill="${c}" opacity="0.85"/>`;
+      }).join('');
+      return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 8 C78 20 82 55 50 92 C18 55 22 20 50 8 Z" fill="${leafColor}" stroke="#2a1f17" stroke-width="2"/>
+        <path d="M50 12 L50 88" stroke="#2a1f17" stroke-width="1.5" opacity="0.5"/>
+        ${spots}
+      </svg>`;
+    }
+    function twigIconSvg() {
+      return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 85 Q40 55 30 25" fill="none" stroke="#7a5c44" stroke-width="6" stroke-linecap="round"/>
+        <path d="M30 25 Q45 15 60 20" fill="none" stroke="#7a5c44" stroke-width="5" stroke-linecap="round"/>
+        <ellipse cx="34" cy="40" rx="13" ry="10" fill="#4a3728" stroke="#2a1f17" stroke-width="2"/>
+        <ellipse cx="55" cy="20" rx="9" ry="7" fill="#4a3728" stroke="#2a1f17" stroke-width="2"/>
+        <ellipse cx="18" cy="70" rx="6" ry="5" fill="#5c4033" stroke="#2a1f17" stroke-width="1.5"/>
+      </svg>`;
+    }
+    function wiltIconSvg() {
+      return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 92 L50 40" stroke="#7a5c44" stroke-width="6" stroke-linecap="round"/>
+        <path d="M50 55 Q25 60 15 78" fill="none" stroke="#7a5c44" stroke-width="5" stroke-linecap="round"/>
+        <path d="M50 45 Q75 50 85 65" fill="none" stroke="#7a5c44" stroke-width="5" stroke-linecap="round"/>
+        <path d="M15 78 C10 88 18 92 22 84" fill="#8a7048" stroke="#2a1f17" stroke-width="1.5"/>
+        <path d="M85 65 C92 72 88 82 80 78" fill="#8a7048" stroke="#2a1f17" stroke-width="1.5"/>
+        <ellipse cx="50" cy="30" rx="12" ry="14" fill="#6b8e4e" stroke="#2a1f17" stroke-width="2" opacity="0.5"/>
+      </svg>`;
+    }
+    function fruitFlyIconSvg() {
+      return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="46" cy="58" rx="30" ry="30" fill="#3d2b1f" stroke="#2a1f17" stroke-width="2"/>
+        <ellipse cx="46" cy="58" rx="30" ry="30" fill="#0d0d0d" opacity="0.25"/>
+        <circle cx="38" cy="50" r="3" fill="#c76b3a"/>
+        <circle cx="55" cy="62" r="2.5" fill="#c76b3a"/>
+        <circle cx="46" cy="72" r="2" fill="#c76b3a"/>
+        <g transform="translate(70,28)">
+          <ellipse cx="0" cy="0" rx="9" ry="6" fill="#4a3728" stroke="#2a1f17" stroke-width="1.5"/>
+          <ellipse cx="-8" cy="-4" rx="7" ry="3" fill="#d4edc4" opacity="0.7" transform="rotate(-20)"/>
+          <ellipse cx="8" cy="-4" rx="7" ry="3" fill="#d4edc4" opacity="0.7" transform="rotate(20)"/>
+        </g>
+      </svg>`;
+    }
+    function fruitRotIconSvg() {
+      return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="55" rx="32" ry="32" fill="#3d2b1f" stroke="#2a1f17" stroke-width="2"/>
+        <path d="M50 22 L50 12" stroke="#5c4033" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="38" cy="45" rx="10" ry="9" fill="#2a1f17" opacity="0.85"/>
+        <ellipse cx="60" cy="60" rx="8" ry="7" fill="#c76b3a" opacity="0.7"/>
+        <ellipse cx="45" cy="68" rx="6" ry="5" fill="#2a1f17" opacity="0.7"/>
+      </svg>`;
+    }
+    function citrusLeafIconSvg(spotColor, showFruit) {
+      const fruit = showFruit ? `<circle cx="72" cy="72" r="16" fill="#e0a530" stroke="#2a1f17" stroke-width="2"/>
+        <circle cx="68" cy="68" r="3" fill="${spotColor}" opacity="0.85"/>
+        <circle cx="77" cy="76" r="2.5" fill="${spotColor}" opacity="0.85"/>` : '';
+      return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M45 10 C70 18 76 48 45 82 C18 50 20 20 45 10 Z" fill="#8fbc6a" stroke="#2a1f17" stroke-width="2"/>
+        <path d="M45 14 L45 78" stroke="#2a1f17" stroke-width="1.5" opacity="0.4"/>
+        <circle cx="36" cy="34" r="4" fill="${spotColor}" opacity="0.85"/>
+        <circle cx="50" cy="50" r="3.5" fill="${spotColor}" opacity="0.85"/>
+        <circle cx="38" cy="60" r="3" fill="${spotColor}" opacity="0.85"/>
+        ${fruit}
+      </svg>`;
+    }
+    function leafMinerIconSvg() {
+      return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 10 C78 20 82 55 50 92 C18 55 22 20 50 10 Z" fill="#8fbc6a" stroke="#2a1f17" stroke-width="2"/>
+        <path d="M30 25 Q40 40 30 55 Q50 60 45 75 Q65 65 62 45" fill="none" stroke="#f0e6d8" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+      </svg>`;
+    }
+    function trunkGummosisIconSvg() {
+      return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="38" y="10" width="24" height="80" rx="6" fill="#5c4033" stroke="#2a1f17" stroke-width="2"/>
+        <path d="M44 45 Q30 55 34 70 Q38 80 46 76 Q42 62 50 55 Z" fill="#e0a530" stroke="#a8720f" stroke-width="1.5" opacity="0.9"/>
+        <path d="M60 55 Q72 62 68 74 Q64 82 58 77" fill="#e0a530" stroke="#a8720f" stroke-width="1.5" opacity="0.75"/>
+      </svg>`;
+    }
+    function scabIconSvg() {
+      return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 10 C78 20 82 55 50 92 C18 55 22 20 50 10 Z" fill="#8fbc6a" stroke="#2a1f17" stroke-width="2"/>
+        <circle cx="40" cy="32" r="6" fill="#a8724a" stroke="#2a1f17" stroke-width="1.5"/>
+        <circle cx="58" cy="45" r="5" fill="#a8724a" stroke="#2a1f17" stroke-width="1.5"/>
+        <circle cx="42" cy="60" r="4.5" fill="#a8724a" stroke="#2a1f17" stroke-width="1.5"/>
+        <circle cx="55" cy="70" r="4" fill="#a8724a" stroke="#2a1f17" stroke-width="1.5"/>
+      </svg>`;
+    }
+
+    function partLabel(p) {
+      const map = { leaves: 'partLeaves', twigs: 'partTwigs', trunk: 'partTrunk', roots: 'partRoots', fruit: 'partFruit' };
+      return t(map[p] || 'partLeaves');
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    function highlightMatch(text, query) {
+      const safe = escapeHtml(text);
+      if (!query) return safe;
+      const idx = safe.toLowerCase().indexOf(escapeHtml(query).toLowerCase());
+      if (idx === -1) return safe;
+      return safe.slice(0, idx) + '<mark>' + safe.slice(idx, idx + query.length) + '</mark>' + safe.slice(idx + query.length);
+    }
+
+    function snippetAround(text, query, radius) {
+      const lower = text.toLowerCase();
+      const q = query.toLowerCase();
+      const idx = lower.indexOf(q);
+      if (idx === -1) return text.slice(0, radius * 2);
+      const start = Math.max(0, idx - radius);
+      const end = Math.min(text.length, idx + q.length + radius);
+      let snippet = text.slice(start, end);
+      if (start > 0) snippet = '…' + snippet;
+      if (end < text.length) snippet = snippet + '…';
+      return snippet;
+    }
+
+    function closeDiseaseSuggestions() {
+      const box = document.getElementById('diseaseSuggest');
+      if (!box) return;
+      box.classList.remove('open');
+      box.setAttribute('aria-hidden', 'true');
+      box.innerHTML = '';
+    }
+
+    /** Google-style live suggestions: matches disease names AND full body text (symptoms/treatment). */
+    function renderDiseaseSuggestions(query) {
+      const box = document.getElementById('diseaseSuggest');
+      if (!box) return;
+      const q = (query || '').trim().toLowerCase();
+      if (!q) { closeDiseaseSuggestions(); return; }
+
+      const matches = [];
+      DISEASES.forEach(d => {
+        const fields = [
+          { text: d.nameEn, label: 'name' },
+          { text: d.nameAr, label: 'name' },
+          { text: d.sci, label: 'name' },
+          { text: d.symptomsEn, label: 'body' },
+          { text: d.symptomsAr, label: 'body' },
+          { text: d.treatmentEn, label: 'body' },
+          { text: d.treatmentAr, label: 'body' }
+        ];
+        for (const f of fields) {
+          if (f.text && f.text.toLowerCase().includes(q)) {
+            matches.push({ d, field: f });
+            break; // one suggestion row per disease, from its first matching field
+          }
+        }
+      });
+
+      if (matches.length === 0) {
+        box.innerHTML = `<div class="suggest-empty">${t('diseaseEmpty')}</div>`;
+        box.classList.add('open');
+        box.setAttribute('aria-hidden', 'false');
+        return;
+      }
+
+      box.innerHTML = matches.slice(0, 8).map(({ d, field }) => {
+        const snippet = field.label === 'name'
+          ? highlightMatch(field.text, query)
+          : highlightMatch(snippetAround(field.text, query, 38), query);
+        return `
+        <div class="suggest-item" data-id="${d.id}" role="option">
+          <div class="suggest-name">${d.nameEn} <span class="suggest-name-ar">${d.nameAr}</span></div>
+          <div class="suggest-snippet">${snippet}</div>
+        </div>`;
+      }).join('');
+      box.classList.add('open');
+      box.setAttribute('aria-hidden', 'false');
+
+      box.querySelectorAll('.suggest-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const d = DISEASES.find(x => x.id === item.dataset.id);
+          if (!d) return;
+          const input = document.getElementById('diseaseSearch');
+          input.value = state.lang === 'ar' ? d.nameAr : d.nameEn;
+          state.diseaseQuery = input.value;
+          state.diseaseCrop = 'all';
+          state.diseasePart = 'all';
+          document.querySelectorAll('#diseaseCropFilters .filter-chip').forEach(b => b.classList.toggle('active', b.dataset.crop === 'all'));
+          document.querySelectorAll('#diseasePartFilters .filter-chip').forEach(b => b.classList.toggle('active', b.dataset.part === 'all'));
+          renderDiseaseList();
+          closeDiseaseSuggestions();
+          const card = document.querySelector(`.disease-list`);
+          if (card) card.scrollTop = 0;
+        });
+      });
+    }
+
+    function renderDiseaseList() {
+      const listEl = document.getElementById('diseaseList');
+      if (!listEl) return;
+      const q = (state.diseaseQuery || '').trim().toLowerCase();
+      const results = DISEASES.filter(d => {
+        if (state.diseaseCrop !== 'all' && d.crop !== state.diseaseCrop) return false;
+        if (state.diseasePart !== 'all' && !d.parts.includes(state.diseasePart)) return false;
+        if (!q) return true;
+        const hay = [d.nameEn, d.nameAr, d.sci, d.symptomsEn, d.symptomsAr].join(' ').toLowerCase();
+        return hay.includes(q);
+      });
+
+      if (results.length === 0) {
+        listEl.innerHTML = `<div class="disease-empty">${t('diseaseEmpty')}</div>`;
+        return;
+      }
+
+      listEl.innerHTML = results.map(d => {
+        const cropTag = d.crop === 'olive' ? t('filterOlive') : t('filterCitrus');
+        const partTags = d.parts.map(p => `<span class="tag-pill part">${partLabel(p)}</span>`).join('');
+        const symptoms = state.lang === 'ar' ? d.symptomsAr : d.symptomsEn;
+        const treatment = state.lang === 'ar' ? d.treatmentAr : d.treatmentEn;
+        return `
+        <div class="disease-card">
+          <div class="disease-card-top">
+            <div class="disease-illus">${d.svg}</div>
+            <div class="disease-meta">
+              <div class="disease-names">
+                <div class="disease-name-en">${d.nameEn}</div>
+                <div class="disease-name-ar">${d.nameAr}</div>
+              </div>
+              <div class="disease-sci">${d.sci}</div>
+              <div class="disease-tags">
+                <span class="tag-pill">${cropTag}</span>
+                ${partTags}
+              </div>
+            </div>
+          </div>
+          <div class="disease-body">
+            <div class="disease-section-title">${t('symptoms')}</div>
+            <p>${symptoms}</p>
+            <div class="disease-section-title">${t('treatment')}</div>
+            <p>${treatment}</p>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function openDiseasePage() {
+      document.getElementById('diseasePage').classList.add('open');
+      document.getElementById('diseasePage').setAttribute('aria-hidden', 'false');
+      document.body.classList.add('disease-open');
+      renderDiseaseList();
+      playSound('nav');
+    }
+
+    function closeDiseasePage() {
+      document.getElementById('diseasePage').classList.remove('open');
+      document.getElementById('diseasePage').setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('disease-open');
+      playSound('nav');
     }
 
     function findGreenhouseAt(wx, wy) {
@@ -2478,7 +3433,7 @@
       document.getElementById('editToolGroup').classList.add('hidden');
       document.getElementById('stepBadge').classList.add('hidden');
       persistData();
-      playAlhamdulillah();
+      playSound('save');
       const gh = getSelected();
       if (gh) {
         document.getElementById('ctrlEditBadge').textContent = 'Viewing';
@@ -2613,7 +3568,7 @@
         if (gh) {
           gh.name = name;
           persistData();
-          playAlhamdulillah();
+          playSound('save');
           updatePanel(gh);
           renderList();
         }
@@ -2631,8 +3586,7 @@
         rect: { ...state.draft.rect },
         doors: [...(state.draft.doors || [])],
         zones: (state.draft.zones || []).map(z => ({ ...z, points: [...z.points] })),
-        blocks: [...(state.draft.blocks || [])],
-        ventilation: 'Auto', irrigation: 'Idle'
+        blocks: [...(state.draft.blocks || [])]
       };
 
       pushUndo('save greenhouse');
@@ -2642,9 +3596,8 @@
       document.getElementById('ghModal').classList.remove('open');
       updateCreateTools();
       persistData();
-      playAlhamdulillah();
+      playSound('save');
       setTimeout(playRooster, 1200);
-      startWind();
       selectGreenhouse(gh.id);
     }
 
@@ -2693,8 +3646,11 @@
       });
 
       (gh.blocks || []).forEach(b => {
-        tctx.fillStyle = '#e8eef5';
+        tctx.fillStyle = '#ffffff';
+        tctx.strokeStyle = '#c8c8c8';
+        tctx.lineWidth = 0.8 / scale;
         tctx.fillRect(b.x - BLOCK_W / 2, b.y - BLOCK_H / 2, BLOCK_W, BLOCK_H);
+        tctx.strokeRect(b.x - BLOCK_W / 2, b.y - BLOCK_H / 2, BLOCK_W, BLOCK_H);
       });
 
       tctx.restore();
@@ -2756,10 +3712,6 @@
       document.getElementById('ctrlPlants').textContent = totalPlants(gh);
       document.getElementById('ctrlDoors').textContent = (gh.doors || []).length;
       document.getElementById('ctrlBlocks').textContent = totalBlocks(gh);
-      document.getElementById('ctrlVent').textContent = gh.ventilation;
-      document.getElementById('ctrlVent').className = 'badge' + (gh.ventilation === 'Off' ? ' idle' : '');
-      document.getElementById('ctrlIrrigation').textContent = gh.irrigation;
-      document.getElementById('ctrlIrrigation').className = 'badge' + (gh.irrigation === 'Idle' ? ' idle' : '');
 
       const zlp = document.getElementById('zoneListPanel');
       zlp.innerHTML = '';
@@ -2857,6 +3809,9 @@
     function handlePointerMove(world) {
       if (state.isDraggingRect && state.rectStart) {
         state.previewRect = normalizeRect(state.rectStart.x, state.rectStart.y, world.x, world.y);
+        if (state.previewRect.w > 2 && state.previewRect.h > 2) {
+          overlayEl.textContent = formatDim(state.previewRect);
+        }
         drawFarm();
         return;
       }
@@ -3176,6 +4131,48 @@
     document.getElementById('btnLangAr').addEventListener('click', () => setLang('ar'));
     document.getElementById('btnBirdsSound').addEventListener('click', toggleBirdsSound);
 
+    document.getElementById('btnResetView').addEventListener('click', resetView);
+    document.getElementById('btnExportImage').addEventListener('click', exportGreenhouseImage);
+
+    document.getElementById('btnOpenDisease').addEventListener('click', openDiseasePage);
+    document.getElementById('btnCloseDisease').addEventListener('click', closeDiseasePage);
+    document.getElementById('mobDisease').addEventListener('click', () => {
+      document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById('mobDisease').classList.add('active');
+      openDiseasePage();
+    });
+    document.getElementById('btnLangEn2').addEventListener('click', () => setLang('en'));
+    document.getElementById('btnLangAr2').addEventListener('click', () => setLang('ar'));
+
+    document.getElementById('diseaseSearch').addEventListener('input', e => {
+      state.diseaseQuery = e.target.value;
+      renderDiseaseList();
+      renderDiseaseSuggestions(e.target.value);
+    });
+    document.getElementById('diseaseSearch').addEventListener('focus', e => {
+      if (e.target.value.trim()) renderDiseaseSuggestions(e.target.value);
+    });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.disease-search-wrap')) closeDiseaseSuggestions();
+    });
+    document.getElementById('diseaseSearch').addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeDiseaseSuggestions(); e.target.blur(); }
+    });
+    document.getElementById('diseaseCropFilters').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-chip');
+      if (!btn) return;
+      state.diseaseCrop = btn.dataset.crop;
+      document.querySelectorAll('#diseaseCropFilters .filter-chip').forEach(b => b.classList.toggle('active', b === btn));
+      renderDiseaseList();
+    });
+    document.getElementById('diseasePartFilters').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-chip');
+      if (!btn) return;
+      state.diseasePart = btn.dataset.part;
+      document.querySelectorAll('#diseasePartFilters .filter-chip').forEach(b => b.classList.toggle('active', b === btn));
+      renderDiseaseList();
+    });
+
 
 
     document.getElementById('soundToggle').addEventListener('change', e => {
@@ -3206,35 +4203,6 @@
       }
     });
 
-
-
-    document.getElementById('btnToggleVent').addEventListener('click', () => {
-      const gh = getSelected();
-      if (!gh) return;
-      const cycle = { Auto: 'On', On: 'Off', Off: 'Auto' };
-      gh.ventilation = cycle[gh.ventilation];
-      document.getElementById('ctrlVent').textContent = gh.ventilation;
-      document.getElementById('ctrlVent').className = 'badge' + (gh.ventilation === 'Off' ? ' idle' : '');
-      persistData();
-    });
-
-    document.getElementById('btnRunIrrigation').addEventListener('click', () => {
-      const gh = getSelected();
-      if (!gh) return;
-      gh.irrigation = 'Running';
-      document.getElementById('ctrlIrrigation').textContent = 'Running';
-      document.getElementById('ctrlIrrigation').className = 'badge';
-      persistData();
-      setTimeout(() => {
-        gh.irrigation = 'Idle';
-        if (state.selectedId === gh.id) {
-          document.getElementById('ctrlIrrigation').textContent = 'Idle';
-          document.getElementById('ctrlIrrigation').className = 'badge idle';
-          persistData();
-        }
-      }, 3000);
-    });
-
     window.addEventListener('resize', () => {
       if (!isMobileLayout()) closeMobilePanels();
       resizeCanvas();
@@ -3247,6 +4215,7 @@
     updateCanvasCursor();
     startFieldAnimation();
     updateUndoBtn();
+    renderDiseaseList();
   </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script>
 </body>

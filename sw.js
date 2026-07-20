@@ -1,10 +1,11 @@
-const CACHE = 'olive-agent-v3';
+const CACHE = 'olive-agent-v5';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './icon-apple.png'
 ];
 
 self.addEventListener('install', e => {
