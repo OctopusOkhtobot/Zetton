@@ -47,7 +47,7 @@
 
     .app {
       display: grid;
-      grid-template-columns: 260px 1fr 280px;
+      grid-template-columns: 220px minmax(0, 1fr);
       grid-template-rows: 56px 1fr auto;
       height: 100vh;
       height: 100dvh;
@@ -626,9 +626,27 @@
 
     #farmCanvas { touch-action: none; }
 
-    @media (max-width: 1024px) {
+
+
+
+    @media (min-width:861px){.control-panel{position:fixed;top:56px;right:0;bottom:0;width:min(300px,86vw);z-index:55;transform:translateX(105%);transition:transform .25s ease;box-shadow:-12px 0 36px #0007}.control-panel.open{transform:translateX(0)}html[dir="rtl"] .control-panel{right:auto;left:0;transform:translateX(-105%);box-shadow:12px 0 36px #0007}html[dir="rtl"] .control-panel.open{transform:translateX(0)}#btnMenuRight{display:flex;align-items:center;justify-content:center}}
+    
+    body.capture-clean .control-panel{visibility:hidden!important}
+    .camera-fallback{position:absolute;z-index:8;top:50%;left:50%;transform:translate(-50%,-50%);width:min(360px,88%);padding:18px;background:var(--panel-bg);border:1px solid var(--border);border-radius:16px;text-align:center;box-shadow:0 12px 40px #0008;line-height:1.55}.camera-fallback button{margin-top:10px;padding:9px 16px;border:0;border-radius:9px;background:var(--accent);color:white;font:inherit}
+    .pan-pad{position:absolute;left:16px;bottom:22px;z-index:5;display:grid;grid-template-columns:40px 40px 40px;grid-template-rows:40px 40px;gap:4px;align-items:center;justify-items:center}.pan-pad button{width:38px;height:38px;border:1px solid var(--border);border-radius:10px;background:var(--panel-bg);color:var(--text);font-size:.86rem;touch-action:manipulation}.pan-pad button[data-pan="up"]{grid-column:2;grid-row:1}.pan-pad button[data-pan="left"]{grid-column:1;grid-row:2}.pan-pad button[data-pan="down"]{grid-column:2;grid-row:2}.pan-pad button[data-pan="right"]{grid-column:3;grid-row:2}html[dir="rtl"] .pan-pad{left:auto;right:16px}
+    .control-panel .panel-body{padding:10px}.control-panel .control-group{margin-bottom:12px}.control-panel .control-value{font-size:1.15rem}.control-panel .control-row{font-size:.8rem;padding:7px 0}
+    .cultivar-row{display:flex;gap:8px;align-items:center}.cultivar-row select{flex:1;min-width:0}.cultivar-row .btn-action{width:auto;white-space:nowrap;margin:0;padding:10px;font-size:.76rem}
+    .camera-tip{position:absolute;z-index:8;bottom:78px;left:50%;transform:translateX(-50%);background:#fff8dc;color:#493b1d;border:1px solid #e5c76a;border-radius:16px;padding:12px 16px;box-shadow:0 8px 28px #0005;font-size:.9rem;max-width:min(90vw,360px);text-align:center;animation:tipIn .35s ease}.camera-tip button{margin-inline-start:10px;border:0;background:transparent;color:#6b5420;font-size:1.1rem}
+    @keyframes tipIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+    .mobile-nav{overflow-x:auto}.mobile-nav button{min-width:64px;flex-shrink:0}
+    .mobile-nav { box-shadow: 0 -8px 24px rgba(0,0,0,.28); }
+    .mobile-nav button { background:#252824; border-color:rgba(255,255,255,.12); min-height:58px; font-size:.72rem; }
+    .mobile-nav button span { display:block; margin-top:3px; }
+    #zoneName { width:100%; padding:11px 12px; border-radius:8px; background:#252824; color:var(--text); border:1px solid var(--border); font:inherit; }
+    .disease-page { display:none !important; }
+        @media (max-width: 1024px) {
       .app {
-        grid-template-columns: 220px 1fr 240px;
+        grid-template-columns: 190px minmax(0, 1fr);
       }
       .header-right { gap: 8px; }
       .user-badge span:first-child { display: none; }
@@ -713,8 +731,10 @@
         height: 44px;
       }
 
+      .pan-pad{bottom:72px;left:8px;transform:scale(.88);transform-origin:bottom left}
+      html[dir="rtl"] .pan-pad{left:auto;right:8px;transform-origin:bottom right}
       .canvas-overlay {
-        bottom: 10px;
+        bottom: 8px;
         font-size: 0.72rem;
         padding: 6px 12px;
         max-width: 95%;
@@ -1133,9 +1153,6 @@
       color: var(--accent-light) !important;
     }
   </style>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" sizes="180x180" href="icon-apple.png" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body>
   <div class="app">
@@ -1147,15 +1164,11 @@
         <div class="logo-icon">🫒</div>
         <span>Olive Agent</span>
       </div>
-      <div class="header-credits">
-        <div class="credit-bar" aria-label="Credits">
-          <div class="credit-en">Under the supervision of Eng. Abdullah Al-Zoubi — Designed by Eng. Hassan Al-Zoubi</div>
-          <div class="credit-ar">بإشراف المهندس عبد الله الزعبي — تصميم المهندس حسن الزعبي</div>
-        </div>
-      </div>
       <div class="header-right">
         <span class="save-indicator" id="saveIndicator" data-i18n="saved">Saved ✓</span>
-        <button class="btn-header nav-disease-btn" id="btnOpenDisease" data-i18n="diseaseNav">🌿 Diseases</button>
+        
+        <button class="btn-header" id="btnCamera" title="تصوير المخطط">📷</button>
+        <button class="btn-header" id="btnSoundToggle" type="button" aria-label="تشغيل أو كتم الأصوات" title="الأصوات">🔊</button>
         <button class="btn-header" id="btnUndo" title="Undo" style="font-size:1rem;padding:6px 10px;" disabled>↩</button>
         <button class="btn-header" id="btnLangEn">EN</button>
         <button class="btn-header" id="btnLangAr">عربي</button>
@@ -1174,13 +1187,15 @@
         <div class="step-badge hidden" id="stepBadge"></div>
         <div class="tool-group hidden" id="toolGroup">
           <button class="btn-tool" id="btnToolRect" disabled data-i18n="toolRect">① Draw Rectangle</button>
-          <button class="btn-tool" id="btnToolDoor" disabled data-i18n="toolDoor">② Add Arcs and Door Markers</button>
+          <button class="btn-tool" id="btnToolDoor" disabled data-i18n="toolDoor">② Add Door Markers</button>
+          <button class="btn-tool" id="btnToolArch" disabled data-i18n="toolArch">③ Add Greenhouse Arches</button>
           <button class="btn-tool" id="btnToolZone" disabled data-i18n="toolZone">③ Draw Olive Seedling Zone Free Shape</button>
           <button class="btn-tool" id="btnToolBlock" disabled data-i18n="toolBlock">④ Place White Blocks</button>
           <button class="btn-tool btn-finish" id="btnFinish" disabled data-i18n="saveDesign">Save Plastic House Design</button>
         </div>
         <div class="tool-group hidden" id="editToolGroup">
-          <button class="btn-tool" id="btnEditDoor" data-i18n="toolDoorShort">Add Arcs and Door Markers</button>
+          <button class="btn-tool" id="btnEditDoor" data-i18n="toolDoorShort">Add Door Markers</button>
+          <button class="btn-tool" id="btnEditArch" data-i18n="toolArchShort">Add Arches</button>
           <button class="btn-tool" id="btnEditZone" data-i18n="toolZoneShort">Draw Olive Seedling Zone</button>
           <button class="btn-tool" id="btnEditBlock" data-i18n="toolBlockShort">Place White Blocks</button>
           <button class="btn-tool btn-finish" id="btnSaveEdits" data-i18n="saveChanges">Save Changes</button>
@@ -1194,6 +1209,9 @@
 
     <main class="canvas-area">
       <canvas id="farmCanvas"></canvas>
+      <div class="pan-pad" aria-label="تحريك المخطط">
+        <button data-pan="up" aria-label="أعلى">▲</button><button data-pan="left" aria-label="يسار">◀</button><button data-pan="down" aria-label="أسفل">▼</button><button data-pan="right" aria-label="يمين">▶</button>
+      </div>
       <div class="zoom-controls">
         <button class="zoom-btn" id="btnZoomIn" title="Zoom in">+</button>
         <div class="zoom-level" id="zoomLevel">100%</div>
@@ -1222,11 +1240,7 @@
               <div class="slider-label"><span data-i18n="panUD">Pan Up / Down</span><span id="panYVal">0</span></div>
               <input type="range" id="panYSlider" min="-300" max="300" value="0" />
             </div>
-            <div class="sound-toggle">
-              <span data-i18n="transitionSound">Transition Sound</span>
-              <input type="checkbox" id="soundToggle" checked />
-            </div>
-            <button class="btn-action" id="btnBirdsSound" style="margin-top:10px" data-i18n="birdsSound">🐦 Play Birds Sound</button>
+
           </div>
           <div class="control-group">
             <label data-i18n="navPlantAreas">Navigate Plant Areas</label>
@@ -1235,7 +1249,6 @@
               <button class="btn-action" id="btnPrevZone" data-i18n="prev">← Prev</button>
               <button class="btn-action" id="btnNextZone" data-i18n="next">Next →</button>
             </div>
-            <button class="btn-action primary" id="btnTourZones" style="margin-top:8px" data-i18n="autoTour">Auto Tour (random zoom)</button>
           </div>
         </div>
         <div class="panel-placeholder" id="panelPlaceholder" data-i18n="selectGh">Select a greenhouse to view or edit.</div>
@@ -1256,6 +1269,9 @@
             <div class="control-row"><span>White Blocks</span><span id="ctrlBlocks">0</span></div>
           </div>
           <div class="control-group">
+            <label>إحصاء الأنواع</label><div id="cultivarSummary"></div>
+          </div>
+          <div class="control-group">
             <label>Plant Zones</label>
             <div id="zoneListPanel"></div>
           </div>
@@ -1269,11 +1285,17 @@
       </div>
     </aside>
 
-    <nav class="mobile-nav" id="mobileNav">
-      <button type="button" id="mobFarms" data-i18n="mobFarms">🏠 Farms</button>
-      <button type="button" id="mobCanvas" class="active" data-i18n="mobCanvas">🌾 Farm</button>
-      <button type="button" id="mobDisease" data-i18n="mobDisease">🌿 Diseases</button>
-      <button type="button" id="mobControls" data-i18n="mobControls">⚙ Controls</button>
+    <nav class="mobile-nav" id="mobileNav" aria-label="Field tools">
+      <button type="button" id="mobFarms" data-i18n="mobFarms">🏠 البيوت</button>
+      <button type="button" id="mobCanvas" class="active" hidden aria-hidden="true">المخطط</button>
+      <button type="button" id="mobControls" hidden aria-hidden="true">التحكم</button>
+      <button type="button" id="mobDrawZone">▧ <span data-i18n="toolZoneShort">رسم حوض</span></button>
+      <button type="button" id="mobPlaceBlock">▰ <span data-i18n="toolBlockShort">وضع بلوك</span></button>
+      <button type="button" id="mobArches">⌒ <span>الأقواس</span></button>
+      <button type="button" id="mobDoors">▣ <span>باب</span></button>
+      <button type="button" id="mobSave">✓ <span data-i18n="saveChanges">حفظ</span></button>
+      <button type="button" id="mobZoom">＋ <span data-i18n="zoom">تكبير</span></button>
+      <button type="button" id="mobCamera" aria-label="تصوير">📷 <span>تصوير</span></button>
     </nav>
 
     <footer class="footer-credit" id="footerCredit">
@@ -1356,8 +1378,8 @@
       <h3>Plant Zone Details</h3>
       <p>Enter info for this green shape — it will appear inside the zone.</p>
       <div class="form-field">
-        <label for="zoneName">Zone Name</label>
-        <input type="text" id="zoneName" placeholder="e.g. Row A" />
+        <label for="zoneName">الصنف / نوع العقلة</label>
+        <div class="cultivar-row"><select id="zoneName"></select><button type="button" id="btnAddCultivar" class="btn-action">＋ نوع جديد</button></div>
       </div>
       <div class="form-field">
         <label for="zoneDate">Date</label>
@@ -1390,10 +1412,12 @@
     </div>
   </div>
 
+  <audio id="audioBismillah" preload="auto" src="bismillah.wav"></audio>
+  <audio id="audioAlhamdulillah" preload="auto" src="alhamdulillah.wav"></audio>
   <script>
     const STORAGE_KEY = 'olive-agent-user';
     const MIN_ZONE_POINTS = 8;
-    const MIN_RECT_SIZE = 40;
+    const MIN_RECT_SIZE = 5;
     const DOOR_SIZE = 14;
     const BLOCK_W = 10;
     const BLOCK_H = 5;
@@ -1410,25 +1434,25 @@
       en: {
         saved: 'Saved ✓', user: 'User', switchUser: 'Switch User', myGreenhouses: 'My Greenhouses',
         newGreenhouse: 'New Greenhouse', hintStep1: 'Step 1: Click "New Greenhouse", then drag a rectangle.',
-        toolRect: '① Draw Rectangle', toolDoor: '② Add Arcs and Door Markers',
-        toolZone: '③ Draw Olive Seedling Zone Free Shape', toolBlock: '④ Place White Blocks',
-        saveDesign: 'Save Plastic House Design', toolDoorShort: 'Add Arcs and Door Markers',
+        toolRect: '① Draw Rectangle', toolDoor: '② Add Door Markers', toolArch: '③ Add Greenhouse Arches', toolArchShort: 'Add Arches',
+        toolZone: '④ Draw Olive Seedling Zone Free Shape', toolBlock: '⑤ Place White Blocks',
+        saveDesign: 'Save Plastic House Design', toolDoorShort: 'Add Door Markers',
         toolZoneShort: 'Draw Olive Seedling Zone', toolBlockShort: 'Place White Blocks',
         saveChanges: 'Save Changes', cancelEdit: 'Cancel Edit', controls: 'Controls', view: 'View',
         zoom: 'Zoom', panLR: 'Pan Left / Right', panUD: 'Pan Up / Down', brightness: 'Brightness',
         colorShift: 'Color Shift', transitionSound: 'Transition Sound', birdsSound: '🐦 Play Birds Sound',
         birdsStop: '🐦 Stop Birds Sound', navPlantAreas: 'Navigate Plant Areas', current: 'Current',
-        prev: '← Prev', next: 'Next →', autoTour: 'Auto Tour (random zoom)', stopTour: 'Stop Tour',
+        prev: '← Prev', next: 'Next →',
         selectGh: 'Select a greenhouse to view or edit.', width: 'W', height: 'H', meters: 'm',
-        dimLabel: 'Width × Height', stepRect: 'Step 1 — Rectangle', stepDoor: 'Step 2 — Arcs & Doors',
-        stepZone: 'Step 3 — Olive Seedling Zones', stepBlock: 'Step 4 — White Blocks',
+        dimLabel: 'Width × Height', stepRect: 'Step 1 — Rectangle', stepDoor: 'Step 2 — Doors', stepArch: 'Step 3 — Arches',
+        stepZone: 'Step 4 — Olive Seedling Zones', stepBlock: 'Step 5 — White Blocks',
         hintRect: 'Drag to draw plastic house rectangle (yellow border, black fill)',
-        hintDoor: 'Click the yellow border to add arcs and door markers',
+        hintDoor: 'Click the yellow frame to add door markers', hintArch: 'Click inside the greenhouse to add a thin arch',
         hintZone: 'Draw olive seedling free shapes inside the rectangle',
         hintBlock: 'Click inside the greenhouse to place white blocks',
         savePlasticTitle: 'Name Plastic House Design', savePlasticDesc: 'Name your design, then save.',
         plasticName: 'Plastic House Name', noZones: 'No plant zones — draw zones first',
-        rectTooSmall: 'Rectangle too small — drag a larger area', welcome: 'Welcome — enter your name to start',
+        rectTooSmall: 'Rectangle too small — draw at least 0.5 × 0.5 m', welcome: 'Welcome — enter your name to start',
         loginSub: 'Enter your name to access your greenhouses', loginName: 'Your Name',
         loginBtn: 'Enter My Greenhouses →', loginError: 'Please enter your name',
         mobFarms: '🏠 Farms', mobCanvas: '🌾 Farm', mobControls: '⚙ Controls',
@@ -1460,25 +1484,25 @@
       ar: {
         saved: 'تم الحفظ ✓', user: 'المستخدم', switchUser: 'تبديل المستخدم', myGreenhouses: 'بيوتي البلاستيكية',
         newGreenhouse: 'بيت بلاستيكي جديد', hintStep1: 'الخطوة ١: اضغط "بيت بلاستيكي جديد" ثم اسحب مستطيلاً.',
-        toolRect: '① رسم المستطيل', toolDoor: '② إضافة أقواس وعلامات أبواب',
-        toolZone: '③ رسم منطقة شتلات زيتون (شكل حر)', toolBlock: '④ وضع مكعبات بيضاء',
-        saveDesign: 'حفظ تصميم البيت البلاستيكي', toolDoorShort: 'أقواس وعلامات أبواب',
+        toolRect: '① رسم المستطيل', toolDoor: '② إضافة الأبواب', toolArch: '③ إضافة أقواس البيت', toolArchShort: 'إضافة الأقواس',
+        toolZone: '④ رسم منطقة شتلات زيتون (شكل حر)', toolBlock: '⑤ وضع مكعبات بيضاء',
+        saveDesign: 'حفظ تصميم البيت البلاستيكي', toolDoorShort: 'إضافة علامات أبواب',
         toolZoneShort: 'منطقة شتلات زيتون', toolBlockShort: 'مكعبات بيضاء',
         saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء التعديل', controls: 'التحكم', view: 'العرض',
         zoom: 'التكبير', panLR: 'تحريك يمين / يسار', panUD: 'تحريك أعلى / أسفل', brightness: 'السطوع',
         colorShift: 'تغيير اللون', transitionSound: 'صوت الانتقال', birdsSound: '🐦 تشغيل صوت العصافير',
         birdsStop: '🐦 إيقاف صوت العصافير', navPlantAreas: 'التنقل بين مناطق النباتات', current: 'الحالي',
-        prev: '→ السابق', next: 'التالي ←', autoTour: 'جولة تلقائية (تكبير عشوائي)', stopTour: 'إيقاف الجولة',
+        prev: '→ السابق', next: 'التالي ←',
         selectGh: 'اختر بيتاً بلاستيكياً للعرض أو التعديل.', width: 'ع', height: 'ط', meters: 'م',
-        dimLabel: 'العرض × الطول', stepRect: 'الخطوة ١ — المستطيل', stepDoor: 'الخطوة ٢ — الأقواس والأبواب',
-        stepZone: 'الخطوة ٣ — مناطق الشتلات', stepBlock: 'الخطوة ٤ — المكعبات البيضاء',
+        dimLabel: 'العرض × الطول', stepRect: 'الخطوة ١ — المستطيل', stepDoor: 'الخطوة ٢ — الأبواب', stepArch: 'الخطوة ٣ — الأقواس',
+        stepZone: 'الخطوة ٤ — مناطق الشتلات', stepBlock: 'الخطوة ٥ — المكعبات البيضاء',
         hintRect: 'اسحب لرسم البيت البلاستيكي (إطار أصفر، تعبئة سوداء)',
-        hintDoor: 'انقر على الإطار الأصفر لإضافة أقواس وعلامات أبواب',
+        hintDoor: 'انقر على الإطار الأصفر لإضافة باب', hintArch: 'انقر داخل البيت لإضافة قوس رفيع',
         hintZone: 'ارسم أشكالاً حرة لشتلات الزيتون داخل المستطيل',
         hintBlock: 'انقر داخل البيت لوضع مكعبات بيضاء',
         savePlasticTitle: 'تسمية تصميم البيت البلاستيكي', savePlasticDesc: 'سمّ تصميمك ثم احفظ.',
         plasticName: 'اسم البيت البلاستيكي', noZones: 'لا توجد مناطق — ارسم مناطق أولاً',
-        rectTooSmall: 'المستطيل صغير جداً — اسحب مساحة أكبر', welcome: 'مرحباً — أدخل اسمك للبدء',
+        rectTooSmall: 'المساحة صغيرة جداً — ارسم ٠٫٥ × ٠٫٥ م على الأقل', welcome: 'مرحباً — أدخل اسمك للبدء',
         loginSub: 'أدخل اسمك للوصول إلى بيوتك البلاستيكية', loginName: 'اسمك',
         loginBtn: 'دخول بيوتي →', loginError: 'يرجى إدخال اسمك',
         mobFarms: '🏠 البيوت', mobCanvas: '🌾 المزرعة', mobControls: '⚙ التحكم',
@@ -1520,7 +1544,6 @@
       view: { brightness: 100, hue: 0 },
       soundEnabled: true,
       navZoneIndex: -1,
-      tourTimer: null,
       anim: null,
       draft: null,
       tool: null,
@@ -1532,13 +1555,8 @@
       zonePoints: [],
       pendingZonePoints: null,
       renameMode: false,
-      lang: 'en',
+      lang: 'ar',
       panBase: { offsetX: 0, offsetY: 0 },
-      birdsPlaying: false,
-      birdsInterval: null,
-      fieldPhase: 0,
-      fieldRaf: null,
-      fieldAnimPaused: false,
       diseaseCrop: 'all',
       diseasePart: 'all',
       diseaseQuery: ''
@@ -1600,7 +1618,7 @@
         canvas.classList.add('cursor-pointer');
         return;
       }
-      if (state.tool === 'door' || state.tool === 'block') {
+      if (state.tool === 'door' || state.tool === 'block' || state.tool === 'arch') {
         canvas.classList.add('cursor-cell');
       } else if (state.tool === 'rect' || state.tool === 'zone') {
         canvas.classList.add('cursor-crosshair');
@@ -1634,8 +1652,6 @@
       });
       if (state.tool) setTool(state.tool);
       updateCreateTools();
-      const birdsBtn = document.getElementById('btnBirdsSound');
-      if (birdsBtn && state.birdsPlaying) birdsBtn.textContent = t('birdsStop');
       if (typeof renderDiseaseList === 'function') renderDiseaseList();
       drawFarm();
     }
@@ -1655,7 +1671,7 @@
       const off = 18 / state.viewport.scale;
       const tick = 6 / state.viewport.scale;
       const lwDim = 1.5 / state.viewport.scale;
-      const fs = Math.max(9, 11 / state.viewport.scale);
+      const fs = 16 / state.viewport.scale;
 
       ctx.strokeStyle = '#f5c518';
       ctx.fillStyle = '#f0e6d8';
@@ -1689,22 +1705,7 @@
       ctx.fillText(`${t('height')} ${pxToM(rect.h)}${t('meters')}`, 0, 0);
       ctx.restore();
 
-      const label = formatDim(rect);
-      const labelAlt = state.lang === 'ar'
-        ? `W ${pxToM(rect.w)}m × H ${pxToM(rect.h)}m`
-        : `العرض ${pxToM(rect.w)}م × الطول ${pxToM(rect.h)}م`;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';
-      ctx.fillStyle = 'rgba(13,13,13,0.85)';
-      const lx = rect.x + rect.w + off + 4 / state.viewport.scale;
-      const ly = rect.y;
-      const pad = 6 / state.viewport.scale;
-      const lines = [label, labelAlt];
-      const lineH = fs * 1.35;
-      const boxW = Math.max(140 / state.viewport.scale, Math.max(label.length, labelAlt.length) * fs * 0.42);
-      ctx.fillRect(lx - pad, ly - pad, boxW, lines.length * lineH + pad * 2);
-      ctx.fillStyle = '#ffe566';
-      lines.forEach((line, i) => ctx.fillText(line, lx, ly + i * lineH));
+
     }
 
     function lw() { return BORDER_WIDTH / state.viewport.scale; }
@@ -1714,111 +1715,19 @@
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
-    // ── ROOSTER crow ──────────────────────────────────────────────────────────
-    function playRooster() {
-      initAudio();
-      const now = audioCtx.currentTime;
-      const master = audioCtx.createGain();
-      master.gain.value = 0.92;
-      master.connect(getMasterBus());
-
-      // 3-part crow: "cock-a-doo-doo"
-      const parts = [
-        { f0: 620, f1: 980, dur: 0.18, vol: 1.0 },
-        { f0: 780, f1: 1320, dur: 0.22, vol: 0.95 },
-        { f0: 550, f1: 820, dur: 0.35, vol: 0.88 },
-        { f0: 480, f1: 680, dur: 0.28, vol: 0.8 }
-      ];
-
-      let t = now;
-      parts.forEach(({ f0, f1, dur, vol }) => {
-        const osc = audioCtx.createOscillator();
-        const osc2 = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        osc.type = 'triangle'; osc2.type = 'sine';
-        osc.frequency.setValueAtTime(f0, t);
-        osc.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.6);
-        osc.frequency.exponentialRampToValueAtTime(f0 * 0.85, t + dur);
-        osc2.frequency.setValueAtTime(f0 * 2.1, t);
-        osc2.frequency.exponentialRampToValueAtTime(f1 * 1.8, t + dur * 0.5);
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(vol, t + 0.03);
-        g.gain.setValueAtTime(vol, t + dur * 0.7);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        osc.connect(g); osc2.connect(g); g.connect(master);
-        osc.start(t); osc2.start(t);
-        osc.stop(t + dur + 0.05); osc2.stop(t + dur + 0.05);
-        t += dur + 0.07;
-      });
-    }
-
-    // ── BIRD CHIRP ────────────────────────────────────────────────────────────
-    function chirpBird() {
-      if (!audioCtx) return;
-      const tNow = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const osc2 = audioCtx.createOscillator();
-      const osc3 = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      const bp = audioCtx.createBiquadFilter();
-      bp.type = 'bandpass';
-      bp.frequency.value = 2400;
-      bp.Q.value = 1.1;
-      const f0 = 1800 + Math.random() * 2200;
-      osc.type = 'sine';
-      osc2.type = 'triangle';
-      osc3.type = 'sine';
-      osc.frequency.setValueAtTime(f0, tNow);
-      osc.frequency.exponentialRampToValueAtTime(f0 * 1.35, tNow + 0.05);
-      osc.frequency.exponentialRampToValueAtTime(f0 * 0.75, tNow + 0.14);
-      osc2.frequency.setValueAtTime(f0 * 2, tNow);
-      osc2.frequency.exponentialRampToValueAtTime(f0 * 1.6, tNow + 0.08);
-      osc3.frequency.setValueAtTime(f0 * 3.1, tNow);
-      gain.gain.setValueAtTime(0.0001, tNow);
-      gain.gain.exponentialRampToValueAtTime(0.4, tNow + 0.012);
-      gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.2);
-      osc.connect(gain);
-      osc2.connect(gain);
-      osc3.connect(gain);
-      gain.connect(bp);
-      bp.connect(getMasterBus());
-      osc.start(); osc2.start(); osc3.start();
-      osc.stop(tNow + 0.26); osc2.stop(tNow + 0.26); osc3.stop(tNow + 0.26);
-    }
-
-    // ── SAVE JINGLE ───────────────────────────────────────────────────────────
-    // ── BIRDS TOGGLE ──────────────────────────────────────────────────────────
-    function toggleBirdsSound() {
-      initAudio();
-      const btn = document.getElementById('btnBirdsSound');
-      if (state.birdsPlaying) {
-        clearInterval(state.birdsInterval);
-        state.birdsInterval = null;
-        state.birdsPlaying = false;
-        if (btn) btn.textContent = t('birdsSound');
-        return;
-      }
-      state.birdsPlaying = true;
-      if (btn) btn.textContent = t('birdsStop');
-      chirpBird();
-      state.birdsInterval = setInterval(() => {
-        if (Math.random() > 0.35) chirpBird();
-      }, 600 + Math.random() * 1400);
-    }
-
     // ── DOOR KNOCK sound ──────────────────────────────────────────────────────
     function playDoorKnock() {
       if (!state.soundEnabled) return;
       initAudio();
       const t0 = audioCtx.currentTime;
-      [0, 0.16, 0.32].forEach(delay => {
+      [0, 0.14].forEach(delay => {
         const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
         const data = buf.getChannelData(0);
         for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.012));
         const src = audioCtx.createBufferSource();
         src.buffer = buf;
-        const g = audioCtx.createGain(); g.gain.value = 1.3;
-        const lp = audioCtx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520;
+        const g = audioCtx.createGain(); g.gain.value = 0.18;
+        const lp = audioCtx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 680;
         const hp = audioCtx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 70;
         src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(getMasterBus());
         src.start(t0 + delay);
@@ -1826,7 +1735,7 @@
     }
 
     // ── GENERIC SOUNDS ────────────────────────────────────────────────────────
-    function playTone(freq, start, duration, vol = 0.28, type = 'triangle') {
+    function playTone(freq, start, duration, vol = 0.10, type = 'sine') {
       const osc = audioCtx.createOscillator();
       const osc2 = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -1838,8 +1747,8 @@
       osc.frequency.value = freq;
       osc2.frequency.value = freq * 2;
       gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(vol, start + 0.01);
-      gain.gain.setValueAtTime(vol * 0.9, start + duration * 0.5);
+      gain.gain.exponentialRampToValueAtTime(vol, start + 0.025);
+      gain.gain.setValueAtTime(vol * 0.7, start + duration * 0.45);
       gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
       osc.connect(gain);
       osc2.connect(gain);
@@ -1854,13 +1763,12 @@
       if (!state.soundEnabled) return;
       initAudio();
       if (kind === 'door') { playDoorKnock(); return; }
-      if (kind === 'rooster') { playRooster(); return; }
       const tones = {
-        nav:   [{ f: 440, d: 0.14, v: 0.44 }, { f: 554, d: 0.2, v: 0.42 }],
-        block: [{ f: 660, d: 0.11, v: 0.46 }],
-        save:  [{ f: 523, d: 0.13, v: 0.46 }, { f: 659, d: 0.16, v: 0.44 }, { f: 784, d: 0.24, v: 0.42 }],
-        zoom:  [{ f: 330, d: 0.09, v: 0.4 }],
-        zone:  [{ f: 392, d: 0.1, v: 0.42 }, { f: 523, d: 0.15, v: 0.4 }]
+        nav:   [{ f: 587, d: 0.08, v: 0.055 }],
+        block: [{ f: 330, d: 0.08, v: 0.10 }],
+        zoom:  [{ f: 698, d: 0.06, v: 0.045 }],
+        arch:  [{ f: 440, d: 0.10, v: 0.065 }, { f: 554, d: 0.12, v: 0.055 }],
+        zone:  [{ f: 587, d: 0.10, v: 0.06 }, { f: 740, d: 0.12, v: 0.05 }]
       };
       const seq = tones[kind] || tones.nav;
       let t = audioCtx.currentTime;
@@ -2104,6 +2012,7 @@
         }
       });
       if (!gh.doors) gh.doors = [];
+      if (!gh.arcs) gh.arcs = [];
       return gh;
     }
 
@@ -2216,7 +2125,7 @@
       el.textContent = `${z.name} (${z.plants} plants)`;
     }
 
-    function flyToZone(index, randomZoom = true) {
+    function flyToZone(index, randomZoom = false) {
       const zones = getNavZones();
       if (!zones.length) {
         overlayEl.textContent = t('noZones');
@@ -2233,36 +2142,12 @@
       overlayEl.textContent = `Viewing zone: ${z.name}`;
     }
 
-    function stopTour() {
-      if (state.tourTimer) {
-        clearInterval(state.tourTimer);
-        state.tourTimer = null;
-      }
-    }
-
-    function startTour() {
-      initAudio();
-      const zones = getNavZones();
-      if (!zones.length) {
-        overlayEl.textContent = 'No plant zones to tour';
-        document.getElementById('btnTourZones').textContent = t('autoTour');
-        return;
-      }
-      stopTour();
-      let i = state.navZoneIndex < 0 ? 0 : state.navZoneIndex;
-      flyToZone(i, true);
-      state.tourTimer = setInterval(() => {
-        i = (i + 1) % zones.length;
-        flyToZone(i, true);
-      }, FLY_DURATION + 1200);
-      overlayEl.textContent = 'Auto tour running — click again to stop';
-    }
-
     function resizeCanvas() {
       const rect = canvas.parentElement.getBoundingClientRect();
       canvas.width = rect.width * devicePixelRatio;
       canvas.height = rect.height * devicePixelRatio;
       ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      if(state.selectedId&&!state.editMode&&!state.draft){const gh=getSelected();if(gh)fitGreenhouseToCanvas(gh);}
       drawFarm();
     }
 
@@ -2315,6 +2200,9 @@
       return ctx.isPointInPath(px, py);
     }
 
+    function polygonArea(points){if(!points||points.length<3)return 0;let s=0;for(let i=0,j=points.length-1;i<points.length;j=i++)s+=points[j].x*points[i].y-points[i].x*points[j].y;return Math.abs(s)/2;}
+    function zoneAreaM2(zone){return polygonArea(zone.points||[])/(PIXELS_PER_METER*PIXELS_PER_METER);}
+    function shortBedDate(value){if(!value)return '';const d=new Date(value+'T00:00:00');return Number.isNaN(d.getTime())?String(value):new Intl.DateTimeFormat(state.lang==='ar'?'ar':'en',{day:'2-digit',month:'2-digit'}).format(d);}
     function polygonCentroid(points) {
       let cx = 0, cy = 0;
       points.forEach(p => { cx += p.x; cy += p.y; });
@@ -2359,6 +2247,10 @@
       });
     }
 
+    function drawArches(rect, arcs) {
+      (arcs||[]).forEach(a=>{const y=rect.y+a.t*rect.h;ctx.beginPath();ctx.moveTo(rect.x+1/state.viewport.scale,y);ctx.quadraticCurveTo(rect.x+rect.w/2,y-rect.w*.26,rect.x+rect.w-1/state.viewport.scale,y);ctx.strokeStyle='rgba(255,219,82,.52)';ctx.lineWidth=2/state.viewport.scale;ctx.lineCap='round';ctx.stroke();});
+    }
+    function placeArch(wx,wy){const gh=getTargetGh();if(!gh?.rect||!pointInRect(wx,wy,gh.rect,0))return;if(!gh.arcs)gh.arcs=[];const t=Math.max(0,Math.min(1,(wy-gh.rect.y)/gh.rect.h));if(gh.arcs.some(a=>Math.abs(a.t-t)<0.005))return;pushUndo('add arch');gh.arcs.push({t});if(state.editMode)persistData();playSound('arch');drawFarm();}
     function drawGhBlocks(blocks) {
       (blocks || []).forEach(b => {
         const hw = BLOCK_W / 2, hh = BLOCK_H / 2;
@@ -2372,28 +2264,33 @@
 
     function drawZoneShape(zone, selected) {
       drawPath(zone.points, true);
-      ctx.fillStyle = selected ? 'rgba(90, 122, 66, 0.82)' : 'rgba(74, 106, 53, 0.72)';
+      const cultivars = ['#76b947','#83c75b','#689f46','#5b984b','#91c95e','#4e9260','#64a77b','#68b88e','#5aab9b','#78b87a','#8abf59','#72a653','#9bc66a','#5ea987'];
+      const cultivarNames = getCultivars();
+      const cultivarIndex = Math.max(0, cultivarNames.indexOf(zone.name)) % cultivars.length;
+      ctx.fillStyle = cultivars[cultivarIndex];
       ctx.fill();
-      ctx.strokeStyle = selected ? '#a8d080' : '#6b8e4e';
+      ctx.strokeStyle = selected ? '#d5f4b7' : '#294b37';
       ctx.lineWidth = 2 / state.viewport.scale;
       ctx.lineJoin = 'round';
       ctx.stroke();
 
       const c = polygonCentroid(zone.points);
-      const fs = Math.max(9, 11 / state.viewport.scale);
-      const lh = fs * 1.15;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#f0e6d8';
-      ctx.font = `700 ${fs}px "DM Sans", sans-serif`;
-      ctx.fillText(zone.name || 'Zone', c.x, c.y - lh);
-      ctx.font = `500 ${fs * 0.8}px "DM Sans", sans-serif`;
-      ctx.fillStyle = 'rgba(240,230,216,0.9)';
-      ctx.fillText(zone.date || '', c.x, c.y);
-      ctx.fillStyle = '#d4edc4';
-      ctx.font = `600 ${fs * 0.85}px "DM Sans", "Noto Sans Arabic", sans-serif`;
-      const plantLbl = state.lang === 'ar' ? 'شتلة' : 'plants';
-      ctx.fillText(`${zone.plants ?? 0} ${plantLbl}`, c.x, c.y + lh);
+      const scale=state.viewport.scale;
+      const bounds=zone.points.reduce((b,p)=>({minX:Math.min(b.minX,p.x),maxX:Math.max(b.maxX,p.x),minY:Math.min(b.minY,p.y),maxY:Math.max(b.maxY,p.y)}),{minX:Infinity,maxX:-Infinity,minY:Infinity,maxY:-Infinity});
+      const maxW=Math.max(12,(bounds.maxX-bounds.minX)*.92);
+      const fs=13/scale, lh=14/scale;
+      const area=zoneAreaM2(zone).toFixed(1);
+      const countText=`${zone.plants??0} ${state.lang==='ar'?'شتلة':'plants'} · ${area} م²`;
+      const captureText=state.lang==='ar'?`${area} م²`:`${area} m²`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.shadowColor='rgba(0,0,0,.85)';ctx.shadowBlur=3/scale;ctx.lineJoin='round';
+      ctx.fillStyle='#fff';ctx.font=`700 ${fs}px "DM Sans", "Noto Sans Arabic", sans-serif`;
+      ctx.fillText(zone.name||'Zone',c.x,c.y-lh,maxW);
+      ctx.fillStyle='#f1f2e8';ctx.font=`600 ${fs*.82}px "DM Sans", "Noto Sans Arabic", sans-serif`;
+      ctx.fillText(shortBedDate(zone.date),c.x,c.y,maxW);
+      ctx.fillStyle='#fff';ctx.font=`700 ${fs*.78}px "DM Sans", "Noto Sans Arabic", sans-serif`;
+      ctx.fillText(state.cleanCapture?captureText:countText,c.x,c.y+lh,maxW);
+      ctx.shadowBlur=0;
     }
 
     function drawGreenhouseBody(rect, selected) {
@@ -2411,6 +2308,7 @@
       drawDoors(gh.rect, gh.doors || []);
       (gh.zones || []).forEach(z => drawZoneShape(z, selected));
       drawGhBlocks(gh.blocks);
+      drawArches(gh.rect, gh.arcs || []);
 
       const c = { x: gh.rect.x + gh.rect.w / 2, y: gh.rect.y - 14 / state.viewport.scale };
       const fs = 12 / state.viewport.scale;
@@ -2434,6 +2332,7 @@
 
       (zones || []).forEach(z => drawZoneShape(z, true));
       drawGhBlocks(state.draft.blocks);
+      if(rect)drawArches(preview,state.draft.arcs||[]);
 
       if (state.isDrawingZone && state.zonePoints.length > 0) {
         drawPath(state.zonePoints, false);
@@ -2444,173 +2343,20 @@
       }
     }
 
-    // ===== RICH FIELD BACKGROUND =====
-    const fieldSeed = [];
-    (function seedField() {
-      const rng = (s) => { let x = Math.sin(s+1)*43758.5453; return x - Math.floor(x); };
-      // stones
-      for (let i = 0; i < 60; i++) fieldSeed.push({ type:'stone', x: rng(i*7)*2400-200, y: rng(i*13)*2400-200, r: rng(i*3)*5+2, a: rng(i*17)*Math.PI });
-      // soil cracks / furrows
-      for (let i = 0; i < 40; i++) fieldSeed.push({ type:'crack', x: rng(i*11+5)*2400-200, y: rng(i*19+5)*2400-200, len: rng(i*7+2)*30+10, a: rng(i*23)*Math.PI });
-      // small wild plants
-      for (let i = 0; i < 50; i++) fieldSeed.push({ type:'plant', x: rng(i*29)*2400-200, y: rng(i*31)*2400-200, size: rng(i*5)*7+3, hue: rng(i*41)*40 });
-      // flowers
-      for (let i = 0; i < 35; i++) fieldSeed.push({ type:'flower', x: rng(i*37+1)*2400-200, y: rng(i*43+1)*2400-200, r: rng(i*11)*3+2, petals: Math.floor(rng(i*53)*3)+5, col: `hsl(${Math.floor(rng(i*61)*360)},80%,70%)` });
-      // birds (animated)
-      for (let i = 0; i < 7; i++) fieldSeed.push({ type:'bird', startX: rng(i*71+3)*2400-200, y: rng(i*79+3)*400+50, speed: rng(i*83)*0.4+0.15, phase: rng(i*89)*Math.PI*2, wingPhase: rng(i*97)*Math.PI*2 });
-    })();
-
     function drawSoilBase(tctx, x, y, w, h, detail = true) {
       const grad = tctx.createLinearGradient(x, y, x + w, y + h);
-      grad.addColorStop(0,   '#6e4c32');
-      grad.addColorStop(0.25, '#5e3f28');
-      grad.addColorStop(0.55, '#4a3220');
-      grad.addColorStop(0.8,  '#3f2a18');
-      grad.addColorStop(1,   '#352214');
+      grad.addColorStop(0,   '#484943');
+      grad.addColorStop(0.5, '#3e403a');
+      grad.addColorStop(1,   '#343731');
       tctx.fillStyle = grad;
       tctx.fillRect(x, y, w, h);
 
       if (!detail) return;
-
-      const step = w < 120 ? 14 : 48;
-      for (let ty = y; ty < y + h; ty += step) {
-        const wave = Math.sin(ty * 0.08) * 3;
-        tctx.strokeStyle = 'rgba(35, 22, 12, 0.12)';
-        tctx.lineWidth = 1;
-        tctx.beginPath();
-        tctx.moveTo(x, ty + wave);
-        tctx.lineTo(x + w, ty + wave + Math.sin(ty * 0.04) * 2);
-        tctx.stroke();
-      }
-
-      for (let tx = x; tx < x + w; tx += step * 1.4) {
-        tctx.strokeStyle = 'rgba(55, 38, 22, 0.1)';
-        tctx.beginPath();
-        tctx.moveTo(tx, y);
-        tctx.lineTo(tx + step * 0.35, y + h);
-        tctx.stroke();
-      }
-
-      for (let tx = x; tx < x + w; tx += step) {
-        for (let ty = y; ty < y + h; ty += step) {
-          const v = Math.sin(tx * 0.031 + 1.1) * Math.cos(ty * 0.027 + 0.7);
-          if (v > 0.08) {
-            tctx.fillStyle = `rgba(95,65,38,${v * 0.22})`;
-            tctx.beginPath();
-            tctx.ellipse(tx, ty, 22 + v * 14, 14 + v * 8, v * 0.5, 0, Math.PI * 2);
-            tctx.fill();
-          }
-        }
-      }
     }
 
     function drawFieldBackground(worldW, worldH) {
-      drawSoilBase(ctx, -200, -200, worldW, worldH, true);
-
-      const sc = state.viewport.scale;
-      const phase = state.fieldPhase;
-
-      fieldSeed.forEach(item => {
-        if (item.type === 'stone') {
-          ctx.save(); ctx.translate(item.x, item.y); ctx.rotate(item.a);
-          ctx.fillStyle = `rgba(90,75,60,0.7)`; ctx.strokeStyle = `rgba(40,28,20,0.4)`;
-          ctx.lineWidth = 0.5 / sc;
-          ctx.beginPath(); ctx.ellipse(0, 0, item.r*1.4, item.r*0.85, 0, 0, Math.PI*2);
-          ctx.fill(); ctx.stroke();
-          ctx.fillStyle = 'rgba(120,100,80,0.3)';
-          ctx.beginPath(); ctx.ellipse(-item.r*0.2, -item.r*0.2, item.r*0.5, item.r*0.3, 0.5, 0, Math.PI*2); ctx.fill();
-          ctx.restore();
-        } else if (item.type === 'crack') {
-          ctx.save(); ctx.translate(item.x, item.y); ctx.rotate(item.a);
-          ctx.strokeStyle = 'rgba(30,18,10,0.35)'; ctx.lineWidth = 0.7 / sc; ctx.lineCap = 'round';
-          ctx.beginPath(); ctx.moveTo(0, 0);
-          ctx.bezierCurveTo(item.len*0.3, item.len*0.15, item.len*0.7, -item.len*0.1, item.len, item.len*0.05);
-          ctx.stroke(); ctx.restore();
-        } else if (item.type === 'plant') {
-          ctx.save(); ctx.translate(item.x, item.y);
-          const sway = Math.sin(phase * 0.7 + item.x * 0.05) * 0.15;
-          const g = `hsl(${100+item.hue},55%,28%)`;
-          ctx.strokeStyle = g; ctx.lineWidth = 1 / sc; ctx.lineCap = 'round';
-          for (let b = 0; b < 3; b++) {
-            const ba = (b/3)*Math.PI*2 + sway;
-            ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ba)*item.size, Math.sin(ba)*item.size); ctx.stroke();
-            ctx.fillStyle = `hsl(${110+item.hue},60%,32%)`;
-            ctx.beginPath(); ctx.ellipse(Math.cos(ba)*item.size, Math.sin(ba)*item.size, item.size*0.4, item.size*0.25, ba, 0, Math.PI*2); ctx.fill();
-          }
-          ctx.restore();
-        } else if (item.type === 'flower') {
-          ctx.save(); ctx.translate(item.x, item.y);
-          const fsway = Math.sin(phase * 0.5 + item.x * 0.04) * 0.2;
-          ctx.strokeStyle = '#3d5a25'; ctx.lineWidth = 0.8/sc;
-          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(fsway * 4, -item.r * 2.2); ctx.stroke();
-          for (let p = 0; p < item.petals; p++) {
-            const pa = (p/item.petals)*Math.PI*2 + phase*0.3;
-            ctx.fillStyle = item.col;
-            ctx.beginPath(); ctx.ellipse(Math.cos(pa)*item.r*1.4 + fsway*3, Math.sin(pa)*item.r*1.4 - item.r*2.2, item.r*0.8, item.r*0.5, pa, 0, Math.PI*2); ctx.fill();
-          }
-          ctx.fillStyle = '#f5e84a';
-          ctx.beginPath(); ctx.arc(fsway*3, -item.r*2.2, item.r*0.55, 0, Math.PI*2); ctx.fill();
-          ctx.restore();
-        } else if (item.type === 'bird') {
-          // Birds fly across in a loop
-          const bx = item.startX + ((phase * item.speed * 300) % (worldW + 400)) - 200;
-          const by = item.y + Math.sin(phase * 1.2 + item.phase) * 20;
-          const wing = Math.sin(phase * 6 + item.wingPhase) * 0.5;
-          const bsize = 7 / sc;
-          ctx.save(); ctx.translate(bx, by);
-          ctx.strokeStyle = 'rgba(30,20,12,0.65)'; ctx.lineWidth = 1.2/sc; ctx.lineCap = 'round';
-          // Body
-          ctx.beginPath(); ctx.ellipse(0, 0, bsize*0.7, bsize*0.28, 0, 0, Math.PI*2); ctx.stroke();
-          // Wings
-          ctx.beginPath();
-          ctx.moveTo(-bsize*0.5, 0);
-          ctx.quadraticCurveTo(-bsize*1.1, -bsize*(0.5+wing), -bsize*1.9, -bsize*wing*0.3);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(bsize*0.5, 0);
-          ctx.quadraticCurveTo(bsize*1.1, -bsize*(0.5+wing), bsize*1.9, -bsize*wing*0.3);
-          ctx.stroke();
-          ctx.restore();
-        }
-      });
+      drawSoilBase(ctx, -200, -200, worldW, worldH, false);
     }
-
-    function fieldAnimationLoop() {
-      if (document.hidden || state.fieldAnimPaused) {
-        state.fieldRaf = null;
-        return;
-      }
-      state.fieldPhase += 0.016;
-      drawFarm();
-      state.fieldRaf = requestAnimationFrame(fieldAnimationLoop);
-    }
-
-    function startFieldAnimation() {
-      if (document.hidden) {
-        state.fieldAnimPaused = true;
-        return;
-      }
-      state.fieldAnimPaused = false;
-      if (state.fieldRaf) cancelAnimationFrame(state.fieldRaf);
-      state.fieldRaf = requestAnimationFrame(fieldAnimationLoop);
-    }
-
-    function pauseFieldAnimation() {
-      state.fieldAnimPaused = true;
-      if (state.fieldRaf) {
-        cancelAnimationFrame(state.fieldRaf);
-        state.fieldRaf = null;
-      }
-    }
-
-    function resumeFieldAnimation() {
-      if (!document.hidden) startFieldAnimation();
-    }
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) pauseFieldAnimation();
-      else resumeFieldAnimation();
-    });
 
     function pickScaleBarMeters() {
       // Choose a readable bar length in meters for current zoom (screen ~60–140px)
@@ -2794,23 +2540,21 @@
         c.moveTo(z.points[0].x, z.points[0].y);
         for (let i = 1; i < z.points.length; i++) c.lineTo(z.points[i].x, z.points[i].y);
         c.closePath();
-        c.fillStyle = 'rgba(74, 106, 53, 0.78)';
+        c.fillStyle = '#76b947';
         c.fill();
         c.strokeStyle = '#6b8e4e';
         c.lineWidth = 2;
         c.stroke();
         const cen = polygonCentroid(z.points);
+        const labelW=Math.max(20,(Math.max(...z.points.map(p=>p.x))-Math.min(...z.points.map(p=>p.x)))*.9);
         c.fillStyle = '#f0e6d8';
-        c.font = '700 12px "DM Sans", sans-serif';
+        c.font = '700 18px "DM Sans", "Noto Sans Arabic", sans-serif';
         c.textAlign = 'center';
         c.textBaseline = 'middle';
-        c.fillText(z.name || 'Zone', cen.x, cen.y - 10);
-        c.font = '500 10px "DM Sans", sans-serif';
-        c.fillStyle = 'rgba(240,230,216,0.9)';
-        c.fillText(z.date || '', cen.x, cen.y);
-        c.fillStyle = '#d4edc4';
-        c.font = '600 11px "DM Sans", "Noto Sans Arabic", sans-serif';
-        c.fillText(`${z.plants ?? 0} ${state.lang === 'ar' ? 'شتلة' : 'plants'}`, cen.x, cen.y + 12);
+        c.fillText(z.name || 'Zone', cen.x, cen.y - 18,labelW);
+        c.fillStyle='#eee';c.font='600 12px "DM Sans", "Noto Sans Arabic", sans-serif';c.fillText(shortBedDate(z.date),cen.x,cen.y-2,labelW);
+        c.fillStyle = '#f4f5e9';c.font = '700 13px "DM Sans", "Noto Sans Arabic", sans-serif';
+        c.fillText(`${zoneAreaM2(z).toFixed(1)} م²`, cen.x, cen.y + 14,labelW);
       });
 
       // Doors
@@ -2831,6 +2575,8 @@
         c.fillRect(b.x - BLOCK_W / 2, b.y - BLOCK_H / 2, BLOCK_W, BLOCK_H);
         c.strokeRect(b.x - BLOCK_W / 2, b.y - BLOCK_H / 2, BLOCK_W, BLOCK_H);
       });
+
+      (gh.arcs||[]).forEach(a=>{const y=r.y+a.t*r.h;c.beginPath();c.moveTo(r.x+1,y);c.quadraticCurveTo(r.x+r.w/2,y-r.w*.26,r.x+r.w-1,y);c.strokeStyle='rgba(255,219,82,.52)';c.lineWidth=2;c.lineCap='round';c.stroke();});
 
       // Dimensions (meters)
       const offDim = 16;
@@ -2891,6 +2637,8 @@
       c.font = '500 11px "DM Sans", sans-serif';
       c.fillStyle = 'rgba(245,197,24,0.9)';
       c.fillText(formatDim(r), cx, cy - 22);
+      c.font = '600 12px "DM Sans", "Noto Sans Arabic", sans-serif';
+      c.fillText(new Intl.DateTimeFormat(state.lang==='ar'?'ar':'en',{year:'numeric',month:'long',day:'numeric'}).format(new Date()),cx,cy-40);
       c.restore();
 
       // Credit line
@@ -2899,7 +2647,8 @@
       c.textAlign = 'left';
       c.fillText('Olive Agent · Eng. Abdullah Al-Zoubi / Eng. Hassan Al-Zoubi', 12, outH / scale - 8);
 
-      const fileName = `${sanitizeFileName(gh.name)}_${sanitizeFileName(userName)}.png`;
+      const dateFile=new Date().toISOString().slice(0,10);
+      const fileName = `${sanitizeFileName(gh.name)}_${sanitizeFileName(userName)}_${dateFile}.png`;
       off.toBlob(blob => {
         if (!blob) return;
         const a = document.createElement('a');
@@ -2908,7 +2657,6 @@
         document.body.appendChild(a);
         a.click();
         setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
-        playSound('save');
         overlayEl.textContent = t('exportDone');
       }, 'image/png');
     }
@@ -3333,8 +3081,8 @@
 
     function setTool(tool) {
       state.tool = tool;
-      ['btnToolRect','btnToolDoor','btnToolZone','btnToolBlock',
-       'btnEditDoor','btnEditZone','btnEditBlock'].forEach(id => {
+      ['btnToolRect','btnToolDoor','btnToolArch','btnToolZone','btnToolBlock',
+       'btnEditDoor','btnEditArch','btnEditZone','btnEditBlock'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.toggle('active', el.id.includes(tool === 'rect' ? 'Rect' : tool === 'door' ? 'Door' : tool === 'zone' ? 'Zone' : 'Block') && (
           (tool === 'rect' && id.includes('Rect')) ||
@@ -3346,14 +3094,14 @@
 
       document.querySelectorAll('.btn-tool').forEach(btn => btn.classList.remove('active'));
       const map = {
-        rect: 'btnToolRect', door: state.editMode ? 'btnEditDoor' : 'btnToolDoor',
+        rect: 'btnToolRect', door: state.editMode ? 'btnEditDoor' : 'btnToolDoor', arch: state.editMode ? 'btnEditArch' : 'btnToolArch',
         zone: state.editMode ? 'btnEditZone' : 'btnToolZone',
         block: state.editMode ? 'btnEditBlock' : 'btnToolBlock'
       };
       const activeBtn = document.getElementById(map[tool]);
       if (activeBtn) activeBtn.classList.add('active');
 
-      const hints = { rect: t('hintRect'), door: t('hintDoor'), zone: t('hintZone'), block: t('hintBlock') };
+      const hints = { rect: t('hintRect'), door: t('hintDoor'), arch: t('hintArch'), zone: t('hintZone'), block: t('hintBlock') };
       overlayEl.textContent = hints[tool] || '';
       updateCanvasCursor();
       drawFarm();
@@ -3367,19 +3115,21 @@
       document.getElementById('drawHint').classList.toggle('hidden', hasDraft || state.editMode);
       document.getElementById('btnToolRect').disabled = !hasDraft;
       document.getElementById('btnToolDoor').disabled = !hasRect;
+      document.getElementById('btnToolArch').disabled = !hasRect;
       document.getElementById('btnToolZone').disabled = !hasRect;
       document.getElementById('btnToolBlock').disabled = !hasRect;
       document.getElementById('btnFinish').disabled = !hasRect;
 
       if (hasDraft) {
-        const steps = { rect: t('stepRect'), door: t('stepDoor'), zone: t('stepZone'), block: t('stepBlock') };
+        const steps = { rect: t('stepRect'), door: t('stepDoor'), arch: t('stepArch'), zone: t('stepZone'), block: t('stepBlock') };
         document.getElementById('stepBadge').textContent = steps[state.tool] || '…';
       }
     }
 
     function startNewGreenhouse() {
+      speakArabicPhrase('بسم الله');
       if (!state.user) { showLoginModal(); return; }
-      state.draft = { rect: null, doors: [], zones: [], blocks: [], name: '' };
+      state.draft = { rect: null, doors: [], arcs: [], zones: [], blocks: [], name: '' };
       state.editMode = false;
       state.selectedId = null;
       state.previewRect = null;
@@ -3433,7 +3183,6 @@
       document.getElementById('editToolGroup').classList.add('hidden');
       document.getElementById('stepBadge').classList.add('hidden');
       persistData();
-      playSound('save');
       const gh = getSelected();
       if (gh) {
         document.getElementById('ctrlEditBadge').textContent = 'Viewing';
@@ -3462,7 +3211,7 @@
       const gh = getTargetGh();
       if (!gh?.rect) return;
       const edge = findNearestEdge(wx, wy, gh.rect);
-      if (!edge) { overlayEl.textContent = 'Click closer to the yellow border'; return; }
+      if (!edge) { overlayEl.textContent = 'Click closer to the greenhouse border'; return; }
       const exists = gh.doors.some(d => d.edge === edge.edge && Math.abs(d.t - edge.t) < 0.12);
       if (!exists) { pushUndo('place door'); gh.doors.push(edge); playSound('door'); }
       if (state.editMode) updatePanel(gh);
@@ -3488,10 +3237,16 @@
       drawFarm();
     }
 
+    const DEFAULT_CULTIVARS = ['نبالي','نبالي محسن','قيسي','اسطنبولي','جلط','كلمتا','k18','اربيكانا','اربيسوانا','رومي','مجهول','صوراني','زيتي','تفاحي'];
+    const CULTIVAR_KEY = 'olive-agent-cultivars-v1';
+    function getCultivars(){ try { const saved=JSON.parse(localStorage.getItem(CULTIVAR_KEY)||'null'); return Array.isArray(saved)&&saved.length?saved:DEFAULT_CULTIVARS.slice(); } catch { return DEFAULT_CULTIVARS.slice(); } }
+    function renderCultivars(selected=''){ const sel=document.getElementById('zoneName'); if(!sel)return; const names=getCultivars(); sel.replaceChildren(...names.map(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;return o;})); if(selected&&names.includes(selected))sel.value=selected; }
+    function addCultivar(){ const label=state.lang==='ar'?'اكتب اسم الصنف الجديد:':'Enter the new cultivar name:'; const name=prompt(label); if(!name||!name.trim())return; const list=getCultivars(); const clean=name.trim(); if(!list.includes(clean)){list.push(clean);localStorage.setItem(CULTIVAR_KEY,JSON.stringify(list));} renderCultivars(clean); }
+    function showCameraTip(){ const old=document.getElementById('cameraTip');if(old)old.remove();const tip=document.createElement('div');tip.id='cameraTip';tip.className='camera-tip';tip.innerHTML=`${state.lang==='ar'?'تمت إضافة البيت البلاستيكي! 📷 لا تنسَ تصوير المخطط لحفظ نسخة مع التاريخ.':'Greenhouse added! 📷 Capture the plan to save a dated copy.'}<button aria-label="إغلاق">×</button>`;document.querySelector('.canvas-area').appendChild(tip);tip.querySelector('button').onclick=()=>tip.remove();setTimeout(()=>tip.remove(),9000);}
     function openZoneModal(points) {
       state.pendingZonePoints = points;
       const n = (getTargetGh()?.zones?.length || 0) + 1;
-      document.getElementById('zoneName').value = `Zone ${n}`;
+      renderCultivars();
       document.getElementById('zoneDate').value = new Date().toISOString().slice(0, 10);
       document.getElementById('zonePlants').value = '';
       document.getElementById('zoneModal').classList.add('open');
@@ -3514,10 +3269,8 @@
         name, date, plants,
         points: state.pendingZonePoints
       });
+      playSound('zone');
 
-      // Zone added → birds chirp
-      initAudio();
-      if (audioCtx) { chirpBird(); setTimeout(chirpBird, 180); setTimeout(chirpBird, 380); }
 
       state.pendingZonePoints = null;
       document.getElementById('zoneModal').classList.remove('open');
@@ -3568,8 +3321,7 @@
         if (gh) {
           gh.name = name;
           persistData();
-          playSound('save');
-          updatePanel(gh);
+            updatePanel(gh);
           renderList();
         }
         state.renameMode = false;
@@ -3585,6 +3337,7 @@
         name,
         rect: { ...state.draft.rect },
         doors: [...(state.draft.doors || [])],
+        arcs: [...(state.draft.arcs || [])],
         zones: (state.draft.zones || []).map(z => ({ ...z, points: [...z.points] })),
         blocks: [...(state.draft.blocks || [])]
       };
@@ -3596,9 +3349,10 @@
       document.getElementById('ghModal').classList.remove('open');
       updateCreateTools();
       persistData();
-      playSound('save');
-      setTimeout(playRooster, 1200);
       selectGreenhouse(gh.id);
+      speakArabicPhrase('الحمد لله');
+      playWind();
+      showCameraTip();
     }
 
     function drawGhThumbnail(gh, thumbCanvas) {
@@ -3710,6 +3464,8 @@
       document.getElementById('ctrlName').textContent = gh.name;
       document.getElementById('ctrlZones').textContent = (gh.zones || []).length;
       document.getElementById('ctrlPlants').textContent = totalPlants(gh);
+      const cultivarTotals=(gh.zones||[]).reduce((a,z)=>(a[z.name]=(a[z.name]||0)+(Number(z.plants)||0),a),{});
+      const summary=document.getElementById('cultivarSummary'); if(summary){summary.innerHTML='';Object.entries(cultivarTotals).forEach(([name,count])=>{const row=document.createElement('div');row.className='control-row';const label=document.createElement('span');label.textContent=name;const value=document.createElement('strong');value.textContent=count;row.append(label,value);summary.appendChild(row);});if(!Object.keys(cultivarTotals).length)summary.textContent=state.lang==='ar'?'لا توجد عقل مسجلة بعد':'No seedlings recorded yet';}
       document.getElementById('ctrlDoors').textContent = (gh.doors || []).length;
       document.getElementById('ctrlBlocks').textContent = totalBlocks(gh);
 
@@ -3718,16 +3474,40 @@
       (gh.zones || []).forEach(z => {
         const el = document.createElement('div');
         el.className = 'zone-list-item';
-        el.innerHTML = `<strong>${z.name}</strong><small>${z.date} · ${z.plants} plants</small>`;
+        el.innerHTML = `<strong>${z.name}</strong><small>${z.plants} ${state.lang==='ar'?'شتلة':'plants'} · ${z.date||''}</small>`;
         el.addEventListener('click', () => {
           const idx = (gh.zones || []).indexOf(z);
-          flyToZone(idx, true);
+          flyToZone(idx, false);
         });
         zlp.appendChild(el);
       });
       if (!gh.zones?.length) zlp.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem">No zones yet</span>';
     }
 
+    function fitGreenhouseToCanvas(gh){if(!gh?.rect)return;const {w,h}=getCanvasSize(),r=gh.rect,margin=Math.max(18,Math.min(34,Math.min(w,h)*.06));const scale=Math.max(ZOOM_MIN,Math.min(ZOOM_MAX,(w-margin*2)/r.w,(h-margin*2)/r.h));state.viewport.scale=scale;state.viewport.offsetX=(w-r.w*scale)/2-r.x*scale;state.viewport.offsetY=(h-r.h*scale)/2-r.y*scale;syncZoomSlider();syncPanSliders();}
+    function captureAppWindow(){
+      if(!navigator.mediaDevices?.getDisplayMedia){showCameraFallback();return;}
+      state.cleanCapture=true;document.body.classList.add('capture-clean');drawFarm();
+      navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser'},audio:false})
+        .then(stream=>{const video=document.createElement('video');video.srcObject=stream;video.muted=true;
+          return video.play().then(()=>new Promise(resolve=>{
+            const done=()=>{try{
+              const c=document.createElement('canvas');c.width=video.videoWidth||window.innerWidth;c.height=video.videoHeight||window.innerHeight;
+              const x=c.getContext('2d');x.drawImage(video,0,0,c.width,c.height);
+              const d=new Date().toLocaleDateString(state.lang==='ar'?'ar':'en');
+              const footer=state.lang==='ar'?`بإشراف م. عبد الله الزعبي · تصميم م. حسن الزعبي · ${d}`:`Supervised by Eng. Abdullah Al-Zoubi · Designed by Eng. Hassan Al-Zoubi · ${d}`;
+              x.fillStyle='rgba(0,0,0,.68)';x.fillRect(12,c.height-48,Math.min(c.width-24,Math.max(340,c.width*.8)),34);
+              x.fillStyle='#fff';x.font=`${Math.max(12,Math.min(16,c.width/55))}px sans-serif`;x.textAlign='left';x.fillText(footer,22,c.height-25, c.width-44);
+              c.toBlob(blob=>{if(blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`olive-app-${new Date().toISOString().slice(0,10)}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);}resolve();},'image/png');
+            }catch(e){resolve();}finally{stream.getTracks().forEach(t=>t.stop());state.cleanCapture=false;document.body.classList.remove('capture-clean');drawFarm();}};
+            if(video.readyState>=2)done();else video.addEventListener('loadeddata',done,{once:true});
+          }));
+        })
+        .catch(()=>{state.cleanCapture=false;document.body.classList.remove('capture-clean');drawFarm();showCameraFallback();});
+    }
+    function showCameraFallback(){const area=document.querySelector('.canvas-area');let card=document.getElementById('cameraFallback');if(!card){card=document.createElement('div');card.className='camera-fallback';card.id='cameraFallback';card.innerHTML='<div>تعذر التقاط نافذة التطبيق من هذا المتصفح. استخدم «حفظ المخطط كصورة» للحصول على نسخة بلا أعداد أو مجموع، أو التقط الشاشة يدوياً.</div><button type="button">حسناً</button>';area.appendChild(card);card.querySelector('button').onclick=()=>card.remove();}}
+    function speakArabicPhrase(text){if(!state.soundEnabled)return;const id=text.includes('بسم')?'audioBismillah':'audioAlhamdulillah';const audio=document.getElementById(id);if(audio){audio.currentTime=0;audio.play().catch(()=>{try{if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(text);u.lang='ar-001';window.speechSynthesis.speak(u);}}catch(e){}});}}
+    function playWind(){if(!state.soundEnabled)return;try{initAudio();const duration=2.6;const buffer=audioCtx.createBuffer(1,Math.floor(audioCtx.sampleRate*duration),audioCtx.sampleRate);const data=buffer.getChannelData(0);let p=0;for(let i=0;i<data.length;i++){p=.94*p+.06*(Math.random()*2-1);data[i]=p;}const src=audioCtx.createBufferSource();src.buffer=buffer;const filter=audioCtx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=520;const gain=audioCtx.createGain();const t=audioCtx.currentTime;gain.gain.setValueAtTime(.0001,t);gain.gain.linearRampToValueAtTime(.11,t+.55);gain.gain.setValueAtTime(.11,t+1.3);gain.gain.linearRampToValueAtTime(.0001,t+duration);src.connect(filter);filter.connect(gain);gain.connect(getMasterBus());src.start(t);src.stop(t+duration+.02);}catch(e){}}
     function selectGreenhouse(id) {
       if (state.draft) return;
       state.selectedId = id;
@@ -3747,6 +3527,7 @@
       updateNavLabel();
       renderList();
       updateCanvasCursor();
+      fitGreenhouseToCanvas(gh);
       drawFarm();
     }
 
@@ -3793,6 +3574,7 @@
       }
 
       if (state.tool === 'door') { placeDoor(world.x, world.y); return; }
+      if (state.tool === 'arch') { placeArch(world.x, world.y); return; }
       if (state.tool === 'block') { placeBlock(world.x, world.y); return; }
 
       if (state.tool === 'zone' && gh.rect) {
@@ -3915,6 +3697,7 @@
       return Math.sqrt(dx * dx + dy * dy);
     }
 
+    let _singlePan = null;
     canvas.addEventListener('touchstart', e => {
       e.preventDefault();
       if (e.touches.length === 2) {
@@ -3939,7 +3722,8 @@
       if (e.touches.length === 1) {
         _pinchActive = false;
         _panActive = false;
-        handlePointerDown(getPointerWorld(e.touches[0]));
+        if (!state.draft && !state.editMode && !isModalOpen()) { _singlePan={x:e.touches[0].clientX,y:e.touches[0].clientY,ox:state.viewport.offsetX,oy:state.viewport.offsetY,moved:false}; }
+        else handlePointerDown(getPointerWorld(e.touches[0]));
       }
     }, { passive: false });
 
@@ -3974,7 +3758,8 @@
       }
 
       if (e.touches.length === 1 && !_pinchActive) {
-        handlePointerMove(getPointerWorld(e.touches[0]));
+        if (_singlePan) { const t=e.touches[0], dx=t.clientX-_singlePan.x,dy=t.clientY-_singlePan.y;if(Math.abs(dx)+Math.abs(dy)>6)_singlePan.moved=true;if(_singlePan.moved){state.viewport.offsetX=_singlePan.ox+dx;state.viewport.offsetY=_singlePan.oy+dy;syncPanSliders();drawFarm();} }
+        else handlePointerMove(getPointerWorld(e.touches[0]));
       }
     }, { passive: false });
 
@@ -3987,13 +3772,15 @@
         updateCanvasCursor();
       }
       if (e.touches.length === 0) {
-        handlePointerUp();
+        if(_singlePan&&!_singlePan.moved){ const touch=e.changedTouches[0];handlePointerDown(getPointerWorld(touch));handlePointerUp(); }
+        _singlePan=null; handlePointerUp();
       }
     }, { passive: false });
 
     canvas.addEventListener('touchcancel', e => {
       _pinchActive = false;
       _panActive = false;
+      _singlePan=null;
       canvas.classList.remove('panning');
       updateCanvasCursor();
       handlePointerUp();
@@ -4029,8 +3816,10 @@
       open ? closeMobilePanels() : openMobilePanel('left');
     });
     document.getElementById('btnMenuRight').addEventListener('click', () => {
-      const open = document.getElementById('controlPanelAside').classList.contains('open');
-      open ? closeMobilePanels() : openMobilePanel('right');
+      const panel=document.getElementById('controlPanelAside');
+      if(!isMobileLayout()){panel.classList.toggle('open');return;}
+      const open=panel.classList.contains('open');
+      open?closeMobilePanels():openMobilePanel('right');
     });
     document.getElementById('closeLeftPanel').addEventListener('click', closeMobilePanels);
     document.getElementById('closeRightPanel').addEventListener('click', closeMobilePanels);
@@ -4089,8 +3878,13 @@
     })();
 
     document.getElementById('btnNewGreenhouse').addEventListener('click', startNewGreenhouse);
+    document.getElementById('mobDrawZone').addEventListener('click', () => { if (state.draft?.rect) setTool('zone'); else if (state.selectedId) setTool('zone'); else document.getElementById('btnNewGreenhouse').click(); });
+    document.getElementById('mobPlaceBlock').addEventListener('click', () => { if (state.draft?.rect || state.selectedId) setTool('block'); });
+    document.getElementById('mobSave').addEventListener('click', () => { if (state.draft?.rect) openGhModal(false); else if (state.editMode) saveEdits(); else document.getElementById('btnExportImage').click(); });
+    document.getElementById('mobZoom').addEventListener('click', () => zoomAt(ZOOM_STEP));
     document.getElementById('btnToolRect').addEventListener('click', () => { if (state.draft && !state.draft.rect) setTool('rect'); });
     document.getElementById('btnToolDoor').addEventListener('click', () => { if (state.draft?.rect) setTool('door'); });
+    document.getElementById('btnToolArch').addEventListener('click',()=>{if(state.draft?.rect)setTool('arch');});
     document.getElementById('btnToolZone').addEventListener('click', () => { if (state.draft?.rect) setTool('zone'); });
     document.getElementById('btnToolBlock').addEventListener('click', () => { if (state.draft?.rect) setTool('block'); });
     document.getElementById('btnFinish').addEventListener('click', () => { if (state.draft?.rect) openGhModal(false); });
@@ -4103,6 +3897,7 @@
 
     document.getElementById('btnEditGreenhouse').addEventListener('click', startEditGreenhouse);
     document.getElementById('btnEditDoor').addEventListener('click', () => setTool('door'));
+    document.getElementById('btnEditArch').addEventListener('click',()=>setTool('arch'));
     document.getElementById('btnEditZone').addEventListener('click', () => setTool('zone'));
     document.getElementById('btnEditBlock').addEventListener('click', () => setTool('block'));
     document.getElementById('btnSaveEdits').addEventListener('click', saveEdits);
@@ -4110,6 +3905,12 @@
     document.getElementById('btnRenameGreenhouse').addEventListener('click', () => openGhModal(true));
 
     document.getElementById('btnZoneSave').addEventListener('click', saveZone);
+    document.getElementById('btnAddCultivar').addEventListener('click',addCultivar);
+    document.getElementById('btnCamera').addEventListener('click',captureAppWindow);
+    document.getElementById('btnSoundToggle').addEventListener('click',e=>{state.soundEnabled=!state.soundEnabled;e.currentTarget.textContent=state.soundEnabled?'🔊':'🔇';if(state.soundEnabled){initAudio();playSound('nav');}});
+    document.getElementById('mobDoors').addEventListener('click',()=>{if(state.draft?.rect||state.selectedId)setTool('door');});
+    document.getElementById('mobCamera').addEventListener('click',captureAppWindow);
+    document.getElementById('mobArches').addEventListener('click',()=>{if(state.draft?.rect||state.selectedId)setTool('arch');});
     document.getElementById('btnZoneCancel').addEventListener('click', cancelZone);
     document.getElementById('btnModalSave').addEventListener('click', saveGreenhouse);
     document.getElementById('btnModalCancel').addEventListener('click', () => {
@@ -4117,6 +3918,7 @@
       document.getElementById('ghModal').classList.remove('open');
     });
 
+    document.querySelectorAll('.pan-pad button').forEach(btn=>btn.addEventListener('click',()=>{const step=Math.max(36,Math.min(getCanvasSize().w,getCanvasSize().h)*.12);const d=btn.dataset.pan;state.viewport.offsetX+=(d==='left'?step:d==='right'?-step:0);state.viewport.offsetY+=(d==='up'?step:d==='down'?-step:0);syncPanSliders();drawFarm();}));
     document.getElementById('btnZoomIn').addEventListener('click', () => zoomAt(ZOOM_STEP));
     document.getElementById('btnZoomOut').addEventListener('click', () => zoomAt(1 / ZOOM_STEP));
 
@@ -4129,18 +3931,12 @@
 
     document.getElementById('btnLangEn').addEventListener('click', () => setLang('en'));
     document.getElementById('btnLangAr').addEventListener('click', () => setLang('ar'));
-    document.getElementById('btnBirdsSound').addEventListener('click', toggleBirdsSound);
+
 
     document.getElementById('btnResetView').addEventListener('click', resetView);
     document.getElementById('btnExportImage').addEventListener('click', exportGreenhouseImage);
 
-    document.getElementById('btnOpenDisease').addEventListener('click', openDiseasePage);
     document.getElementById('btnCloseDisease').addEventListener('click', closeDiseasePage);
-    document.getElementById('mobDisease').addEventListener('click', () => {
-      document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
-      document.getElementById('mobDisease').classList.add('active');
-      openDiseasePage();
-    });
     document.getElementById('btnLangEn2').addEventListener('click', () => setLang('en'));
     document.getElementById('btnLangAr2').addEventListener('click', () => setLang('ar'));
 
@@ -4175,48 +3971,34 @@
 
 
 
-    document.getElementById('soundToggle').addEventListener('change', e => {
-      state.soundEnabled = e.target.checked;
-      if (state.soundEnabled) playSound('zoom');
-    });
+
 
     document.getElementById('btnPrevZone').addEventListener('click', () => {
-      stopTour();
       const i = state.navZoneIndex < 0 ? 0 : state.navZoneIndex - 1;
-      flyToZone(i, true);
+      flyToZone(i, false);
     });
 
     document.getElementById('btnNextZone').addEventListener('click', () => {
-      stopTour();
       const i = state.navZoneIndex < 0 ? 0 : state.navZoneIndex + 1;
-      flyToZone(i, true);
+      flyToZone(i, false);
     });
 
-    document.getElementById('btnTourZones').addEventListener('click', e => {
-      if (state.tourTimer) {
-        stopTour();
-        e.target.textContent = t('autoTour');
-        overlayEl.textContent = t('stopTour');
-      } else {
-        e.target.textContent = t('stopTour');
-        startTour();
-      }
-    });
 
     window.addEventListener('resize', () => {
       if (!isMobileLayout()) closeMobilePanels();
       resizeCanvas();
       syncPanSliders();
     });
-    const savedLang = localStorage.getItem(LANG_KEY) || 'en';
+    const savedLang = localStorage.getItem(LANG_KEY) || 'ar';
     setLang(savedLang);
+    document.getElementById('btnSoundToggle').textContent=state.soundEnabled?'🔊':'🔇';
+    renderCultivars();
     initUser();
     resizeCanvas();
     updateCanvasCursor();
-    startFieldAnimation();
     updateUndoBtn();
     renderDiseaseList();
   </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script>
+
 </body>
 </html>
